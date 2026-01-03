@@ -10840,3 +10840,18 @@ header.masthead .page-heading .subheading {
     font-size: 1.75rem;
   }
 }
+.news-body .card-title {
+  font-weight: 700;
+  font-size: 1.1rem;
+  color: #212529;
+}
+
+.news-body .card-text {
+  font-size: 0.95rem;
+  color: #555;
+}
+
+.news-body .btn-outline-danger {
+  border-radius: 20px;
+  font-size: 0.85rem;
+}
