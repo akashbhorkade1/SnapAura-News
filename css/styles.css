@@ -10796,3 +10796,57 @@ header.masthead .post-heading .meta a {
     font-size: 2.25rem;
   }
 }
+
+/* ===== Top Brand Bar ===== */
+.top-brand-bar {
+  background-color: #111;
+  color: #fff;
+  font-size: 0.9rem;
+}
+.top-brand-bar a {
+  color: #ffcc00;
+  font-weight: 600;
+  text-decoration: none;
+}
+.top-brand-bar a:hover {
+  color: #fff;
+}
+.top-icons a {
+  color: #fff;
+  font-size: 1rem;
+}
+.live-btn {
+  background-color: #e50914;
+  padding: 0.2rem 0.6rem;
+  border-radius: 4px;
+  font-weight: 700;
+  color: #fff;
+}
+
+/* ===== Category Navigation ===== */
+.category-nav {
+  background-color: #fff;
+  border-bottom: 1px solid #eee;
+}
+.category-nav a {
+  color: #333;
+  font-weight: 600;
+  text-decoration: none;
+  position: relative;
+}
+.category-nav a:hover {
+  color: #e50914;
+}
+.category-nav a::after {
+  content: "";
+  position: absolute;
+  width: 0%;
+  height: 2px;
+  bottom: -2px;
+  left: 0;
+  background-color: #e50914;
+  transition: width 0.3s ease;
+}
+.category-nav a:hover::after {
+  width: 100%;
+}
