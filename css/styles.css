@@ -10856,3 +10856,12 @@ header.masthead .post-heading .meta a {
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
 }
+
+.masthead {
+  background-color: #ffffff;   /* pure white */
+  height: 40vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+}
