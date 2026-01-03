@@ -23,19 +23,6 @@
   --bs-cyan: #0dcaf0;
   --bs-black: #000;
   --bs-white: #fff;
-  --bs-gray: #6c757d;
-  --bs-gray-dark: #343a40;
-  --bs-gray-100: #f8f9fa;
-  --bs-gray-200: #e9ecef;
-  --bs-gray-300: #dee2e6;
-  --bs-gray-400: #ced4da;
-  --bs-gray-500: #adb5bd;
-  --bs-gray-600: #6c757d;
-  --bs-gray-700: #495057;
-  --bs-gray-800: #343a40;
-  --bs-gray-900: #212529;
-  --bs-primary: #0085A1;
-  --bs-secondary: #6c757d;
   --bs-success: #198754;
   --bs-info: #0dcaf0;
   --bs-warning: #ffc107;
@@ -10850,11 +10837,12 @@ header.masthead .post-heading .meta a {
 .category-nav a:hover::after {
   width: 100%;
 }
+
 .snap-title {
   font-size: 3rem;
   font-weight: 700;
   font-family: 'Merriweather', serif;
-  background: linear-gradient(90deg, #ff9900, #ffcc00);
+  background: linear-gradient(90deg, var(--bs-orange), var(--bs-yellow));
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   text-shadow: 1px 1px 4px rgba(0,0,0,0.4);
@@ -10864,7 +10852,7 @@ header.masthead .post-heading .meta a {
   font-size: 1.2rem;
   font-style: italic;
   font-weight: 600;
-  background: linear-gradient(90deg, #ffcc00, #ff9900);
+  background: linear-gradient(90deg, var(--bs-yellow), var(--bs-orange));
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
 }
