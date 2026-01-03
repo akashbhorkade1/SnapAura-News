@@ -10654,83 +10654,7 @@ footer {
   padding-bottom: 3rem;
 }
 
-header.masthead {
-  position: relative;
-  margin-bottom: 3rem;
-  padding-top: calc(8rem + 57px);
-  padding-bottom: 8rem;
-  background: no-repeat center center;
-  background-color:#ffffff;
-  background-size: cover;
-  background-attachment: scroll;
-}
-header.masthead:before {
-  content: none;
- 
-}
-header.masthead .page-heading,
-header.masthead .post-heading,
-header.masthead .site-heading {
-  color: #ffffff;
-}
-header.masthead .page-heading,
-header.masthead .site-heading {
-  text-align: center;
-}
-header.masthead .page-heading h1, header.masthead .page-heading .h1,
-header.masthead .site-heading h1,
-header.masthead .site-heading .h1 {
-  font-size: 3rem;
-}
-header.masthead .page-heading .subheading,
-header.masthead .site-heading .subheading {
-  font-size: 1.5rem;
-  font-weight: 300;
-  line-height: 1.1;
-  display: block;
-  margin-top: 0.625rem;
-  font-family: "Open Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
-}
-header.masthead .post-heading h1, header.masthead .post-heading .h1 {
-  font-size: 2.25rem;
-}
-header.masthead .post-heading .meta,
-header.masthead .post-heading .subheading {
-  line-height: 1.1;
-  display: block;
-}
-header.masthead .post-heading .subheading {
-  font-size: 1.5rem;
-  font-weight: 600;
-  margin: 0.75rem 0 2rem;
-  font-family: "Open Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
-}
-header.masthead .post-heading .meta {
-  font-size: 1.25rem;
-  font-weight: 300;
-  font-style: italic;
-  font-family: "Lora", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
-}
-header.masthead .post-heading .meta a {
-  color: #ffffff;
-}
-@media (min-width: 992px) {
-  header.masthead {
-    padding-top: 12.5rem;
-    padding-bottom: 12.5rem;
-  }
-  header.masthead .page-heading h1, header.masthead .page-heading .h1,
-  header.masthead .site-heading h1,
-  header.masthead .site-heading .h1 {
-    font-size: 5rem;
-  }
-  header.masthead .post-heading h1, header.masthead .post-heading .h1 {
-    font-size: 3.5rem;
-  }
-  header.masthead .post-heading .subheading {
-    font-size: 1.875rem;
-  }
-}
+
 
 .section-heading {
   font-size: 2.25rem;
@@ -10858,4 +10782,61 @@ header.masthead .post-heading .meta a {
   align-items: center;
   justify-content: center;
   text-align: center;
+}
+
+header.masthead {
+  position: relative;
+  margin-bottom: 3rem;
+  padding-top: 4rem;         /* ⬅️ reduced top padding */
+  padding-bottom: 4rem;      /* ⬅️ reduced bottom padding */
+  background-color: #ffffff; /* ⬅️ pure white background */
+  text-align: center;
+  background: none;
+}
+
+/* Remove overlay */
+header.masthead::before {
+  content: none;
+}
+
+/* Heading styles */
+header.masthead .site-heading h1,
+header.masthead .page-heading h1 {
+  font-size: 3rem;
+  font-weight: 700;
+  margin: 0;
+  background: linear-gradient(90deg, #ff9900, #ffcc00);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  font-family: "Merriweather", serif;
+}
+
+/* Subheading styles */
+header.masthead .site-heading .subheading,
+header.masthead .page-heading .subheading {
+  font-size: 1.5rem;
+  font-weight: 600;
+  margin-top: 0.5rem;
+  background: linear-gradient(90deg, #ffcc00, #ff9900);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  font-family: "Open Sans", sans-serif;
+}
+
+/* Responsive scaling */
+@media (min-width: 992px) {
+  header.masthead {
+    padding-top: 6rem;
+    padding-bottom: 6rem;
+  }
+
+  header.masthead .site-heading h1,
+  header.masthead .page-heading h1 {
+    font-size: 4rem;
+  }
+
+  header.masthead .site-heading .subheading,
+  header.masthead .page-heading .subheading {
+    font-size: 1.75rem;
+  }
 }
