@@ -458,3 +458,99 @@ footer .social-icons a:hover {
   0%, 100% { transform: translateY(0); }
   50% { transform: translateY(-5px); }
 }
+
+/* ===== Homepage Layout for Desktop ===== */
+
+/* Logo and Header */
+.header-logo {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 2rem;
+}
+.header-logo img {
+  height: 60px;
+}
+.header-logo h1 {
+  font-size: 2rem;
+  font-weight: 700;
+  color: #222;
+}
+
+/* Navigation Bar */
+.navbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem 2rem;
+  background-color: #fff;
+  border-bottom: 1px solid #eee;
+}
+.navbar ul {
+  display: flex;
+  list-style: none;
+  gap: 1.5rem;
+}
+.navbar a {
+  font-weight: 600;
+  color: #333;
+  text-decoration: none;
+}
+.navbar a:hover {
+  color: #e50914;
+  border-bottom: 2px solid #e50914;
+}
+
+/* Globe Icon Grid */
+.icon-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 2rem;
+  justify-items: center;
+  margin: 3rem 0;
+}
+.icon-grid img {
+  width: 100px;
+  height: 100px;
+  object-fit: contain;
+}
+
+/* Broken Image Fallback */
+img:before {
+  content: "⚠️ Image failed to load";
+  display: block;
+  font-size: 0.9rem;
+  color: #999;
+}
+
+/* Headline and Tagline */
+.site-heading {
+  text-align: center;
+  margin-top: 2rem;
+}
+.site-heading h1 {
+  font-size: 2.5rem;
+  font-weight: 700;
+  color: #e50914;
+}
+.site-heading p {
+  font-size: 1.2rem;
+  font-style: italic;
+  color: #555;
+}
+
+/* Responsive Tweaks */
+@media (max-width: 1024px) {
+  .icon-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+@media (max-width: 768px) {
+  .navbar ul {
+    flex-direction: column;
+    gap: 1rem;
+  }
+  .icon-grid {
+    grid-template-columns: 1fr;
+  }
+}
