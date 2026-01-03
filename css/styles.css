@@ -1,53 +1,14 @@
 @charset "UTF-8";
 :root {
-  /* Brand Colors */
-  --bs-primary: #1a73e8;        /* Accent Blue (trustworthy, modern) */
-  --bs-secondary: #202124;      /* Dark Gray/Black for text */
-  --bs-light: #f9f9f9;          /* Background */
-  --bs-dark: #121212;           /* Footer / Navbar background */
-
-  /* Supporting Colors */
-  --bs-success: #198754;
-  --bs-danger: #dc3545;
-  --bs-warning: #ffc107;
-  --bs-info: #0dcaf0;
-
-  /* Typography */
-  --bs-body-font-family: 'Open Sans', Arial, sans-serif;
-  --bs-heading-font-family: 'Lora', serif;
-  --bs-body-font-size: 1rem;
-  --bs-body-line-height: 1.7;
-  --bs-body-color: #333;
-  --bs-body-bg: #fff;
-
-  /* Links */
-  --bs-link-color: var(--bs-primary);
-  --bs-link-hover-color: #0d47a1; /* Darker blue on hover */
-
-  /* Borders & Radius */
-  --bs-border-radius: 0.5rem;
-  --bs-border-color: #e0e0e0;
-}
-*,
-*::before,
-*::after {
-  box-sizing: border-box;
-}
-
-@media (prefers-reduced-motion: no-preference) {
-  :root {
-    scroll-behavior: smooth;
-  }
+  --primary-color: #007bff;
+  --secondary-color: #6c757d;
+  --font-main: 'Roboto', sans-serif;
 }
 
 body {
-      margin: 0;
-      font-family: 'Open Sans', Arial, sans-serif;
-      font-size: 1rem;
-      line-height: 1.7;
-      color: #333;
-      background-color: #f9f9f9;
-      }
+  font-family: var(--font-main);
+  color: var(--secondary-color);
+}
 h1, h2, h3, h4, h5, h6 {
                        font-family: 'Lora', serif;
                        font-weight: 700;
