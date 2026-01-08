@@ -10670,38 +10670,54 @@ footer {
   padding: 0.625rem;
   text-align: center;
 }
-
 .post-preview > a {
   color: #212529;
+  text-decoration: none;
+  display: block;
+  transition: all 0.3s ease;
 }
-.post-preview > a:focus, .post-preview > a:hover {
+
+.post-preview > a:hover {
+  color: #ff9900; /* SnapAura orange */
+  transform: translateY(-2px);
+}
+
+.post-preview > a > .post-title {
+  font-size: 2rem;
+  font-weight: 700;
+  margin-top: 2rem;
+  margin-bottom: 0.5rem;
+  font-family: 'Merriweather', serif;
+  background: linear-gradient(90deg, #ff9900, #ffcc00);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.post-preview > a > .post-subtitle {
+  font-size: 1.1rem;
+  font-weight: 400;
+  margin-bottom: 0.75rem;
+  color: #555;
+  font-family: 'Open Sans', sans-serif;
+}
+
+.post-preview > .post-meta {
+  font-size: 1rem;
+  font-style: italic;
+  color: #6f42c1; /* purple tone */
+  margin-top: 0.25rem;
+}
+
+.post-preview > .post-meta > a {
   text-decoration: none;
   color: #0085A1;
 }
-.post-preview > a > .post-title {
-  font-size: 1.875rem;
-  margin-top: 1.875rem;
-  margin-bottom: 0.625rem;
-}
-.post-preview > a > .post-subtitle {
-  font-weight: 300;
-  margin-bottom: 0.625rem;
-}
-.post-preview > .post-meta {
-  font-size: 1.125rem;
-  font-style: italic;
-  margin-top: 0;
-  color: #6c757d;
-}
-.post-preview > .post-meta > a {
-  text-decoration: none;
-}
+
 @media (min-width: 992px) {
   .post-preview > a > .post-title {
-    font-size: 2.25rem;
+    font-size: 2.5rem;
   }
 }
-
 /* ===== Top Brand Bar ===== */
 .top-brand-bar {
   background-color: #111;
@@ -10868,5 +10884,36 @@ header.masthead .page-heading .subheading {
   width: 80px;
   margin: 1rem auto;
   background: linear-gradient(to right, #6f42c1, #a855f7); /* deep purple to violet */
+  border-radius: 2px;
+}
+.clean-header {
+  background-color: #ffffff;
+  padding-top: 3rem;
+  padding-bottom: 2rem;
+}
+
+.post-title {
+  font-size: 2.5rem;
+  font-weight: 700;
+  font-family: 'Merriweather', serif;
+  background: linear-gradient(90deg, #ff9900, #ffcc00);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  margin-bottom: 0.5rem;
+}
+
+.meta {
+  font-size: 1rem;
+  font-style: italic;
+  color: #6f42c1;
+  font-family: 'Open Sans', sans-serif;
+}
+
+.purple-divider {
+  border: none;
+  height: 4px;
+  width: 80px;
+  margin: 1rem auto;
+  background: linear-gradient(to right, #6f42c1, #a855f7);
   border-radius: 2px;
 }
