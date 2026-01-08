@@ -10760,21 +10760,28 @@ footer {
   font-size: 3rem;
   font-weight: 700;
   font-family: 'Merriweather', serif;
-  background: linear-gradient(90deg, var(--bs-orange), var(--bs-yellow));
+  background: linear-gradient(90deg, #ff9900, #ffcc00);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
-  text-shadow: 1px 1px 4px rgba(0,0,0,0.4);
 }
 
 .snap-subtitle {
   font-size: 1.2rem;
   font-style: italic;
   font-weight: 600;
-  background: linear-gradient(90deg, var(--bs-yellow), var(--bs-orange));
+  background: linear-gradient(90deg, #ffcc00, #ff9900);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
 }
 
+.purple-divider {
+  border: none;
+  height: 4px;
+  width: 80px;
+  margin: 1rem auto;
+  background: linear-gradient(to right, #6f42c1, #a855f7);
+  border-radius: 2px;
+}
 .masthead {
   background-color: #ffffff;   /* pure white */
   height: 40vh;
