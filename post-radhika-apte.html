@@ -66,6 +66,15 @@
   gtag('js', new Date());
   gtag('config', 'G-DJQ7J0Y2RG');
 </script>
+    <script src="https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.page.js" defer></script>
+<script>
+  window.OneSignalDeferred = window.OneSignalDeferred || [];
+  OneSignalDeferred.push(async function(OneSignal) {
+    await OneSignal.init({
+      appId: "ffd1a5d0-40de-4e89-834e-d20e21793855",
+    });
+  });
+</script>
 </head>
   <body>
     <!-- Top Brand Bar -->
@@ -190,6 +199,7 @@
 </footer>
   </body>
 </html>
+
 
 
 
