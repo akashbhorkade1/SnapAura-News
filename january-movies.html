@@ -173,29 +173,43 @@
   <a href="https://www.instagram.com/" target="_blank">📸 Instagram</a>
   <a href="https://www.youtube.com/" target="_blank">▶️ YouTube</a>
 </div>
-      <script>
-  let likeCount = 1000;
-  let dislikeCount = 12;
-  let shareCount = 39;
 
+<script>
+  // Load counts from localStorage or set defaults
+  let likeCount = localStorage.getItem("likeCount") || 1000;
+  let dislikeCount = localStorage.getItem("dislikeCount") || 12;
+  let shareCount = localStorage.getItem("shareCount") || 39;
+
+  // Show counts on page
+  document.getElementById("like-count").innerText = likeCount;
+  document.getElementById("dislike-count").innerText = dislikeCount;
+  document.getElementById("share-count").innerText = shareCount;
+
+  // Like button
   document.getElementById("like-btn").onclick = function() {
     likeCount++;
+    localStorage.setItem("likeCount", likeCount);
     document.getElementById("like-count").innerText = likeCount;
   };
 
+  // Dislike button
   document.getElementById("dislike-btn").onclick = function() {
     dislikeCount++;
+    localStorage.setItem("dislikeCount", dislikeCount);
     document.getElementById("dislike-count").innerText = dislikeCount;
   };
 
+  // Share button
   document.getElementById("share-btn").onclick = function() {
     shareCount++;
+    localStorage.setItem("shareCount", shareCount);
     document.getElementById("share-count").innerText = shareCount;
 
     let popup = document.getElementById("share-options");
     popup.style.display = (popup.style.display === "block") ? "none" : "block";
   };
 </script>
+
       <hr class="my-5">
       <h3 class="text-center">📰 और खबरें</h3>
       <div class="post-preview">
