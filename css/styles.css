@@ -10981,20 +10981,44 @@ header.masthead .page-heading .subheading {
 
 .engagement-bar {
   display: flex;
-  justify-content: flex-end; /* Right side */
+  justify-content: flex-end;
   margin-top: 10px;
 }
 
 .engagement-bar .btn {
   display: inline-block;
   margin-left: 15px;
-  font-size: 18px;
+  font-size: 20px;
   cursor: pointer;
   color: #444;
+  transition: transform 0.2s;
 }
 
-.engagement-bar .count {
-  margin-left: 5px;
-  font-weight: bold;
-  color: #666;
+.engagement-bar .btn:hover {
+  transform: scale(1.2);
+  color: purple;
+}
+
+.share-popup {
+  display: none;
+  position: absolute;
+  right: 20px;
+  background: #fff;
+  border: 1px solid #ddd;
+  padding: 8px 12px;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+}
+
+.share-popup a {
+  display: inline-block;
+  margin: 5px;
+  text-decoration: none;
+  font-size: 16px;
+  color: #0073e6;
+  transition: color 0.2s;
+}
+
+.share-popup a:hover {
+  color: purple;
 }
