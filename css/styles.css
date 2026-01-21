@@ -11025,7 +11025,7 @@ header.masthead .page-heading .subheading {
 .logo-img {
   display: block;
   margin: 0 auto;        /* center align */
-  max-width: 670px;      /* adjust size as needed */
+  max-width: 620px;      /* adjust size as needed */
   height: auto;          /* keep aspect ratio */
 }
 
