@@ -11024,11 +11024,11 @@ header.masthead .page-heading .subheading {
 }
 .logo-img {
   display: block;
-  margin: 0 auto;          /* center align */
-  width: 566px;            /* minimal breadth */
-  height: 150px;           /* more length */
-  object-fit: contain;     /* maintain aspect ratio inside box */
+  margin: 0 auto;        /* center align */
+  max-width: 1080px;      /* adjust size as needed */
+  height: auto;          /* keep aspect ratio */
 }
+
 /* Tablet screens (≤ 992px) */
 @media (max-width: 992px) {
   .logo-img {
