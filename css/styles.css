@@ -11028,8 +11028,17 @@ header.masthead .page-heading .subheading {
   max-width: 720px;            /* adjust width as per your design */
   height: auto;                /* keeps aspect ratio intact */
 }
-@media (max-width: 768px) {
+/* Tablet screens (≤ 992px) */
+@media (max-width: 992px) {
   .logo-img {
-    max-width: 120px;
+    max-width: 480px;   /* smaller size for tablets */
   }
 }
+
+/* Mobile screens (≤ 576px) */
+@media (max-width: 576px) {
+  .logo-img {
+    max-width: 240px;   /* even smaller size for mobiles */
+  }
+}
+
