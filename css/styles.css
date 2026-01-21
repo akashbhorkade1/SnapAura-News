@@ -11025,20 +11025,19 @@ header.masthead .page-heading .subheading {
 .logo-img {
   display: block;              /* ensures it behaves like a block element */
   margin: 0 auto;              /* centers the logo horizontally */
-  max-width: 720px;            /* adjust width as per your design */
+  max-width: 1080px;            /* adjust width as per your design */
   height: auto;                /* keeps aspect ratio intact */
 }
 /* Tablet screens (≤ 992px) */
 @media (max-width: 992px) {
   .logo-img {
-    max-width: 480px;   /* smaller size for tablets */
+    max-width: 720px; /* tablet ke liye */
   }
 }
 
-/* Mobile screens (≤ 576px) */
 @media (max-width: 576px) {
   .logo-img {
-    max-width: 240px;   /* even smaller size for mobiles */
+    max-width: 360px; /* mobile ke liye */
   }
 }
 
