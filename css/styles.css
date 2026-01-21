@@ -11022,3 +11022,14 @@ header.masthead .page-heading .subheading {
 .share-popup a:hover {
   color: purple;
 }
+.logo-img {
+  display: block;              /* ensures it behaves like a block element */
+  margin: 0 auto;              /* centers the logo horizontally */
+  max-width: 180px;            /* adjust width as per your design */
+  height: auto;                /* keeps aspect ratio intact */
+}
+@media (max-width: 768px) {
+  .logo-img {
+    max-width: 120px;
+  }
+}
