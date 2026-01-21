@@ -11025,7 +11025,7 @@ header.masthead .page-heading .subheading {
 .logo-img {
   display: block;              /* ensures it behaves like a block element */
   margin: 0 auto;              /* centers the logo horizontally */
-  max-width: 360px;            /* adjust width as per your design */
+  max-width: 720px;            /* adjust width as per your design */
   height: auto;                /* keeps aspect ratio intact */
 }
 @media (max-width: 768px) {
