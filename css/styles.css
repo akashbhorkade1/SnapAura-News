@@ -11023,10 +11023,11 @@ header.masthead .page-heading .subheading {
   color: purple;
 }
 .logo-img {
-  display: block;              /* ensures it behaves like a block element */
-  margin: 0 auto;              /* centers the logo horizontally */
-  max-width: 1080px;            /* adjust width as per your design */
-  height: auto;                /* keeps aspect ratio intact */
+  display: block;
+  margin: 0 auto;          /* center align */
+  width: 1920px;            /* minimal breadth */
+  height: 1080px;           /* more length */
+  object-fit: contain;     /* maintain aspect ratio inside box */
 }
 /* Tablet screens (≤ 992px) */
 @media (max-width: 992px) {
