@@ -11041,4 +11041,49 @@ header.masthead .page-heading .subheading {
     max-width: 360px; /* mobile ke liye */
   }
 }
+.snap-image-block {
+  text-align: center;
+  margin: 30px auto;
+}
+
+.snap-image {
+  max-width: 100%;
+  height: auto;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+.snap-credit {
+  font-size: 14px;
+  color: #777;
+  margin-top: 8px;
+  font-style: italic;
+}
+@media (max-width: 768px) {
+  .snap-credit {
+    font-size: 12px;
+  }
+}
+#pagination {
+  text-align: center;
+  margin-top: 20px;
+}
+
+#pagination button {
+  background-color: #444;
+  color: #fff;
+  border: none;
+  padding: 8px 12px;
+  margin: 2px;
+  cursor: pointer;
+  border-radius: 4px;
+}
+
+#pagination button.active {
+  background-color: #ff6600;
+}
+
+#pagination button:hover {
+  background-color: #666;
+}
 
