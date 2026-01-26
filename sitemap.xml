@@ -1,24 +1,207 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns="https://www.sitemaps.org/schemas/sitemap/0.9">
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+
   <url>
     <loc>https://snapaura.space/</loc>
-    <lastmod>2026-01-09</lastmod>
+    <lastmod>2026-01-26</lastmod>
+    <changefreq>daily</changefreq>
     <priority>1.0</priority>
   </url>
+
   <url>
-    <loc>https://snapaura.space/snapaura-hindi.html</loc>
-    <lastmod>2026-01-09</lastmod>
+    <loc>https://snapaura.space/about.html</loc>
+    <lastmod>2026-01-26</lastmod>
+    <changefreq>daily</changefreq>
     <priority>0.8</priority>
   </url>
+
   <url>
-    <loc>https://snapaura.space/post-radhika-apte.html</loc>
-    <lastmod>2025-12-30</lastmod>
+    <loc>https://snapaura.space/bollywood.html</loc>
+    <lastmod>2026-01-26</lastmod>
+    <changefreq>daily</changefreq>
     <priority>0.8</priority>
   </url>
+
   <url>
-    <loc>https://snapaura.space/post-laalo-trailer.html</loc>
-    <lastmod>2026-01-05</lastmod>
+    <loc>https://snapaura.space/contact.html</loc>
+    <lastmod>2026-01-26</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.6</priority>
+  </url>
+
+  <url>
+    <loc>https://snapaura.space/ind-vs-nz-result.html</loc>
+    <lastmod>2026-01-26</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.9</priority>
+  </url>
+
+  <url>
+    <loc>https://snapaura.space/index.html</loc>
+    <lastmod>2026-01-26</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>1.0</priority>
+  </url>
+
+  <url>
+    <loc>https://snapaura.space/interviews.html</loc>
+    <lastmod>2026-01-26</lastmod>
+    <changefreq>daily</changefreq>
     <priority>0.7</priority>
   </url>
-  <!-- Add more posts here -->
+
+  <url>
+    <loc>https://snapaura.space/january-movies.html</loc>
+    <lastmod>2026-01-26</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.7</priority>
+  </url>
+
+  <url>
+    <loc>https://snapaura.space/latest.html</loc>
+    <lastmod>2026-01-26</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.9</priority>
+  </url>
+
+  <url>
+    <loc>https://snapaura.space/live.html</loc>
+    <lastmod>2026-01-26</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.7</priority>
+  </url>
+
+  <url>
+    <loc>https://snapaura.space/music.html</loc>
+    <lastmod>2026-01-26</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.8</priority>
+  </url>
+
+  <url>
+    <loc>https://snapaura.space/ott-jan.html</loc>
+    <lastmod>2026-01-26</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.7</priority>
+  </url>
+
+  <url>
+    <loc>https://snapaura.space/panchayat-season-5-update.html</loc>
+    <lastmod>2026-01-26</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.7</priority>
+  </url>
+
+  <url>
+    <loc>https://snapaura.space/pickleball-league-sonyliv.html</loc>
+    <lastmod>2026-01-26</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.7</priority>
+  </url>
+
+  <url>
+    <loc>https://snapaura.space/post-radhika-apte.html</loc>
+    <lastmod>2026-01-26</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.8</priority>
+  </url>
+
+  <url>
+    <loc>https://snapaura.space/post.html</loc>
+    <lastmod>2026-01-26</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.6</priority>
+  </url>
+
+  <url>
+    <loc>https://snapaura.space/rcb-wpl-win.html</loc>
+    <lastmod>2026-01-26</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.7</priority>
+  </url>
+
+  <url>
+    <loc>https://snapaura.space/reviews.html</loc>
+    <lastmod>2026-01-26</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.8</priority>
+  </url>
+
+  <url>
+    <loc>https://snapaura.space/robin-kaye-news.html</loc>
+    <lastmod>2026-01-26</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.7</priority>
+  </url>
+
+  <url>
+    <loc>https://snapaura.space/seema-sajdeh-divorce-news.html</loc>
+    <lastmod>2026-01-26</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.7</priority>
+  </url>
+
+  <url>
+    <loc>https://snapaura.space/shreyas-iyer-back.html</loc>
+    <lastmod>2026-01-26</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.7</priority>
+  </url>
+
+  <url>
+    <loc>https://snapaura.space/snapaura-hindi.html</loc>
+    <lastmod>2026-01-26</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.8</priority>
+  </url>
+
+  <url>
+    <loc>https://snapaura.space/snapaura-music.html</loc>
+    <lastmod>2026-01-26</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.8</priority>
+  </url>
+
+  <url>
+    <loc>https://snapaura.space/snapaura-ott.html</loc>
+    <lastmod>2026-01-26</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.8</priority>
+  </url>
+
+  <url>
+    <loc>https://snapaura.space/snapaura-stars.html</loc>
+    <lastmod>2026-01-26</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.8</priority>
+  </url>
+
+  <url>
+    <loc>https://snapaura.space/stars.html</loc>
+    <lastmod>2026-01-26</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.7</priority>
+  </url>
+
+  <url>
+    <loc>https://snapaura.space/trending.html</loc>
+    <lastmod>2026-01-26</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.9</priority>
+  </url>
+
+  <url>
+    <loc>https://snapaura.space/tvk-election-symbol.html</loc>
+    <lastmod>2026-01-26</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.7</priority>
+  </url>
+
+  <url>
+    <loc>https://snapaura.space/web-series.html</loc>
+    <lastmod>2026-01-26</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.8</priority>
+  </url>
+
 </urlset>
