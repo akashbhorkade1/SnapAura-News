@@ -140,14 +140,14 @@ body {
    3. Masthead (Arrow 2: Size & Spacing Fix)
    ========================================= */
 header.masthead {
-    padding: 1.5rem 0; /* रिकामी जागा कमी केली */
+    padding: 1rem 0; /* रिकामी जागा (Space) कमी केली */
     background: #fff;
     text-align: center;
 }
 
 .snap-title, .post-heading .post-title {
-    font-size: 3.2rem; /* साईझ २ पॉईंटने वाढवली */
-    font-weight: 800;
+    font-size: 3.5rem; /* साईझ २-३ पॉईंटने वाढवली */
+    font-weight: 900;
     font-family: 'Merriweather', serif;
     background: linear-gradient(90deg, #ff9900, #ffcc00);
     -webkit-background-clip: text;
@@ -161,7 +161,7 @@ header.masthead {
     height: 4px;
     width: 60px;
     background: linear-gradient(to right, #6f42c1, #a855f7);
-    margin: 10px auto; /* डिव्हायडर मधील स्पेस कमी केली */
+    margin: 5px auto 15px; /* टायटलच्या जवळ आणले */
     border-radius: 2px;
 }
 
@@ -171,7 +171,7 @@ header.masthead {
 .snap-image, .post-preview img {
     max-width: 100%;
     height: auto;
-    border-radius: 8px;
+    border-radius: 12px;
     box-shadow: 0 4px 12px rgba(0,0,0,0.1);
 }
 
@@ -198,8 +198,8 @@ header.masthead {
     left: 50%;
     transform: translate(-50%, -50%);
     color: white;
-    font-size: 50px;
-    opacity: 0.8;
+    font-size: 60px;
+    opacity: 0.9;
     z-index: 10;
 }
 
@@ -253,7 +253,7 @@ footer a {
         justify-content: flex-start;
     }
     .snap-title, .post-heading .post-title {
-        font-size: 2rem;
+        font-size: 2.2rem;
     }
 }
 
