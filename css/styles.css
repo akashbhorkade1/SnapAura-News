@@ -1,7 +1,7 @@
 @charset "UTF-8";
 
 /* =========================================
-   1. Root Variables & Reset
+   1. Root Variables & Global Reset
    ========================================= */
 :root {
     --bs-blue: #0d6efd;
@@ -41,33 +41,88 @@ body {
 }
 
 /* =========================================
-   2. Typography & Headlines
+   2. Header & Top Brand Bar (Combined Fix)
    ========================================= */
-h1, h2, h3, h4, h5, h6 {
-    margin-top: 0;
-    margin-bottom: 0.5rem;
+.top-brand-bar {
+    background-color: #111;
+    color: #fff;
+    padding: 8px 0;
+    font-size: 0.85rem;
+}
+
+.top-brand-bar a {
+    color: #ffcc00;
+    font-weight: 600;
+    text-decoration: none;
+    margin-right: 12px;
+    transition: color 0.2s;
+}
+
+.top-brand-bar a:hover {
+    color: #fff;
+}
+
+.brand-links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+/* Category Navigation Fix */
+.category-nav {
+    background-color: #fff;
+    border-bottom: 1px solid #eee;
+    padding: 12px 0;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+}
+
+.category-nav ul {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+.category-nav a {
+    color: #333;
+    font-weight: 700;
+    text-decoration: none;
+    font-size: 0.95rem;
+    transition: color 0.3s;
+}
+
+.category-nav a:hover {
+    color: #e50914;
+}
+
+/* =========================================
+   3. Masthead & Post Titles
+   ========================================= */
+header.masthead {
+    padding: 3rem 0;
+    background: #fff;
+    text-align: center;
+}
+
+.post-heading .post-title, .snap-title {
+    font-size: 2.8rem;
     font-weight: 800;
+    font-family: 'Merriweather', serif;
+    background: linear-gradient(90deg, #ff9900, #ffcc00);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    margin-bottom: 10px;
     line-height: 1.2;
 }
 
-.post-title {
-    font-size: 2rem;
-    font-weight: 700;
-    font-family: 'Merriweather', serif;
-    background: linear-gradient(90deg, #ff9900, #ffcc00);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    line-height: 1.4;
-    margin-bottom: 0.5rem;
-}
-
-.snap-title {
-    font-size: 3.5rem;
-    font-weight: 700;
-    font-family: 'Merriweather', serif;
-    background: linear-gradient(90deg, #ff9900, #ffcc00);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
+.purple-divider {
+    height: 4px;
+    width: 60px;
+    background: linear-gradient(to right, #6f42c1, #a855f7);
+    margin: 15px auto;
+    border-radius: 2px;
 }
 
 .meta {
@@ -77,70 +132,7 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 /* =========================================
-   3. Navigation & Bars
-   ========================================= */
-.top-brand-bar {
-    background-color: #111;
-    color: #fff;
-    padding: 10px 0;
-}
-
-.top-brand-bar a {
-    color: #ffcc00;
-    font-weight: 600;
-    text-decoration: none;
-    margin-right: 15px;
-}
-
-.category-nav {
-    background-color: #fff;
-    border-bottom: 1px solid #eee;
-    padding: 10px 0;
-}
-
-.category-nav a {
-    color: #333;
-    font-weight: 600;
-    text-decoration: none;
-    padding: 5px 15px;
-}
-
-.category-nav a:hover {
-    color: #e50914;
-}
-
-/* =========================================
-   4. Layout Components
-   ========================================= */
-.container {
-    width: 100%;
-    padding-right: 1.5rem;
-    padding-left: 1.5rem;
-    margin-right: auto;
-    margin-left: auto;
-}
-
-@media (min-width: 1200px) {
-    .container { max-width: 1140px; }
-}
-
-.masthead {
-    background-color: #ffffff;
-    padding: 4rem 0;
-    text-align: center;
-}
-
-.purple-divider {
-    border: none;
-    height: 4px;
-    width: 80px;
-    margin: 1rem auto;
-    background: linear-gradient(to right, #6f42c1, #a855f7);
-    border-radius: 2px;
-}
-
-/* =========================================
-   5. Post Previews & Content
+   4. Post Previews & Content Styles
    ========================================= */
 .post-preview > a {
     color: #212529;
@@ -167,7 +159,7 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 /* =========================================
-   6. Engagement & Social
+   5. Engagement Bar & Footer
    ========================================= */
 .engagement-bar {
     display: flex;
@@ -196,9 +188,40 @@ h1, h2, h3, h4, h5, h6 {
     margin-top: 30px;
 }
 
+footer {
+    background-color: #212529;
+    color: #fff;
+    padding: 3rem 0;
+}
+
+footer a {
+    color: #fff;
+    text-decoration: none;
+}
+
 /* =========================================
-   7. Animations & Footer
+   6. Responsive Mobile Fix (Combined)
    ========================================= */
+@media (max-width: 768px) {
+    .top-brand-bar {
+        text-align: center;
+    }
+    .brand-links {
+        justify-content: center;
+    }
+    .category-nav ul {
+        gap: 10px;
+        overflow-x: auto;
+        white-space: nowrap;
+        padding-bottom: 5px;
+        justify-content: flex-start; /* मोबाईलवर स्क्रोलिंगसाठी */
+    }
+    .post-heading .post-title, .snap-title {
+        font-size: 1.8rem;
+    }
+}
+
+/* Animations */
 @keyframes colorchange {
     0%   { color: #cc5500; }
     50%  { color: #0000ff; }
@@ -211,15 +234,4 @@ h1, h2, h3, h4, h5, h6 {
     text-align: center;
     font-family: "Merriweather", serif;
     animation: colorchange 5s infinite;
-}
-
-footer {
-    background-color: #212529;
-    color: #fff;
-    padding: 3rem 0;
-}
-
-footer a {
-    color: #fff;
-    text-decoration: none;
 }
