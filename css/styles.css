@@ -52,14 +52,21 @@ body {
 }
 
 /* =========================================
-   2. Header & Top Brand Bar (Layout Fix)
+   2. Header Fix (Icons to First Line Right Side)
    ========================================= */
 .top-brand-bar {
     background-color: #111;
     color: #fff;
-    padding: 10px 0;
+    padding: 8px 0;
     font-size: 0.85rem;
     min-height: 45px;
+}
+
+/* Arrow 1 Fix: Icons moving to the right */
+.top-brand-bar .container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
 }
 
 .brand-links {
@@ -67,6 +74,13 @@ body {
     align-items: center;
     flex-wrap: wrap;
     gap: 12px;
+}
+
+.top-icons {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    margin-left: auto;
 }
 
 .top-brand-bar a {
@@ -80,7 +94,7 @@ body {
     color: #fff;
 }
 
-/* 'Trailer + Review' बटन त्याच्या जागी फिक्स करण्यासाठी */
+/* LIVE बटन पहिल्या ओळीत नीट दिसण्यासाठी */
 .live-btn {
     background-color: #e50914;
     color: #fff !important;
@@ -90,13 +104,14 @@ body {
     font-size: 0.75rem;
     text-transform: uppercase;
     display: inline-block;
+    margin-left: 10px;
 }
 
 /* Category Navigation Fix */
 .category-nav {
     background-color: #fff;
     border-bottom: 1px solid #eee;
-    padding: 15px 0;
+    padding: 12px 0;
     box-shadow: 0 2px 5px rgba(0,0,0,0.05);
 }
 
@@ -122,34 +137,54 @@ body {
 }
 
 /* =========================================
-   3. Masthead & Play Button Centering
+   3. Masthead (Arrow 2: Size & Spacing Fix)
    ========================================= */
 header.masthead {
-    padding: 3rem 0;
+    padding: 1.5rem 0; /* रिकामी जागा कमी केली */
     background: #fff;
     text-align: center;
 }
 
 .snap-title, .post-heading .post-title {
-    font-size: 2.8rem;
+    font-size: 3.2rem; /* साईझ २ पॉईंटने वाढवली */
     font-weight: 800;
     font-family: 'Merriweather', serif;
     background: linear-gradient(90deg, #ff9900, #ffcc00);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
-    margin-bottom: 10px;
-    line-height: 1.2;
+    margin-top: 0;
+    margin-bottom: 5px;
+    line-height: 1.1;
 }
 
 .purple-divider {
     height: 4px;
     width: 60px;
     background: linear-gradient(to right, #6f42c1, #a855f7);
-    margin: 15px auto;
+    margin: 10px auto; /* डिव्हायडर मधील स्पेस कमी केली */
     border-radius: 2px;
 }
 
-/* इमेजवरील प्ले बटन सेंटर करण्यासाठी */
+/* =========================================
+   4. Desktop Image Optimization
+   ========================================= */
+.snap-image, .post-preview img {
+    max-width: 100%;
+    height: auto;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+}
+
+@media (min-width: 992px) {
+    /* डेस्कटॉपवर इमेज खूप मोठी दिसू नये म्हणून मर्यादा */
+    .snap-image, .post-preview img {
+        max-width: 850px; 
+        display: block;
+        margin: 0 auto;
+    }
+}
+
+/* प्ले बटन सेंटर करण्यासाठी */
 .video-container, .position-relative {
     position: relative;
     display: block;
@@ -169,27 +204,6 @@ header.masthead {
 }
 
 /* =========================================
-   4. Post Previews & Images
-   ========================================= */
-.post-preview > a {
-    color: #212529;
-    text-decoration: none;
-    display: block;
-    transition: all 0.3s ease;
-}
-
-.post-preview > a:hover {
-    transform: translateY(-2px);
-}
-
-.snap-image {
-    max-width: 100%;
-    height: auto;
-    border-radius: 8px;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-}
-
-/* =========================================
    5. Engagement Bar & Footer (Icon Fix)
    ========================================= */
 .engagement-bar {
@@ -199,10 +213,10 @@ header.masthead {
     padding-bottom: 20px;
 }
 
-/* मोबाईलवर गायब होणारे आयकॉन्स दिसण्यासाठी */
-.fab, .fas {
+.social-media i, footer .fab, footer .fas {
     display: inline-block !important;
     visibility: visible !important;
+    color: #fff !important;
 }
 
 footer {
@@ -223,8 +237,13 @@ footer a {
     .top-brand-bar {
         text-align: center;
     }
-    .brand-links {
+    .top-brand-bar .container {
+        flex-direction: column;
+        gap: 5px;
+    }
+    .brand-links, .top-icons {
         justify-content: center;
+        margin-left: 0;
     }
     .category-nav ul {
         gap: 10px;
@@ -234,7 +253,7 @@ footer a {
         justify-content: flex-start;
     }
     .snap-title, .post-heading .post-title {
-        font-size: 1.8rem;
+        font-size: 2rem;
     }
 }
 
