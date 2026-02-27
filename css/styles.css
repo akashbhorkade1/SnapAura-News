@@ -27,7 +27,7 @@ body {
 
 .container {
     width: 100%;
-    max-width: 1140px; 
+    max-width: 1140px;
     margin: 0 auto;
     padding: 0 1.5rem;
 }
@@ -98,14 +98,13 @@ body {
 }
 
 /* =========================================
-   3. Masthead & Title (Mobile Fix Included)
+   3. Masthead & Title
    ========================================= */
 header.masthead {
     padding: 1.5rem 0;
     text-align: center;
 }
 
-/* Desktop Title Style */
 .post-heading .post-title {
     font-size: 3.5rem;
     font-weight: 900;
@@ -123,6 +122,7 @@ header.masthead {
     background: linear-gradient(to right, #6f42c1, #a855f7);
     margin: 10px auto 20px;
     border-radius: 2px;
+    border: none;
 }
 
 /* =========================================
@@ -150,6 +150,40 @@ header.masthead {
 /* =========================================
    5. Post Preview & Images
    ========================================= */
+.post-preview {
+    margin-bottom: 2rem;
+}
+
+.post-preview a {
+    text-decoration: none;
+    color: inherit;
+}
+
+/* FIX 12: Moved repeated inline styles to reusable CSS classes */
+.post-title {
+    font-size: 1.625rem;      /* 26px */
+    font-weight: 800;
+    color: #212529;
+    line-height: 1.3;
+    margin-top: 15px;
+    font-family: 'Lora', serif;
+}
+
+.post-subtitle {
+    font-size: 1.125rem;      /* 18px */
+    color: #6c757d;
+    line-height: 1.6;
+    font-weight: 400;
+    margin-top: 10px;
+}
+
+.post-meta {
+    margin-top: 10px;
+    font-style: italic;
+    color: #868e96;
+    font-size: 0.9rem;
+}
+
 .post-preview-img-container {
     position: relative;
     width: 100%;
@@ -170,6 +204,55 @@ header.masthead {
     box-shadow: 0 4px 15px rgba(0,0,0,0.1);
 }
 
+/* Post thumbnail images (non-.snap-image posts) */
+.post-preview img:not(.snap-image) {
+    width: 100%;
+    border-radius: 8px;
+    margin-bottom: 10px;
+    display: block;
+}
+
+/* Badges overlaid on images */
+.badge-music-special {
+    position: absolute;
+    top: 12px;
+    left: 12px;
+    background-color: #6f42c1;
+    color: #fff;
+    font-size: 0.75rem;
+    font-weight: 700;
+    padding: 4px 10px;
+    border-radius: 4px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    z-index: 2;
+}
+
+.live-badge-overlay {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    background-color: #e50914;
+    color: #fff;
+    font-size: 0.75rem;
+    font-weight: 700;
+    padding: 4px 10px;
+    border-radius: 4px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    z-index: 2;
+}
+
+.post-preview-img-container .fa-play-circle {
+    position: absolute;
+    bottom: 16px;
+    right: 16px;
+    font-size: 2.5rem;
+    color: rgba(255,255,255,0.85);
+    z-index: 2;
+    pointer-events: none;
+}
+
 /* =========================================
    6. Footer Styles
    ========================================= */
@@ -177,7 +260,6 @@ footer {
     background-color: var(--bs-dark);
     color: #fff;
     padding: 3rem 0;
-    text-align: center;
 }
 
 .social-icons {
@@ -193,12 +275,11 @@ footer i {
 }
 
 /* =========================================
-   7. Mobile Optimization (The BIG FIX)
+   7. Mobile Optimization
    ========================================= */
 @media (max-width: 768px) {
-    /* Mobile pe Title ko chhota kiya */
     .post-heading .post-title {
-        font-size: 1.8rem !important; 
+        font-size: 1.8rem !important;
         padding: 0 5px;
         line-height: 1.3;
     }
@@ -206,19 +287,19 @@ footer i {
     .snap-title {
         font-size: 2.2rem;
     }
-    
+
     .top-brand-bar .container {
         flex-direction: column;
         gap: 8px;
     }
-    
+
     .category-nav ul {
         gap: 15px;
         overflow-x: auto;
         white-space: nowrap;
         justify-content: flex-start;
         padding: 10px 15px;
-        -webkit-overflow-scrolling: touch; /* Smooth scroll for mobile */
+        -webkit-overflow-scrolling: touch;
     }
 
     /* Hide scrollbar but keep functionality */
@@ -229,5 +310,13 @@ footer i {
     .engagement-bar .btn {
         padding: 8px 15px !important;
         font-size: 0.9rem;
+    }
+
+    .post-title {
+        font-size: 1.25rem;
+    }
+
+    .post-subtitle {
+        font-size: 1rem;
     }
 }
