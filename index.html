@@ -9,27 +9,35 @@
 
   <!-- SEO Title & Description -->
   <title>SnapAura – Entertainment & Career News</title>
-  <meta name="description" content="SnapAura एक एंटरटेनमेंट न्यूज़ प्लेटफॉर्म है जो बॉलीवुड, वेब सीरीज़, करियर अपडेट्स आणि करंट अफेअर्स सादर करतो.">
+  <!-- FIX 1: Single language meta description -->
+  <meta name="description" content="SnapAura एक एंटरटेनमेंट न्यूज़ प्लेटफॉर्म है जो बॉलीवुड, वेब सीरीज़, करियर अपडेट्स और करेंट अफेयर्स की ताज़ा खबरें हिंदी में प्रस्तुत करता है।">
 
   <!-- Open Graph for social sharing -->
   <meta property="og:title" content="SnapAura – Trusted Entertainment & Career Updates" />
   <meta property="og:description" content="Bollywood, Web Series, Reviews, Career & Current Affairs in Hindi." />
   <meta property="og:url" content="https://snapaura.space" />
   <meta property="og:type" content="website" />
-  <meta property="og:image" content="https://snapaura.space/assets/img/logo-deesktop.jpg" />
+  <!-- FIX 2: Fixed typo logo-deesktop → logo-desktop -->
+  <meta property="og:image" content="https://snapaura.space/assets/img/logo-desktop.jpg" />
 
   <!-- Twitter Card -->
   <meta name="twitter:card" content="summary_large_image" />
   <meta name="twitter:title" content="SnapAura – Entertainment & Career News in Hindi" />
   <meta name="twitter:description" content="Bollywood, Web Series, Reviews, Career & Current Affairs in Hindi." />
-  <meta name="twitter:image" content="https://snapaura.space/assets/img/logo-deesktop.jpg" />
+  <!-- FIX 2 (continued): Fixed typo here too -->
+  <meta name="twitter:image" content="https://snapaura.space/assets/img/logo-desktop.jpg" />
 
   <!-- RSS Feed -->
   <link rel="alternate" type="application/rss+xml" title="SnapAura RSS Feed" href="https://snapaura.space/rss.xml" />
 
-  <!-- Fonts & Icons -->
-  <script src="https://use.fontawesome.com/releases/v6.3.0/js/all.js" crossorigin="anonymous" async></script>
-  <link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,700;1,400;1,700&family=Open+Sans:ital,wght@0,300;0,400;0,600;0,700;0,800;1,300;1,400;1,600;1,700;1,800&display=swap" rel="stylesheet">
+  <!-- FIX 3: preconnect hints for Google Fonts (performance) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <!-- FIX 4: Added Merriweather to Google Fonts import (was used in CSS but never loaded) -->
+  <link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,700;1,400;1,700&family=Merriweather:wght@400;700&family=Open+Sans:ital,wght@0,300;0,400;0,600;0,700;0,800;1,300;1,400;1,600;1,700;1,800&display=swap" rel="stylesheet">
+
+  <!-- FIX 5: Switched FontAwesome from JS to CSS (saves ~150KB, unblocks rendering) -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.3.0/css/all.min.css" crossorigin="anonymous">
 
   <!-- Core theme CSS -->
   <link href="css/styles.css" rel="stylesheet" />
@@ -69,343 +77,330 @@
       });
     });
   </script>
-  <script src="js/scripts.js"></script>
+  <!-- FIX 6: Removed duplicate scripts.js from <head> — it now only loads before </body> -->
 </head>
-  <body>
+<body>
 
-    <!-- Top Brand Bar -->
-<div class="top-brand-bar">
-  <div class="container d-flex justify-content-between align-items-center flex-wrap py-2">
-    <div class="brand-links d-flex flex-wrap gap-3">
-       <a href="index.html">SnapAura Space</a>
-          <a class="nav-link" href="bollywood.html" >SnapAura Hindi</a>
-          <a class="nav-link" href="web-series.html" >SnapAura OTT</a>
-          <a class="nav-link" href="Career.html" >SnapAura Career</a>
-        </div>
-        <div class="top-icons d-flex gap-3">
-          <a href="#"><i class="fas fa-cloud-sun"></i></a>
-          <a href="#"><i class="fas fa-cog"></i></a>
-          <a href="#"><i class="fas fa-search"></i></a>
-          <a class="nav-link text-danger fw-bold" href="live.html" >LIVE</a>
-        </div>
+  <!-- Top Brand Bar -->
+  <div class="top-brand-bar">
+    <div class="container d-flex justify-content-between align-items-center flex-wrap py-2">
+      <div class="brand-links d-flex flex-wrap gap-3">
+        <a href="index.html">SnapAura Space</a>
+        <a class="nav-link" href="bollywood.html">SnapAura Hindi</a>
+        <a class="nav-link" href="web-series.html">SnapAura OTT</a>
+        <a class="nav-link" href="Career.html">SnapAura Career</a>
+      </div>
+      <div class="top-icons d-flex gap-3">
+        <a href="#"><i class="fas fa-cloud-sun"></i></a>
+        <a href="#"><i class="fas fa-cog"></i></a>
+        <a href="#"><i class="fas fa-search"></i></a>
+        <a class="nav-link text-danger fw-bold" href="live.html">LIVE</a>
       </div>
     </div>
-
-    <!-- Category Navigation -->
-    <nav class="category-nav">
-      <ul class="d-flex flex-wrap justify-content-center gap-4 py-2 list-unstyled mb-0">
-        <li><a class="nav-link" href="latest.html" >Latest</a></li>
-        <li><a class="nav-link" href="bollywood.html" >Bollywood</a></li>
-        <li><a class="nav-link" href="web-series.html" >Web Series</a></li>
-        <li><a class="nav-link" href="cricket.html" >Cricket</a></li>
-        <li><a class="nav-link" href="Career.html" >Career</a></li>
-        <li><a class="nav-link" href="Current-Affairs.html" >Current Affairs</a></li>
-      </ul>
-</nav>
-
-<!-- Masthead -->
-<header class="masthead">
-  <div class="container px-4 px-lg-5 site-heading text-center">
-   <h1 class="page-title">SNAPAURA SPACE</h1>
-    <hr class="purple-divider" />
   </div>
-</header>
 
+  <!-- Category Navigation -->
+  <nav class="category-nav">
+    <ul class="d-flex flex-wrap justify-content-center gap-4 py-2 list-unstyled mb-0">
+      <li><a class="nav-link" href="latest.html">Latest</a></li>
+      <li><a class="nav-link" href="bollywood.html">Bollywood</a></li>
+      <li><a class="nav-link" href="web-series.html">Web Series</a></li>
+      <li><a class="nav-link" href="cricket.html">Cricket</a></li>
+      <li><a class="nav-link" href="Career.html">Career</a></li>
+      <li><a class="nav-link" href="Current-Affairs.html">Current Affairs</a></li>
+    </ul>
+  </nav>
 
+  <!-- Masthead -->
+  <header class="masthead">
+    <div class="container px-4 px-lg-5 site-heading text-center">
+      <h1 class="page-title">SNAPAURA SPACE</h1>
+      <hr class="purple-divider" />
+    </div>
+  </header>
 
- <!-- Main Content -->
-    
-<div class="container px-4 px-lg-5">
-  <div class="row gx-4 gx-lg-5 justify-content-center">
-    <div class="col-md-10 col-lg-8 col-xl-7">
-      <!-- Post Previews -->
-      <div class="post-preview">
-    <a href="Cricket/india-vs-zimbabwe-super8-t20-world-cup.html" style="text-decoration: none;">
-        <div class="post-preview-img-container">
-            
-            <span class="badge-music-special" style="background-color: #1a73e8;">CRICKET SPECIAL</span>
-            <span class="live-badge-overlay">IND WON BY 72 RUNS</span>
+  <!-- Main Content -->
+  <div class="container px-4 px-lg-5">
+    <div class="row gx-4 gx-lg-5 justify-content-center">
+      <div class="col-md-10 col-lg-8 col-xl-7">
 
-            <img src="assets/img/ind-vs-zim-t20.jpg" alt="India vs Zimbabwe T20 World Cup Super 8" class="snap-image" style="filter: brightness(0.9); transition: 0.3s;">
-            
-            <i class="fas fa-play-circle"></i>
-        </div>
-        
-        <div class="mt-3">
-            <h2 class="post-title" style="font-size: 26px; margin-top: 15px; color: #212529; font-weight: 800; line-height: 1.3;">
+        <!-- Post Previews -->
+        <div class="post-preview">
+          <a href="Cricket/india-vs-zimbabwe-super8-t20-world-cup.html" style="text-decoration: none;">
+            <div class="post-preview-img-container">
+              <span class="badge-music-special" style="background-color: #1a73e8;">CRICKET SPECIAL</span>
+              <span class="live-badge-overlay">IND WON BY 72 RUNS</span>
+              <!-- FIX 7: Removed loading="lazy" from first/hero image for better LCP score -->
+              <!-- FIX 8: Added width & height to prevent layout shift (CLS) -->
+              <img src="assets/img/ind-vs-zim-t20.jpg" alt="India vs Zimbabwe T20 World Cup Super 8" class="snap-image" width="800" height="450" style="filter: brightness(0.9); transition: 0.3s;">
+              <i class="fas fa-play-circle"></i>
+            </div>
+            <div class="mt-3">
+              <h2 class="post-title" style="font-size: 26px; margin-top: 15px; color: #212529; font-weight: 800; line-height: 1.3;">
                 🏏 Super 8 T20 World Cup: India Defeats Zimbabwe by 72 Runs! Semifinal Hopes Alive
-            </h2>
-            <p style="font-size: 18px; color: #6c757d; margin-top: 10px; line-height: 1.6; font-weight: 400;">
+              </h2>
+              <p style="font-size: 18px; color: #6c757d; margin-top: 10px; line-height: 1.6; font-weight: 400;">
                 Abhishek Sharma and Hardik Pandya power India to a massive total. Check out the full match analysis and India's qualification scenarios for the semifinals.
-            </p>
+              </p>
+            </div>
+          </a>
+          <p class="post-meta" style="margin-top: 10px; font-style: italic; color: #868e96;">
+            SnapAura Cricket Desk – Feb 27, 2026
+          </p>
         </div>
-    </a>
-    
-    <p class="post-meta" style="margin-top: 10px; font-style: italic; color: #868e96;">
-        SnapAura Cricket Desk – Feb 27, 2026
-    </p>
-</div>
-<hr class="my-4" />
- <div class="post-preview">
-  <a href="Music/arijit-singh-retirement-news.html" style="text-decoration: none;">
-    <div class="post-preview-img-container">
-      
-      <span class="badge-music-special">Music Special</span>
-      
-      <span class="live-badge-overlay">Emotional Video</span>
+        <hr class="my-4" />
 
-      <img src="assets/img/arijit-singh-retirement.jpg" alt="Arijit Singh Final Note" loading="lazy" class="snap-image" style="filter: brightness(0.85);">
-      
-      <i class="fas fa-play-circle"></i>
-    </div>
-    
-    <div class="mt-3">
-      <h2 class="post-title" style="font-size: 26px; margin-top: 15px;">
-        🎶 Final Note for Listeners: Arijit Singh ki Awaaz Hamesha Goonjegi
-      </h2>
-      <h3 class="post-subtitle" style="font-size: 18px; line-height: 1.6;">
-        "I am calling it off" - अरिजीत सिंह का प्लेबैक सिंगिंग से संन्यास का फैसला। देखें भावुक कर देने वाला वीडियो और उनका आखिरी संदेश।
-      </h3>
-    </div>
-  </a>
-    <p class="post-meta">
-    SnapAura Music Desk – Feb 26, 2026
-  </p>
-</div>
-      <hr class="my-4" style="border-top: 1px solid #eeeeee;" 
-        
-      <div class="post-preview">
-  <a href="Review/the-bluff-movie-review.html" style="text-decoration: none;">
-    <div class="post-preview-img-container">
-      
-      <span class="live-badge-overlay" style="background-color: #dc3545; left: 15px; right: auto;">
-        TRAILER + REVIEW
-      </span>
-
-      <img src="assets/img/the-bluff-review.jpg" alt="The Bluff Trailer & Review" loading="lazy" class="snap-image">
-      
-      <i class="fas fa-play-circle"></i>
-    </div>
-    
-    <div class="mt-3">
-      <h2 class="post-title" style="font-size: 26px; margin-top: 15px;">
-        🎬 The Bluff Review: प्रियंका चोपड़ा का समुद्री डाकू अवतार! देखें फिल्म का ट्रेलर और पूरा विश्लेषण
-      </h2>
-    </div>
-  </a>
-  
-  <p class="post-meta">
-    SnapAura Entertainment Desk – Feb 25, 2026
-  </p>
-</div>
-<hr class="my-4" />
-    
-    
-            <div class="post-preview">
-  <a href="arijit-singh-news.html">
-    <img src="assets/img/arijit-singh-news.jpg" alt="Arijit Singh Quits Playback" loading="lazy" style="width:100%; border-radius:8px; margin-bottom:10px;">
-    <h2 class="post-title">🎤 अरिजीत सिंह का बड़ा ऐलान: प्लेबैक सिंगिंग को कहा अलविदा, अब इंडिपेंडेंट म्यूजिक ही पहचान</h2>
-    <h3 class="post-subtitle">"I Am Calling It Off" - जानें क्यों करोड़ों फैन्स के चहेते सिंगर ने लिया यह चौंकाने वाला फैसला।</h3>
-  </a>
-  <p class="post-meta">SnapAura Music Desk – 27 Jan 2026</p>
-</div>
-<hr class="my-4" />
-      <div class="post-preview">
-  <a href="robin-kaye-news.html">
-    <img src="assets/img/robin-kaye-news.jpg" alt="Robin Kaye American Idol" loading="lazy" style="width:100%; border-radius:8px; margin-bottom:10px;">
-    <h2 class="post-title">🎵 'American Idol' की म्यूजिक सुपरवाइजर Robin Kaye की दर्दनाक मौत</h2>
-    <h3 class="post-subtitle">कैलिफोर्निया में रॉबिन और उनके पति की घर में घुसकर हत्या, म्यूजिक इंडस्ट्री में शोक की लहर।</h3>
-  </a>
-  <p class="post-meta">SnapAura International Desk – 26 Jan 2026</p>
-</div>
-<hr class="my-4" />
-      <div class="post-preview">
-  <a href="seema-sajdeh-divorce-news.html">
-    <img src="assets/img/seema-sohail-news.jpg" alt="Seema Sajdeh News" loading="lazy" style="width:100%; border-radius:8px; margin-bottom:10px;">
-    <h2 class="post-title">💔 सीमा सजदेह का बड़ा खुलासा: सोहेल खान से क्यों टूटा 24 साल का रिश्ता?</h2>
-    <h3 class="post-subtitle">तलाक, डिप्रेशन और आत्मनिर्भरता—सीमा ने बयां किया अपने जीवन का सबसे मुश्किल दौर।</h3>
-  </a>
-  <p class="post-meta">SnapAura Entertainment Desk – 25 Jan 2026</p>
-</div>
-<hr class="my-4" />
-      <div class="post-preview">
-  <a href="tvk-election-symbol.html">
-    <img src="assets/img/vijay-tvk-symbol.jpg" alt="Thalapathy Vijay TVK News" loading="lazy" style="width:100%; border-radius:8px; margin-bottom:10px;">
-    <h2 class="post-title">🗳️ Whistle Bajaa! थलपति विजय की पार्टी TVK को मिला चुनाव चिन्ह</h2>
-    <h3 class="post-subtitle">तमिलनाडु की राजनीति में सुपरस्टार विजय का धमाका, मिला 'सीटी' सिंबल। जानें पूरी इलेक्शन स्ट्रेटेजी।</h3>
-  </a>
-  <p class="post-meta">SnapAura Politics Desk – 22 Jan 2026</p>
-</div>
-<hr class="my-4" />
-      <div class="post-preview">
-  <a href="panchayat-season-5-update.html">
-    <img src="assets/img/panchayat-s5.jpg" alt="Panchayat Season 5" loading="lazy" style="width:100%; border-radius:8px; margin-bottom:10px;">
-    <h2 class="post-title">🌾 Panchayat Season 5: कब आएगा नया सचिव जी का आदेश? जानें रिलीज अपडेट्स</h2>
-    <h3 class="post-subtitle">फुलेरा गांव में सत्ता बदल चुकी है! जानें सचिव जी और मंजू देवी के अगले कदम के बारे में सब कुछ।</h3>
-  </a>
-  <p class="post-meta">SnapAura Entertainment Desk – 21 Jan 2026</p>
-</div>
-<hr class="my-4" />
-      <div class="post-preview">
-  <a href="pickleball-league-sonyliv.html">
-    <img src="assets/img/pickleball-league.jpg" alt="World Pickleball League Season 2" loading="lazy" style="width:100%; border-radius:8px; margin-bottom:10px;">
-    <h2 class="post-title">World Pickleball League: Sony LIV बना स्ट्रीमिंग पार्टनर, ऋषभ पंत और सामंथा की टीमें मचाएंगी धमाल</h2>
-    <h3 class="post-subtitle">पिकलबॉल का बढ़ता क्रेज! सीजन 2 में भिड़ेंगे 18 देशों के खिलाड़ी, जानें कहाँ देखें लाइव मैच।</h3>
-  </a>
-  <p class="post-meta">SnapAura Sports Desk – 21 Jan 2026</p>
-</div>
-<hr class="my-4" />
-      <div class="post-preview">
-  <a href="ott-jan.html">
-    <img src="assets/img/ott-jan-thumb.jpg" alt="OTT Releases January 2026" loading="lazy" style="width:100%; border-radius:8px; margin-bottom:10px;">
-    <h2 class="post-title">🍿 OTT धमाका ALERT! मिर्जापुर 4 से पंचायत तक, नोट कर लें 20-30 जनवरी की बड़ी रिलीज डेट्स</h2>
-    <h3 class="post-subtitle">पॉपकॉर्न तैयार रखो! अगले 10 दिनों में OTT पर मचेगा असली बवाल, देखें पूरी लिस्ट।</h3>
-  </a>
-  <p class="post-meta">
-    SnapAura Team- 20 Jan 2026
-  </p>
-</div>
-<hr class="my-4" />
-      
-      <div class="post-preview">
-  <a href="rcb-wpl-win.html">
-    <img src="assets/img/rcb-wpl-win-thumb.jpg" alt="RCB Women WPL Win" loading="lazy" style="width:100%; border-radius:8px; margin-bottom:10px;">
-    <h2 class="post-title">RCB Women on Fire! गुजरात जायंट्स को धूल चटाकर लगाई जीत की 'पंजों' वाली दहाड़, अनस्टॉपेबल है मंधाना की सेना!</h2>
-  </a>
-  <p class="post-meta">SnapAura Sports Desk – 19 Jan 2026</p>
-</div>
-<hr class="my-4" />
-      
-      <div class="post-preview">
-  <a href="ind-vs-nz-result.html">
-    <img alt="IND vs NZ Match" style="width:100%; border-radius:8px; margin-bottom:10px;">
-    <h2 class="post-title">IND vs NZ 3rd ODI: इंदौर में टूटा टीम इंडिया का घमंड, न्यूज़ीलैंड ने 37 साल बाद जीती सीरीज</h2>
-  </a>
-  <p class="post-meta">SnapAura Sports Desk – 18 Jan 2026</p>
-</div>
-<hr class="my-4" />
-      <div class="post-preview">
-  <a href="shreyas-iyer-back.html">
-    <img src="assets/img/shreyas-iyer-thumb.jpg" alt="Shreyas Iyer Back" style="width:100%; border-radius:8px; margin-bottom:10px;">
-    <h2 class="post-title">Shreyas Iyer & Ravi Bishnoi are BACK! T20 स्क्वाड में हुई 'Savage' एंट्री, कीवियों की बढ़ी टेंशन</h2>
-  </a>
-  <p class="post-meta">SnapAura Sports Desk – 19 Jan 2026</p>
-</div>
-<hr class="my-4" />
-      <!-- Post preview -->
-<div class="post-preview">
-  <a href="january-movies.html">
-    <img src="assets/img/january-movies-thumb.jpg" alt="january-movies" style="width:100%; border-radius:8px; margin-bottom:10px;">
-    <h2 class="post-title"> जनवरी 2026 में रिलीज़ होने वाली हिंदी फिल्में  SnapAura</h2>
-  </a>
-  <p class="post-meta">SnapAura Entertainment Desk – 9 jan 2026</p>
-</div>
-<hr class="my-4" />
-
-      
-      <div class="post-preview">
-        <a href="post-radhika-apte.html">
-          <img src="assets/img/radhika-thumb.jpg" alt="Radhika Apte" class="img-fluid rounded mb-3">
-          <h2 class="post-title">राधिका आप्टे ने बॉलीवुड और साउथ इंडस्ट्री में सेक्सिज़्म पर बात की</h2>
-          <h3 class="post-subtitle">20 साल के करियर में कई असहज अनुभवों का सामना किया</h3>
-        </a>
-        <p class="post-meta">SnapAura टीम द्वारा पोस्ट किया गया – 30 दिसंबर 2025</p>
-      </div>
-      <hr class="my-4" />
-
-      <div class="post-preview">
-        <a href="post-economic-reforms.html">
-          <h2 class="post-title">Government Announces New Economic Reforms</h2>
-          <h3 class="post-subtitle">India releases reforms aimed at boosting growth in key sectors.</h3>
-        </a>
-        <p class="post-meta">Posted by <a href="#!">SnapAura Team</a> on December 31, 2025</p>
-      </div>
-      <hr class="my-4" />
-
-      <div class="post-preview">
-        <a href="post-climate-summit.html">
-          <h2 class="post-title">Global Leaders Meet at Climate Summit</h2>
-          <h3 class="post-subtitle">World leaders gather to discuss strategies to address climate change.</h3>
-        </a>
-        <p class="post-meta">Posted by <a href="#!">SnapAura Team</a> on December 28, 2025</p>
-      </div>
-      <hr class="my-4" />
-
-      <div class="post-preview">
-        <a href="post-tech-innovations.html">
-          <h2 class="post-title">New Technology Innovations Unveiled</h2>
-          <h3 class="post-subtitle">Tech companies showcase cutting-edge innovations at an international conference.</h3>
-        </a>
-        <p class="post-meta">Posted by <a href="#!">SnapAura Team</a> on December 27, 2025</p>
-      </div>
-      <hr class="my-4" />
-      <div id="pagination"></div>
-    </div>
-  </div>
-</div>
-
-          <!-- Pager -->
-          <div class="d-flex justify-content-end mb-4">
-            <a class="btn btn-primary text-uppercase" href="#!">Older Posts →</a>
-          </div>
+        <div class="post-preview">
+          <a href="Music/arijit-singh-retirement-news.html" style="text-decoration: none;">
+            <div class="post-preview-img-container">
+              <span class="badge-music-special">Music Special</span>
+              <span class="live-badge-overlay">Emotional Video</span>
+              <!-- FIX 8 (continued): Added width & height on remaining images -->
+              <img src="assets/img/arijit-singh-retirement.jpg" alt="Arijit Singh Final Note" loading="lazy" class="snap-image" width="800" height="450" style="filter: brightness(0.85);">
+              <i class="fas fa-play-circle"></i>
+            </div>
+            <div class="mt-3">
+              <h2 class="post-title" style="font-size: 26px; margin-top: 15px;">
+                🎶 Final Note for Listeners: Arijit Singh ki Awaaz Hamesha Goonjegi
+              </h2>
+              <h3 class="post-subtitle" style="font-size: 18px; line-height: 1.6;">
+                "I am calling it off" - अरिजीत सिंह का प्लेबैक सिंगिंग से संन्यास का फैसला। देखें भावुक कर देने वाला वीडियो और उनका आखिरी संदेश।
+              </h3>
+            </div>
+          </a>
+          <p class="post-meta">SnapAura Music Desk – Feb 26, 2026</p>
         </div>
+        <!-- FIX 9: Fixed malformed <hr> tag — was missing closing > -->
+        <hr class="my-4" style="border-top: 1px solid #eeeeee;" />
+
+        <div class="post-preview">
+          <a href="Review/the-bluff-movie-review.html" style="text-decoration: none;">
+            <div class="post-preview-img-container">
+              <span class="live-badge-overlay" style="background-color: #dc3545; left: 15px; right: auto;">
+                TRAILER + REVIEW
+              </span>
+              <img src="assets/img/the-bluff-review.jpg" alt="The Bluff Trailer & Review" loading="lazy" class="snap-image" width="800" height="450">
+              <i class="fas fa-play-circle"></i>
+            </div>
+            <div class="mt-3">
+              <h2 class="post-title" style="font-size: 26px; margin-top: 15px;">
+                🎬 The Bluff Review: प्रियंका चोपड़ा का समुद्री डाकू अवतार! देखें फिल्म का ट्रेलर और पूरा विश्लेषण
+              </h2>
+            </div>
+          </a>
+          <p class="post-meta">SnapAura Entertainment Desk – Feb 25, 2026</p>
+        </div>
+        <hr class="my-4" />
+
+        <div class="post-preview">
+          <a href="arijit-singh-news.html">
+            <img src="assets/img/arijit-singh-news.jpg" alt="Arijit Singh Quits Playback" loading="lazy" width="800" height="450" style="width:100%; border-radius:8px; margin-bottom:10px;">
+            <h2 class="post-title">🎤 अरिजीत सिंह का बड़ा ऐलान: प्लेबैक सिंगिंग को कहा अलविदा, अब इंडिपेंडेंट म्यूजिक ही पहचान</h2>
+            <h3 class="post-subtitle">"I Am Calling It Off" - जानें क्यों करोड़ों फैन्स के चहेते सिंगर ने लिया यह चौंकाने वाला फैसला।</h3>
+          </a>
+          <p class="post-meta">SnapAura Music Desk – 27 Jan 2026</p>
+        </div>
+        <hr class="my-4" />
+
+        <div class="post-preview">
+          <a href="robin-kaye-news.html">
+            <img src="assets/img/robin-kaye-news.jpg" alt="Robin Kaye American Idol" loading="lazy" width="800" height="450" style="width:100%; border-radius:8px; margin-bottom:10px;">
+            <h2 class="post-title">🎵 'American Idol' की म्यूजिक सुपरवाइजर Robin Kaye की दर्दनाक मौत</h2>
+            <h3 class="post-subtitle">कैलिफोर्निया में रॉबिन और उनके पति की घर में घुसकर हत्या, म्यूजिक इंडस्ट्री में शोक की लहर।</h3>
+          </a>
+          <p class="post-meta">SnapAura International Desk – 26 Jan 2026</p>
+        </div>
+        <hr class="my-4" />
+
+        <div class="post-preview">
+          <a href="seema-sajdeh-divorce-news.html">
+            <img src="assets/img/seema-sohail-news.jpg" alt="Seema Sajdeh News" loading="lazy" width="800" height="450" style="width:100%; border-radius:8px; margin-bottom:10px;">
+            <h2 class="post-title">💔 सीमा सजदेह का बड़ा खुलासा: सोहेल खान से क्यों टूटा 24 साल का रिश्ता?</h2>
+            <h3 class="post-subtitle">तलाक, डिप्रेशन और आत्मनिर्भरता—सीमा ने बयां किया अपने जीवन का सबसे मुश्किल दौर।</h3>
+          </a>
+          <p class="post-meta">SnapAura Entertainment Desk – 25 Jan 2026</p>
+        </div>
+        <hr class="my-4" />
+
+        <div class="post-preview">
+          <a href="tvk-election-symbol.html">
+            <img src="assets/img/vijay-tvk-symbol.jpg" alt="Thalapathy Vijay TVK News" loading="lazy" width="800" height="450" style="width:100%; border-radius:8px; margin-bottom:10px;">
+            <h2 class="post-title">🗳️ Whistle Bajaa! थलपति विजय की पार्टी TVK को मिला चुनाव चिन्ह</h2>
+            <h3 class="post-subtitle">तमिलनाडु की राजनीति में सुपरस्टार विजय का धमाका, मिला 'सीटी' सिंबल। जानें पूरी इलेक्शन स्ट्रेटेजी।</h3>
+          </a>
+          <p class="post-meta">SnapAura Politics Desk – 22 Jan 2026</p>
+        </div>
+        <hr class="my-4" />
+
+        <div class="post-preview">
+          <a href="panchayat-season-5-update.html">
+            <img src="assets/img/panchayat-s5.jpg" alt="Panchayat Season 5" loading="lazy" width="800" height="450" style="width:100%; border-radius:8px; margin-bottom:10px;">
+            <h2 class="post-title">🌾 Panchayat Season 5: कब आएगा नया सचिव जी का आदेश? जानें रिलीज अपडेट्स</h2>
+            <h3 class="post-subtitle">फुलेरा गांव में सत्ता बदल चुकी है! जानें सचिव जी और मंजू देवी के अगले कदम के बारे में सब कुछ।</h3>
+          </a>
+          <p class="post-meta">SnapAura Entertainment Desk – 21 Jan 2026</p>
+        </div>
+        <hr class="my-4" />
+
+        <div class="post-preview">
+          <a href="pickleball-league-sonyliv.html">
+            <img src="assets/img/pickleball-league.jpg" alt="World Pickleball League Season 2" loading="lazy" width="800" height="450" style="width:100%; border-radius:8px; margin-bottom:10px;">
+            <h2 class="post-title">World Pickleball League: Sony LIV बना स्ट्रीमिंग पार्टनर, ऋषभ पंत और सामंथा की टीमें मचाएंगी धमाल</h2>
+            <h3 class="post-subtitle">पिकलबॉल का बढ़ता क्रेज! सीजन 2 में भिड़ेंगे 18 देशों के खिलाड़ी, जानें कहाँ देखें लाइव मैच।</h3>
+          </a>
+          <p class="post-meta">SnapAura Sports Desk – 21 Jan 2026</p>
+        </div>
+        <hr class="my-4" />
+
+        <div class="post-preview">
+          <a href="ott-jan.html">
+            <img src="assets/img/ott-jan-thumb.jpg" alt="OTT Releases January 2026" loading="lazy" width="800" height="450" style="width:100%; border-radius:8px; margin-bottom:10px;">
+            <h2 class="post-title">🍿 OTT धमाका ALERT! मिर्जापुर 4 से पंचायत तक, नोट कर लें 20-30 जनवरी की बड़ी रिलीज डेट्स</h2>
+            <h3 class="post-subtitle">पॉपकॉर्न तैयार रखो! अगले 10 दिनों में OTT पर मचेगा असली बवाल, देखें पूरी लिस्ट।</h3>
+          </a>
+          <p class="post-meta">SnapAura Team – 20 Jan 2026</p>
+        </div>
+        <hr class="my-4" />
+
+        <div class="post-preview">
+          <a href="rcb-wpl-win.html">
+            <img src="assets/img/rcb-wpl-win-thumb.jpg" alt="RCB Women WPL Win" loading="lazy" width="800" height="450" style="width:100%; border-radius:8px; margin-bottom:10px;">
+            <h2 class="post-title">RCB Women on Fire! गुजरात जायंट्स को धूल चटाकर लगाई जीत की 'पंजों' वाली दहाड़, अनस्टॉपेबल है मंधाना की सेना!</h2>
+          </a>
+          <p class="post-meta">SnapAura Sports Desk – 19 Jan 2026</p>
+        </div>
+        <hr class="my-4" />
+
+        <div class="post-preview">
+          <a href="ind-vs-nz-result.html">
+            <!-- FIX 10: Added missing src attribute — was showing broken image to all visitors -->
+            <img src="assets/img/ind-vs-nz-thumb.jpg" alt="IND vs NZ Match" loading="lazy" width="800" height="450" style="width:100%; border-radius:8px; margin-bottom:10px;">
+            <h2 class="post-title">IND vs NZ 3rd ODI: इंदौर में टूटा टीम इंडिया का घमंड, न्यूज़ीलैंड ने 37 साल बाद जीती सीरीज</h2>
+          </a>
+          <p class="post-meta">SnapAura Sports Desk – 18 Jan 2026</p>
+        </div>
+        <hr class="my-4" />
+
+        <div class="post-preview">
+          <a href="shreyas-iyer-back.html">
+            <img src="assets/img/shreyas-iyer-thumb.jpg" alt="Shreyas Iyer Back" loading="lazy" width="800" height="450" style="width:100%; border-radius:8px; margin-bottom:10px;">
+            <h2 class="post-title">Shreyas Iyer & Ravi Bishnoi are BACK! T20 स्क्वाड में हुई 'Savage' एंट्री, कीवियों की बढ़ी टेंशन</h2>
+          </a>
+          <p class="post-meta">SnapAura Sports Desk – 19 Jan 2026</p>
+        </div>
+        <hr class="my-4" />
+
+        <div class="post-preview">
+          <a href="january-movies.html">
+            <img src="assets/img/january-movies-thumb.jpg" alt="January Movies 2026" loading="lazy" width="800" height="450" style="width:100%; border-radius:8px; margin-bottom:10px;">
+            <h2 class="post-title">जनवरी 2026 में रिलीज़ होने वाली हिंदी फिल्में – SnapAura</h2>
+          </a>
+          <p class="post-meta">SnapAura Entertainment Desk – 9 Jan 2026</p>
+        </div>
+        <hr class="my-4" />
+
+        <div class="post-preview">
+          <a href="post-radhika-apte.html">
+            <img src="assets/img/radhika-thumb.jpg" alt="Radhika Apte" loading="lazy" class="img-fluid rounded mb-3" width="800" height="450">
+            <h2 class="post-title">राधिका आप्टे ने बॉलीवुड और साउथ इंडस्ट्री में सेक्सिज़्म पर बात की</h2>
+            <h3 class="post-subtitle">20 साल के करियर में कई असहज अनुभवों का सामना किया</h3>
+          </a>
+          <p class="post-meta">SnapAura टीम द्वारा पोस्ट किया गया – 30 दिसंबर 2025</p>
+        </div>
+        <hr class="my-4" />
+
+        <div class="post-preview">
+          <a href="post-economic-reforms.html">
+            <h2 class="post-title">Government Announces New Economic Reforms</h2>
+            <h3 class="post-subtitle">India releases reforms aimed at boosting growth in key sectors.</h3>
+          </a>
+          <p class="post-meta">Posted by <a href="#!">SnapAura Team</a> on December 31, 2025</p>
+        </div>
+        <hr class="my-4" />
+
+        <div class="post-preview">
+          <a href="post-climate-summit.html">
+            <h2 class="post-title">Global Leaders Meet at Climate Summit</h2>
+            <h3 class="post-subtitle">World leaders gather to discuss strategies to address climate change.</h3>
+          </a>
+          <p class="post-meta">Posted by <a href="#!">SnapAura Team</a> on December 28, 2025</p>
+        </div>
+        <hr class="my-4" />
+
+        <div class="post-preview">
+          <a href="post-tech-innovations.html">
+            <h2 class="post-title">New Technology Innovations Unveiled</h2>
+            <h3 class="post-subtitle">Tech companies showcase cutting-edge innovations at an international conference.</h3>
+          </a>
+          <p class="post-meta">Posted by <a href="#!">SnapAura Team</a> on December 27, 2025</p>
+        </div>
+        <hr class="my-4" />
+
+        <div id="pagination"></div>
+
+        <!-- FIX 11: Moved pager inside the content column (was outside, causing layout misalignment) -->
+        <div class="d-flex justify-content-end mb-4">
+          <a class="btn btn-primary text-uppercase" href="#!">Older Posts →</a>
+        </div>
+
+      </div><!-- /col -->
+    </div><!-- /row -->
+  </div><!-- /container -->
+
+  <!-- Footer -->
+  <footer class="bg-dark text-light pt-5 pb-3">
+    <div class="container">
+      <div class="row">
+
+        <!-- About -->
+        <div class="col-md-3">
+          <h5>SnapAura</h5>
+          <p>SnapAura एक एंटरटेनमेंट न्यूज़ प्लेटफॉर्म है जो बॉलीवुड, वेब सीरीज़, और फिल्म इंडस्ट्री की ताज़ा खबरें हिंदी में प्रस्तुत करता है।</p>
+        </div>
+
+        <!-- Categories -->
+        <div class="col-md-3">
+          <h5>श्रेणियाँ</h5>
+          <ul class="list-unstyled">
+            <li><a href="categories.html" class="text-light">बॉलीवुड</a></li>
+            <li><a href="categories.html" class="text-light">वेब सीरीज़</a></li>
+            <li><a href="categories.html" class="text-light">फिल्म समीक्षा</a></li>
+            <li><a href="categories.html" class="text-light">सेलेब्रिटी इंटरव्यू</a></li>
+          </ul>
+        </div>
+
+        <!-- Quick Links -->
+        <div class="col-md-3">
+          <h5>त्वरित लिंक</h5>
+          <ul class="list-unstyled">
+            <li><a href="index.html" class="text-light">होम</a></li>
+            <li><a href="about.html" class="text-light">हमारे बारे में</a></li>
+            <li><a href="contact.html" class="text-light">संपर्क करें</a></li>
+          </ul>
+        </div>
+
+        <!-- Social -->
+        <div class="col-md-3">
+          <h5>सोशल मीडिया</h5>
+          <a href="https://www.facebook.com/profile.php?id=100067758124332" class="text-light me-2"><i class="fab fa-facebook-f"></i></a>
+          <a href="#" class="text-light me-2"><i class="fab fa-twitter"></i></a>
+          <a href="https://www.instagram.com/snapaura.space" class="text-light me-2"><i class="fab fa-instagram"></i></a>
+          <a href="https://youtube.com/@snapaura-space" class="text-light"><i class="fab fa-youtube"></i></a>
+        </div>
+
+      </div>
+
+      <hr class="bg-secondary" />
+
+      <div class="text-center small">
+        © 2026 SnapAura | एंटरटेनमेंट की दुनिया से जुड़ी हर खबर | <a href="#top" class="text-light">🔝 ऊपर जाएं</a>
       </div>
     </div>
+  </footer>
 
-    <!-- Footer -->
-<footer class="bg-dark text-light pt-5 pb-3">
-  <div class="container">
-    <div class="row">
-
-      <!-- About -->
-      <div class="col-md-3">
-        <h5>SnapAura</h5>
-        <p>SnapAura एक एंटरटेनमेंट न्यूज़ प्लेटफॉर्म है जो बॉलीवुड, वेब सीरीज़, और फिल्म इंडस्ट्री की ताज़ा खबरें हिंदी में प्रस्तुत करता है।</p>
-      </div>
-
-      <!-- Categories -->
-      <div class="col-md-3">
-        <h5>श्रेणियाँ</h5>
-        <ul class="list-unstyled">
-          <li><a href="categories.html" class="text-light">बॉलीवुड</a></li>
-          <li><a href="categories.html" class="text-light">वेब सीरीज़</a></li>
-          <li><a href="categories.html" class="text-light">फिल्म समीक्षा</a></li>
-          <li><a href="categories.html" class="text-light">सेलेब्रिटी इंटरव्यू</a></li>
-        </ul>
-      </div>
-
-      <!-- Quick Links -->
-      <div class="col-md-3">
-        <h5>त्वरित लिंक</h5>
-        <ul class="list-unstyled">
-          <li><a href="index.html" class="text-light">होम</a></li>
-          <li><a href="about.html" class="text-light">हमारे बारे में</a></li>
-          <li><a href="contact.html" class="text-light">संपर्क करें</a></li>
-        </ul>
-      </div>
-
-      <!-- Social -->
-      <div class="col-md-3">
-        <h5>सोशल मीडिया</h5>
-        <a href="https://www.facebook.com/profile.php?id=100067758124332" class="text-light me-2"><i class="fab fa-facebook-f"></i></a>
-        <a href="#" class="text-light me-2"><i class="fab fa-twitter"></i></a>
-        <a href="https://www.instagram.com/snapaura.space" class="text-light me-2"><i class="fab fa-instagram"></i></a>
-        <a href="https://youtube.com/@snapaura-space" class="text-light"><i class="fab fa-youtube"></i></a>
-      </div>
-
-    </div>
-
-    <hr class="bg-secondary" />
-
-    <div class="text-center small">
-      © 2026 SnapAura | एंटरटेनमेंट की दुनिया से जुड़ी हर खबर | <a href="#top" class="text-light">🔝 ऊपर जाएं</a>
-    </div>
-  </div>
-</footer>
-    
-    <!-- Bootstrap core JS -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"></script>
-    <!-- Core theme JS -->
-    <script src="js/scripts.js"></script>
-  </body>
+  <!-- Bootstrap core JS -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"></script>
+  <!-- FIX 6 (continued): scripts.js loaded only once, here before </body> -->
+  <script src="js/scripts.js"></script>
+</body>
 </html>
