@@ -25,7 +25,6 @@ body {
     overflow-x: hidden;
 }
 
-/* Container for Desktop width control */
 .container {
     width: 100%;
     max-width: 1140px; 
@@ -34,7 +33,7 @@ body {
 }
 
 /* =========================================
-   2. Header & Top Bar (Icons to Right)
+   2. Header & Top Bar
    ========================================= */
 .top-brand-bar {
     background-color: #111;
@@ -76,7 +75,6 @@ body {
     text-transform: uppercase;
 }
 
-/* Category Navigation */
 .category-nav {
     border-bottom: 1px solid #eee;
     padding: 15px 0;
@@ -100,14 +98,15 @@ body {
 }
 
 /* =========================================
-   3. Masthead (Title Section)
+   3. Masthead & Title (Mobile Fix Included)
    ========================================= */
 header.masthead {
     padding: 1.5rem 0;
     text-align: center;
 }
 
-.snap-title, .post-heading .post-title {
+/* Desktop Title Style */
+.post-heading .post-title {
     font-size: 3.5rem;
     font-weight: 900;
     font-family: 'Merriweather', serif;
@@ -115,7 +114,7 @@ header.masthead {
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     margin: 0;
-    line-height: 1.1;
+    line-height: 1.2;
 }
 
 .purple-divider {
@@ -127,13 +126,30 @@ header.masthead {
 }
 
 /* =========================================
-   4. Post Preview & Image Fix (Desktop Size)
+   4. Engagement Bar (Like & Share)
    ========================================= */
-.post-preview {
-    margin-bottom: 3rem;
+.engagement-bar {
+    margin: 30px 0;
 }
 
-/* हा क्लास इमेजला डेस्कटॉपवर लहान ठेवतो आणि बॅजला आत लॉक करतो */
+.engagement-bar .btn {
+    transition: all 0.3s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-weight: 600;
+}
+
+.engagement-bar .btn:hover {
+    background-color: #f8f9fa;
+    border-color: var(--bs-purple) !important;
+    color: var(--bs-purple);
+    transform: translateY(-2px);
+}
+
+/* =========================================
+   5. Post Preview & Images
+   ========================================= */
 .post-preview-img-container {
     position: relative;
     width: 100%;
@@ -142,7 +158,7 @@ header.masthead {
 
 @media (min-width: 992px) {
     .post-preview-img-container {
-        max-width: 850px; /* डेस्कटॉपवर इमेजची रुंदी */
+        max-width: 850px;
     }
 }
 
@@ -154,48 +170,8 @@ header.masthead {
     box-shadow: 0 4px 15px rgba(0,0,0,0.1);
 }
 
-/* बॅजेस जे इमेजच्या आत राहतील */
-.badge-music-special, .live-badge-overlay {
-    position: absolute;
-    top: 15px;
-    left: 15px;
-    z-index: 5;
-    background-color: var(--bs-purple);
-    color: white;
-    padding: 5px 12px;
-    border-radius: 4px;
-    font-weight: bold;
-    font-size: 0.75rem;
-    text-transform: uppercase;
-}
-
-.live-badge-overlay {
-    background-color: var(--bs-red);
-    left: auto;
-    right: 15px;
-}
-
-/* सेंटर प्ले बटन */
-.fa-play-circle {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    color: white;
-    font-size: 60px;
-    opacity: 0.9;
-    pointer-events: none;
-}
-
-.post-title {
-    font-size: 1.8rem;
-    font-weight: 700;
-    color: #212529;
-    text-decoration: none;
-}
-
 /* =========================================
-   5. Footer & Social Icons (Mobile Fix)
+   6. Footer Styles
    ========================================= */
 footer {
     background-color: var(--bs-dark);
@@ -211,19 +187,25 @@ footer {
     margin-bottom: 20px;
 }
 
-/* मोबाईलवर आयकॉन्स दिसण्यासाठी खास बदल */
-footer .fab, footer .fas, footer i {
-    display: inline-block !important;
-    visibility: visible !important;
+footer i {
     color: #fff !important;
     font-size: 1.5rem;
 }
 
 /* =========================================
-   6. Mobile Optimization
+   7. Mobile Optimization (The BIG FIX)
    ========================================= */
 @media (max-width: 768px) {
-    .snap-title { font-size: 2.2rem; }
+    /* Mobile pe Title ko chhota kiya */
+    .post-heading .post-title {
+        font-size: 1.8rem !important; 
+        padding: 0 5px;
+        line-height: 1.3;
+    }
+
+    .snap-title {
+        font-size: 2.2rem;
+    }
     
     .top-brand-bar .container {
         flex-direction: column;
@@ -231,25 +213,21 @@ footer .fab, footer .fas, footer i {
     }
     
     .category-nav ul {
-        gap: 10px;
+        gap: 15px;
         overflow-x: auto;
         white-space: nowrap;
         justify-content: flex-start;
-        padding: 5px 15px;
+        padding: 10px 15px;
+        -webkit-overflow-scrolling: touch; /* Smooth scroll for mobile */
     }
 
-    .post-title { font-size: 1.5rem; }
-}
+    /* Hide scrollbar but keep functionality */
+    .category-nav ul::-webkit-scrollbar {
+        display: none;
+    }
 
-/* Page Title Animation */
-@keyframes colorchange {
-    0% { color: #cc5500; }
-    50% { color: #0000ff; }
-    100% { color: #000000; }
-}
-
-.page-title {
-    font-size: 3rem;
-    font-weight: 700;
-    animation: colorchange 5s infinite;
+    .engagement-bar .btn {
+        padding: 8px 15px !important;
+        font-size: 0.9rem;
+    }
 }
