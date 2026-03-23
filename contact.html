@@ -4,11 +4,12 @@
   <meta charset="utf-8" />
   <meta name="google-adsense-account" content="ca-pub-1892357947938832">
   <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
-  <meta name="description" content="SnapAura से संपर्क करें – हमें लिखें या सोशल मीडिया पर फॉलो करें।" />
   <meta name="author" content="SnapAura Team" />
-  <title>Contact – SnapAura</title>
+  <title>Contact Us – SnapAura</title>
+  <meta name="description" content="Get in touch with the SnapAura team. Send us your feedback, suggestions, or queries and we'll respond shortly.">
+  <meta name="robots" content="index, follow">
+  <link rel="canonical" href="https://snapaura.space/contact.html" />
   <link rel="icon" type="image/x-icon" href="assets/favicon.ico" />
-  <!-- FIX: FontAwesome CSS, preconnect, Merriweather, modern css2? URL -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,700;1,400;1,700&family=Merriweather:wght@400;700&family=Open+Sans:ital,wght@0,300;0,400;0,600;0,700;0,800;1,300;1,400;1,600;1,700;1,800&display=swap" rel="stylesheet">
@@ -17,7 +18,6 @@
 </head>
 <body>
 
-  <!-- Top Brand Bar -->
   <div class="top-brand-bar">
     <div class="container d-flex justify-content-between align-items-center flex-wrap py-2">
       <div class="brand-links d-flex flex-wrap gap-3">
@@ -27,15 +27,12 @@
         <a class="nav-link" href="Career.html">SnapAura Career</a>
       </div>
       <div class="top-icons d-flex gap-3">
-        <a href="#"><i class="fas fa-cloud-sun"></i></a>
-        <a href="#"><i class="fas fa-cog"></i></a>
         <a href="#"><i class="fas fa-search"></i></a>
         <a class="nav-link text-danger fw-bold" href="live.html">LIVE</a>
       </div>
     </div>
   </div>
 
-  <!-- Category Navigation -->
   <nav class="category-nav">
     <ul class="d-flex flex-wrap justify-content-center gap-4 py-2 list-unstyled mb-0">
       <li><a class="nav-link" href="latest.html">Latest</a></li>
@@ -47,46 +44,105 @@
     </ul>
   </nav>
 
-  <!-- Page Header -->
-  <header class="masthead">
-    <div class="container px-4 px-lg-5 site-heading text-center">
-      <h1>Contact Us</h1>
-      <p class="subheading">Have questions? We're here to help.</p>
-      <hr class="purple-divider" />
-    </div>
-  </header>
-
-  <!-- Main Content -->
-  <main class="mb-4">
-    <div class="container px-4 px-lg-5">
+  <!-- Header -->
+  <header class="masthead clean-header">
+    <div class="container position-relative px-4 px-lg-5 text-center">
       <div class="row gx-4 gx-lg-5 justify-content-center">
         <div class="col-md-10 col-lg-8 col-xl-7">
-          <p>Want to get in touch with the SnapAura team? Fill out the form below and we'll respond as soon as possible.</p>
-          <div class="my-5">
-            <form id="contactForm" novalidate>
-              <div class="form-floating mb-3">
-                <input class="form-control" id="name" name="name" type="text" placeholder="Enter your name..." required />
-                <label for="name">Name</label>
-              </div>
-              <div class="form-floating mb-3">
-                <input class="form-control" id="email" name="email" type="email" placeholder="Enter your email..." required />
-                <label for="email">Email address</label>
-              </div>
-              <div class="form-floating mb-3">
-                <input class="form-control" id="phone" name="phone" type="tel" placeholder="Enter your phone number..." />
-                <label for="phone">Phone Number</label>
-              </div>
-              <div class="form-floating mb-3">
-                <textarea class="form-control" id="message" name="message" placeholder="Enter your message here..." style="height: 12rem" required></textarea>
-                <label for="message">Message</label>
-              </div>
-              <button class="btn btn-primary text-uppercase" id="submitButton" type="submit">Send</button>
-            </form>
+          <div class="post-heading">
+            <h1 class="post-title">Contact Us</h1>
+            <span class="meta">We'd love to hear from you!</span>
+            <hr class="purple-divider" />
           </div>
         </div>
       </div>
     </div>
-  </main>
+  </header>
+
+  <!-- Contact Section -->
+  <section class="mb-5">
+    <div class="container px-4 px-lg-5">
+      <div class="row gx-4 gx-lg-5 justify-content-center">
+        <div class="col-md-10 col-lg-8 col-xl-7">
+
+          <p class="lead text-center mb-4">Have a question, suggestion, or feedback? Fill out the form below and we'll get back to you as soon as possible.</p>
+
+          <!-- Success Message (hidden by default) -->
+          <div id="success-msg" style="display:none; background:#d4edda; border-left: 5px solid #28a745; padding: 15px; border-radius: 8px; margin-bottom: 20px;">
+            ✅ <strong>Thank you!</strong> Your message has been sent successfully. We'll get back to you soon.
+          </div>
+
+          <!-- Error Message (hidden by default) -->
+          <div id="error-msg" style="display:none; background:#f8d7da; border-left: 5px solid #dc3545; padding: 15px; border-radius: 8px; margin-bottom: 20px;">
+            ❌ <strong>Oops!</strong> Something went wrong. Please try again or email us directly.
+          </div>
+
+          <!-- Contact Form using Formspree -->
+          <form id="contact-form" action="https://formspree.io/f/xbdznrve" method="POST">
+
+            <div class="mb-3">
+              <label for="name" class="form-label fw-semibold">Full Name <span class="text-danger">*</span></label>
+              <input type="text" class="form-control" id="name" name="name" placeholder="Your full name" required>
+            </div>
+
+            <div class="mb-3">
+              <label for="email" class="form-label fw-semibold">Email Address <span class="text-danger">*</span></label>
+              <input type="email" class="form-control" id="email" name="email" placeholder="your@email.com" required>
+            </div>
+
+            <div class="mb-3">
+              <label for="phone" class="form-label fw-semibold">Phone Number <span class="text-muted">(Optional)</span></label>
+              <input type="tel" class="form-control" id="phone" name="phone" placeholder="+91 XXXXX XXXXX">
+            </div>
+
+            <div class="mb-3">
+              <label for="subject" class="form-label fw-semibold">Subject <span class="text-danger">*</span></label>
+              <select class="form-select" id="subject" name="subject" required>
+                <option value="" disabled selected>Select a subject</option>
+                <option value="Feedback">💬 Feedback</option>
+                <option value="Suggestion">💡 Suggestion</option>
+                <option value="News Tip">📰 News Tip</option>
+                <option value="Advertise">📢 Advertise with Us</option>
+                <option value="Technical Issue">🔧 Technical Issue</option>
+                <option value="Other">🔹 Other</option>
+              </select>
+            </div>
+
+            <div class="mb-4">
+              <label for="message" class="form-label fw-semibold">Message <span class="text-danger">*</span></label>
+              <textarea class="form-control" id="message" name="message" rows="5" placeholder="Write your message here..." required></textarea>
+            </div>
+
+            <div class="text-center">
+              <button type="submit" class="btn btn-primary rounded-pill px-5 py-2 fw-bold" id="submit-btn">
+                <i class="fas fa-paper-plane me-2"></i> Send Message
+              </button>
+            </div>
+
+          </form>
+
+          <hr class="my-5">
+
+          <!-- Direct Contact Info -->
+          <div class="text-center">
+            <h5 class="mb-3">Or reach us directly</h5>
+            <div class="d-flex flex-wrap justify-content-center gap-3">
+              <a href="https://www.instagram.com/snapaura.space" target="_blank" rel="noopener noreferrer" class="btn btn-outline-danger rounded-pill px-4">
+                <i class="fab fa-instagram me-1"></i> Instagram
+              </a>
+              <a href="https://www.facebook.com/profile.php?id=100067758124332" target="_blank" rel="noopener noreferrer" class="btn btn-outline-primary rounded-pill px-4">
+                <i class="fab fa-facebook-f me-1"></i> Facebook
+              </a>
+              <a href="https://youtube.com/@snapaura-space" target="_blank" rel="noopener noreferrer" class="btn btn-outline-danger rounded-pill px-4">
+                <i class="fab fa-youtube me-1"></i> YouTube
+              </a>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+  </section>
 
   <!-- Footer -->
   <footer class="bg-dark text-light pt-5 pb-3">
@@ -94,42 +150,81 @@
       <div class="row">
         <div class="col-md-3">
           <h5>SnapAura</h5>
-          <p>SnapAura एक एंटरटेनमेंट न्यूज़ प्लेटफॉर्म है जो बॉलीवुड, वेब सीरीज़, और फिल्म इंडस्ट्री की ताज़ा खबरें हिंदी में प्रस्तुत करता है।</p>
+          <p>SnapAura is your premier entertainment news platform covering Bollywood, Cricket, and Career updates.</p>
         </div>
         <div class="col-md-3">
-          <h5>श्रेणियाँ</h5>
+          <h5>Categories</h5>
           <ul class="list-unstyled">
-            <!-- FIX: removed ../ prefix — all pages are at root level -->
-            <li><a href="bollywood.html" class="text-light">बॉलीवुड</a></li>
-            <li><a href="web-series.html" class="text-light">वेब सीरीज़</a></li>
-            <li><a href="reviews.html" class="text-light">फिल्म समीक्षा</a></li>
-            <li><a href="cricket.html" class="text-light">क्रिकेट</a></li>
+            <li><a href="bollywood.html" class="text-light">Bollywood</a></li>
+            <li><a href="cricket.html" class="text-light">Cricket</a></li>
+            <li><a href="Career.html" class="text-light">Career</a></li>
+            <li><a href="Current-Affairs.html" class="text-light">Current Affairs</a></li>
           </ul>
         </div>
         <div class="col-md-3">
-          <h5>त्वरित लिंक</h5>
+          <h5>Quick Links</h5>
           <ul class="list-unstyled">
-            <li><a href="index.html" class="text-light">होम</a></li>
-            <li><a href="about.html" class="text-light">हमारे बारे में</a></li>
-            <li><a href="contact.html" class="text-light">संपर्क करें</a></li>
+            <li><a href="index.html" class="text-light">Home</a></li>
+            <li><a href="about.html" class="text-light">About Us</a></li>
+            <li><a href="contact.html" class="text-light">Contact</a></li>
+            <li><a href="privacy-policy.html" class="text-light">Privacy Policy</a></li>
           </ul>
         </div>
         <div class="col-md-3">
-          <h5>सोशल मीडिया</h5>
-          <a href="https://www.facebook.com/profile.php?id=100067758124332" class="text-light me-2"><i class="fab fa-facebook-f"></i></a>
-          <a href="#" class="text-light me-2"><i class="fab fa-twitter"></i></a>
-          <a href="https://www.instagram.com/snapaura.space" class="text-light me-2"><i class="fab fa-instagram"></i></a>
-          <a href="https://youtube.com/@snapaura-space" class="text-light"><i class="fab fa-youtube"></i></a>
+          <h5>Follow Us</h5>
+          <a href="https://www.facebook.com/profile.php?id=100067758124332" class="text-light me-2" target="_blank" rel="noopener noreferrer"><i class="fab fa-facebook-f"></i></a>
+          <a href="https://www.instagram.com/snapaura.space" class="text-light me-2" target="_blank" rel="noopener noreferrer"><i class="fab fa-instagram"></i></a>
+          <a href="https://youtube.com/@snapaura-space" class="text-light" target="_blank" rel="noopener noreferrer"><i class="fab fa-youtube"></i></a>
         </div>
       </div>
       <hr class="bg-secondary" />
       <div class="text-center small">
-        © 2026 SnapAura | एंटरटेनमेंट की दुनिया से जुड़ी हर खबर | <a href="#top" class="text-light">🔝 ऊपर जाएं</a>
+        © 2026 SnapAura | Bringing you the latest updates | <a href="#top" class="text-light">🔝 Back to Top</a>
       </div>
     </div>
   </footer>
 
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"></script>
   <script src="js/scripts.js"></script>
+
+  <script>
+    const form = document.getElementById('contact-form');
+    const submitBtn = document.getElementById('submit-btn');
+    const successMsg = document.getElementById('success-msg');
+    const errorMsg = document.getElementById('error-msg');
+
+    form.addEventListener('submit', async function (e) {
+      e.preventDefault();
+
+      submitBtn.disabled = true;
+      submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i> Sending...';
+
+      const formData = new FormData(form);
+
+      try {
+        const response = await fetch(form.action, {
+          method: 'POST',
+          body: formData,
+          headers: { 'Accept': 'application/json' }
+        });
+
+        if (response.ok) {
+          successMsg.style.display = 'block';
+          errorMsg.style.display = 'none';
+          form.reset();
+          window.scrollTo({ top: successMsg.offsetTop - 100, behavior: 'smooth' });
+        } else {
+          throw new Error('Form submission failed');
+        }
+      } catch (err) {
+        errorMsg.style.display = 'block';
+        successMsg.style.display = 'none';
+      } finally {
+        submitBtn.disabled = false;
+        submitBtn.innerHTML = '<i class="fas fa-paper-plane me-2"></i> Send Message';
+      }
+    });
+  </script>
+
 </body>
 </html>
