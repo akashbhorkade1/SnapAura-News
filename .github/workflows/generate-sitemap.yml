@@ -1,0 +1,79 @@
+name: Auto Generate Sitemap
+
+on:
+  push:
+    branches: [master]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  generate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Generate sitemap.xml
+        run: |
+          BASE_URL="https://snapaura.space"
+          TODAY=$(date +%Y-%m-%d)
+          SITEMAP="sitemap.xml"
+
+          echo '<?xml version="1.0" encoding="UTF-8"?>' > "$SITEMAP"
+          echo '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">' >> "$SITEMAP"
+
+          echo "  <url>" >> "$SITEMAP"
+          echo "    <loc>${BASE_URL}/</loc>" >> "$SITEMAP"
+          echo "    <lastmod>${TODAY}</lastmod>" >> "$SITEMAP"
+          echo "    <changefreq>daily</changefreq>" >> "$SITEMAP"
+          echo "    <priority>1.0</priority>" >> "$SITEMAP"
+          echo "  </url>" >> "$SITEMAP"
+
+          find . -name "*.html" -not -path "./.git/*" | sort | while read -r file; do
+            relative="${file#./}"
+
+            if [ "$relative" = "index.html" ]; then
+              continue
+            fi
+
+            LASTMOD=$(git log -1 --format="%cs" -- "$relative" 2>/dev/null || echo "$TODAY")
+
+            PRIORITY="0.7"
+            case "$relative" in
+              bollywood.html|cricket.html|web-series.html|latest.html|Career.html|Current-Affairs.html)
+                PRIORITY="0.9"
+                ;;
+              about.html|contact.html|privacy-policy.html)
+                PRIORITY="0.6"
+                ;;
+              live.html)
+                PRIORITY="0.5"
+                ;;
+            esac
+
+            echo "  <url>" >> "$SITEMAP"
+            echo "    <loc>${BASE_URL}/${relative}</loc>" >> "$SITEMAP"
+            echo "    <lastmod>${LASTMOD}</lastmod>" >> "$SITEMAP"
+            echo "    <changefreq>weekly</changefreq>" >> "$SITEMAP"
+            echo "    <priority>${PRIORITY}</priority>" >> "$SITEMAP"
+            echo "  </url>" >> "$SITEMAP"
+          done
+
+          echo '</urlset>' >> "$SITEMAP"
+
+          echo "Generated sitemap with $(grep -c '<loc>' "$SITEMAP") URLs"
+
+      - name: Commit and push sitemap
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add sitemap.xml
+          if git diff --cached --quiet; then
+            echo "No changes to sitemap.xml"
+          else
+            git commit -m "Auto-generate sitemap.xml"
+            git push
+          fi
