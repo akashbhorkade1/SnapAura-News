@@ -51,7 +51,7 @@
         <div class="col-md-10 col-lg-8 col-xl-7">
           <div class="post-heading">
             <h1 class="post-title">Contact Us</h1>
-            <span class="meta">We'd love to hear from you!</span>
+            <span class="meta">SnapAura – Trusted Entertainment & Career Updates</span>
             <hr class="purple-divider" />
           </div>
         </div>
@@ -65,47 +65,53 @@
       <div class="row gx-4 gx-lg-5 justify-content-center">
         <div class="col-md-10 col-lg-8 col-xl-7">
 
-          <p class="lead text-center mb-4">Have a question, suggestion, or feedback? Fill out the form below and we'll get back to you as soon as possible.</p>
+          <p class="lead text-center mb-4">We're always happy to hear from you — suggestions, feedback, news tips, correction requests, or collaboration proposals. Reach out through any of the channels below:</p>
 
-          <!-- Success Message (hidden by default) -->
-          <div id="success-msg" style="display:none; background:#d4edda; border-left: 5px solid #28a745; padding: 15px; border-radius: 8px; margin-bottom: 20px;">
-            ✅ <strong>Thank you!</strong> Your message has been sent successfully. We'll get back to you soon.
+          <!-- Email -->
+          <div class="text-center mb-4">
+            <h5 class="mb-2">Email</h5>
+            <p><i class="fas fa-envelope me-2"></i><a href="mailto:akash90752@gmail.com" class="text-decoration-none">akash90752@gmail.com</a></p>
           </div>
 
-          <!-- Error Message (hidden by default) -->
-          <div id="error-msg" style="display:none; background:#f8d7da; border-left: 5px solid #dc3545; padding: 15px; border-radius: 8px; margin-bottom: 20px;">
-            ❌ <strong>Oops!</strong> Something went wrong. Please try again or email us directly.
+          <!-- Social Media -->
+          <div class="text-center mb-5">
+            <h5 class="mb-3">Social Media</h5>
+            <div class="d-flex flex-wrap justify-content-center gap-3">
+              <a href="https://www.facebook.com/profile.php?id=100067758124332" target="_blank" rel="noopener noreferrer" class="btn btn-outline-primary rounded-pill px-4">
+                <i class="fab fa-facebook-f me-1"></i> Facebook
+              </a>
+              <a href="https://www.instagram.com/snapaura.space" target="_blank" rel="noopener noreferrer" class="btn btn-outline-danger rounded-pill px-4">
+                <i class="fab fa-instagram me-1"></i> Instagram
+              </a>
+              <a href="https://twitter.com/snapaura_space" target="_blank" rel="noopener noreferrer" class="btn btn-outline-dark rounded-pill px-4">
+                <i class="fab fa-x-twitter me-1"></i> X (Twitter)
+              </a>
+              <a href="https://youtube.com/@snapaura-space" target="_blank" rel="noopener noreferrer" class="btn btn-outline-danger rounded-pill px-4">
+                <i class="fab fa-youtube me-1"></i> YouTube
+              </a>
+            </div>
           </div>
 
-          <!-- Contact Form using Formspree -->
+          <hr class="my-4">
+
+          <h4 class="text-center mb-4">Send Us a Message</h4>
+
+          <!-- Contact Form -->
           <form id="contact-form" action="https://formspree.io/f/xbdznrve" method="POST">
 
             <div class="mb-3">
-              <label for="name" class="form-label fw-semibold">Full Name <span class="text-danger">*</span></label>
-              <input type="text" class="form-control" id="name" name="name" placeholder="Your full name" required>
+              <label for="name" class="form-label fw-semibold">Name <span class="text-danger">*</span></label>
+              <input type="text" class="form-control" id="name" name="name" placeholder="Your name" required>
             </div>
 
             <div class="mb-3">
-              <label for="email" class="form-label fw-semibold">Email Address <span class="text-danger">*</span></label>
+              <label for="email" class="form-label fw-semibold">Email <span class="text-danger">*</span></label>
               <input type="email" class="form-control" id="email" name="email" placeholder="your@email.com" required>
             </div>
 
             <div class="mb-3">
-              <label for="phone" class="form-label fw-semibold">Phone Number <span class="text-muted">(Optional)</span></label>
-              <input type="tel" class="form-control" id="phone" name="phone" placeholder="+91 XXXXX XXXXX">
-            </div>
-
-            <div class="mb-3">
-              <label for="subject" class="form-label fw-semibold">Subject <span class="text-danger">*</span></label>
-              <select class="form-select" id="subject" name="subject" required>
-                <option value="" disabled selected>Select a subject</option>
-                <option value="Feedback">💬 Feedback</option>
-                <option value="Suggestion">💡 Suggestion</option>
-                <option value="News Tip">📰 News Tip</option>
-                <option value="Advertise">📢 Advertise with Us</option>
-                <option value="Technical Issue">🔧 Technical Issue</option>
-                <option value="Other">🔹 Other</option>
-              </select>
+              <label for="subject" class="form-label fw-semibold">Subject</label>
+              <input type="text" class="form-control" id="subject" name="subject" placeholder="Subject of your message">
             </div>
 
             <div class="mb-4">
@@ -115,28 +121,22 @@
 
             <div class="text-center">
               <button type="submit" class="btn btn-primary rounded-pill px-5 py-2 fw-bold" id="submit-btn">
-                <i class="fas fa-paper-plane me-2"></i> Send Message
+                Send
               </button>
             </div>
 
           </form>
 
+          <div class="text-center mt-3">
+            <small class="text-muted">Note: This form is currently a design template — connect it to a backend (Google Forms, or a PHP mail handler) to make it functional.</small>
+          </div>
+
           <hr class="my-5">
 
-          <!-- Direct Contact Info -->
-          <div class="text-center">
-            <h5 class="mb-3">Or reach us directly</h5>
-            <div class="d-flex flex-wrap justify-content-center gap-3">
-              <a href="https://www.instagram.com/snapaura.space" target="_blank" rel="noopener noreferrer" class="btn btn-outline-danger rounded-pill px-4">
-                <i class="fab fa-instagram me-1"></i> Instagram
-              </a>
-              <a href="https://www.facebook.com/profile.php?id=100067758124332" target="_blank" rel="noopener noreferrer" class="btn btn-outline-primary rounded-pill px-4">
-                <i class="fab fa-facebook-f me-1"></i> Facebook
-              </a>
-              <a href="https://youtube.com/@snapaura-space" target="_blank" rel="noopener noreferrer" class="btn btn-outline-danger rounded-pill px-4">
-                <i class="fab fa-youtube me-1"></i> YouTube
-              </a>
-            </div>
+          <!-- Response Time -->
+          <div class="text-center mb-4">
+            <h5 class="mb-2">Response Time</h5>
+            <p>We typically try to respond within 2-3 business days.</p>
           </div>
 
         </div>
@@ -179,7 +179,7 @@
       </div>
       <hr class="bg-secondary" />
       <div class="text-center small">
-        © 2026 SnapAura | Bringing you the latest updates | <a href="#top" class="text-light">🔝 Back to Top</a>
+        © 2026 SnapAura | Trusted Entertainment & Career Updates | <a href="about.html" class="text-light">About Us</a> | <a href="privacy-policy.html" class="text-light">Privacy Policy</a>
       </div>
     </div>
   </footer>
@@ -190,14 +190,12 @@
   <script>
     const form = document.getElementById('contact-form');
     const submitBtn = document.getElementById('submit-btn');
-    const successMsg = document.getElementById('success-msg');
-    const errorMsg = document.getElementById('error-msg');
 
     form.addEventListener('submit', async function (e) {
       e.preventDefault();
 
       submitBtn.disabled = true;
-      submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i> Sending...';
+      submitBtn.innerHTML = 'Sending...';
 
       const formData = new FormData(form);
 
@@ -209,19 +207,16 @@
         });
 
         if (response.ok) {
-          successMsg.style.display = 'block';
-          errorMsg.style.display = 'none';
+          alert('Thank you! Your message has been sent successfully.');
           form.reset();
-          window.scrollTo({ top: successMsg.offsetTop - 100, behavior: 'smooth' });
         } else {
           throw new Error('Form submission failed');
         }
       } catch (err) {
-        errorMsg.style.display = 'block';
-        successMsg.style.display = 'none';
+        alert('Oops! Something went wrong. Please try again or email us directly.');
       } finally {
         submitBtn.disabled = false;
-        submitBtn.innerHTML = '<i class="fas fa-paper-plane me-2"></i> Send Message';
+        submitBtn.innerHTML = 'Send';
       }
     });
   </script>
