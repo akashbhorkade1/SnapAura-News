@@ -44,7 +44,7 @@ body {
 
 .top-brand-bar .container {
     display: flex;
-    justify-content: space-between;
+    justify-content: center;
     align-items: center;
 }
 
@@ -52,12 +52,6 @@ body {
     display: flex;
     gap: 15px;
     font-weight: 600;
-}
-
-.top-icons {
-    display: flex;
-    align-items: center;
-    gap: 15px;
 }
 
 .top-brand-bar a {
