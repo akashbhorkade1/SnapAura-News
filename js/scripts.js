@@ -2,44 +2,56 @@
  * SnapAura Scripts (Fixed)
  * - Safe mainNav check (won't crash on pages without #mainNav)
  * - Pagination works with .post-preview items
+ * - Throttled scroll for performance
+ * - Recalculates headerHeight on resize
+ * - Scroll to top on page change
+ * - Accessibility: aria-label on pagination buttons
  */
 
 // ─── Sticky Nav (only runs if #mainNav exists) ───────────────────────────────
 window.addEventListener('DOMContentLoaded', () => {
   const mainNav = document.getElementById('mainNav');
-  if (!mainNav) return; // FIX: was crashing on every page that lacks #mainNav
+  if (!mainNav) return;
 
   let scrollPos = 0;
-  const headerHeight = mainNav.clientHeight;
+  let headerHeight = mainNav.clientHeight;
 
+  window.addEventListener('resize', () => {
+    headerHeight = mainNav.clientHeight;
+  });
+
+  let ticking = false;
   window.addEventListener('scroll', function () {
-    const currentTop = document.body.getBoundingClientRect().top * -1;
+    if (!ticking) {
+      window.requestAnimationFrame(() => {
+        const currentTop = document.body.getBoundingClientRect().top * -1;
 
-    if (currentTop < scrollPos) {
-      // Scrolling Up
-      if (currentTop > 0 && mainNav.classList.contains('is-fixed')) {
-        mainNav.classList.add('is-visible');
-      } else {
-        mainNav.classList.remove('is-visible', 'is-fixed');
-      }
-    } else {
-      // Scrolling Down
-      mainNav.classList.remove('is-visible');
-      if (currentTop > headerHeight && !mainNav.classList.contains('is-fixed')) {
-        mainNav.classList.add('is-fixed');
-      }
+        if (currentTop < scrollPos) {
+          if (currentTop > 0 && mainNav.classList.contains('is-fixed')) {
+            mainNav.classList.add('is-visible');
+          } else {
+            mainNav.classList.remove('is-visible', 'is-fixed');
+          }
+        } else {
+          mainNav.classList.remove('is-visible');
+          if (currentTop > headerHeight && !mainNav.classList.contains('is-fixed')) {
+            mainNav.classList.add('is-fixed');
+          }
+        }
+        scrollPos = currentTop;
+        ticking = false;
+      });
+      ticking = true;
     }
-    scrollPos = currentTop;
   });
 });
 
 // ─── Pagination (only runs if #pagination + .post-preview exist) ─────────────
 document.addEventListener('DOMContentLoaded', function () {
   const pagination = document.getElementById('pagination');
-  if (!pagination) return; // FIX: safe guard — do nothing on pages without pagination
+  if (!pagination) return;
 
   const itemsPerPage = 10;
-  // FIX: use .post-preview (actual class used on all pages) instead of .news-item
   const newsItems = document.querySelectorAll('.post-preview');
   if (newsItems.length === 0) return;
 
@@ -54,6 +66,7 @@ document.addEventListener('DOMContentLoaded', function () {
     document.querySelectorAll('#pagination button').forEach((btn, i) => {
       btn.classList.toggle('active', i === page - 1);
     });
+    window.scrollTo({ top: pagination.offsetTop - 100, behavior: 'smooth' });
   }
 
   function setupPagination() {
@@ -62,12 +75,12 @@ document.addEventListener('DOMContentLoaded', function () {
       const btn = document.createElement('button');
       btn.innerText = i;
       btn.className = 'btn btn-sm btn-outline-secondary me-1 mb-2';
+      btn.setAttribute('aria-label', 'Go to page ' + i);
       btn.addEventListener('click', () => showPage(i));
       pagination.appendChild(btn);
     }
   }
 
-  // Only render pagination if more than one page
   if (totalPages > 1) {
     setupPagination();
     showPage(1);
