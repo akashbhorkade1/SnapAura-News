@@ -3,16 +3,29 @@
   <channel>
     <title>SnapAura</title>
     <link>https://snapaura.space</link>
-    <description>Bollywood &amp; Entertainment News</description>
+    <description>Bollywood, Cricket, Career &amp; Entertainment Updates</description>
     <language>hi-IN</language>
 
     <item>
-      <title>जनवरी 2026 में रिलीज़ होने वाली हिंदी फिल्में</title>
-      <link>https://snapaura.space/january-movies.html</link>
-      <description>जनवरी 2026 में रिलीज़ होने वाली हिंदी फिल्मों की पूरी लिस्ट देखें — Ikkis, Azad Bharath, Sardar 2, Kattalan, Border 2 और Haunted 3D।</description>
-      <pubDate>Mon, 12 Jan 2026 16:00:00 +0530</pubDate>
+      <title>रणबीर कपूर आता पुण्याचा 'जमीनदार'! मुळशीत १६ कोटींची भव्य खरेदी</title>
+      <link>https://snapaura.space/bollywood/ranbir-kapoor-mulshi-property-investment.html</link>
+      <description>रणबीर कपूरने पुण्याच्या मुळशी तालुक्यात २५.७ एकर जमीन १६.४२ कोटींना खरेदी केली. अमिताभ बच्चन, कार्तिक आर्यन, क्रिती सेनन, विराट-अनुष्का यांच्या रिअल इस्टेट गुंतवणुकीचा संपूर्ण रिपोर्ट वाचा.</description>
+      <pubDate>Mon, 14 Jul 2026 00:00:00 +0530</pubDate>
     </item>
 
-    <!-- हर नई खबर के लिए नया <item> block add करें -->
+    <item>
+      <title>The Bluff Review: प्रियंका चोपड़ा का समुद्री डाकू अवतार</title>
+      <link>https://snapaura.space/Review/the-bluff-movie-review.html</link>
+      <description>प्रियंका चोपड़ा स्टारर The Bluff की पूरी रिव्यू और विश्लेषण। फिल्म का ट्रेलर और हमारा विस्तृत रिव्यू पढ़ें।</description>
+      <pubDate>Tue, 25 Feb 2026 00:00:00 +0530</pubDate>
+    </item>
+
+    <item>
+      <title>SSB Constable Bharti 2026: 827 पदांसाठी अर्ज करा</title>
+      <link>https://snapaura.space/Career/ssb-constable-bharti-2026.html</link>
+      <description>सशस्त्र सीमा बलात 827 पदांसाठी भरती सुरू. Driver, Veterinary, Tailor व इतर पदांसाठी ऑनलाइन अर्ज करा.</description>
+      <pubDate>Thu, 31 Jul 2026 00:00:00 +0530</pubDate>
+    </item>
+
   </channel>
 </rss>
