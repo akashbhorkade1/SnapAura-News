@@ -36,6 +36,7 @@ body {
    2. Header & Top Bar
    ========================================= */
 .top-brand-bar {
+    display: none;
     background-color: #111;
     color: #fff;
     padding: 10px 0;
