@@ -50,7 +50,11 @@ for (const { item } of due) {
   }
 
   fs.mkdirSync(path.dirname(destination), { recursive: true });
-  fs.copyFileSync(source, destination);
+  let html = fs.readFileSync(source, "utf8");
+  const canonical = `https://snapaura.space/${item.destination.replace(/\\/g, "/")}`;
+  html = html.replace(/<link\s+rel="canonical"\s+href="[^"]*"\s*\/?>/i, `<link rel="canonical" href="${canonical}">`);
+  html = html.replace(/(<meta\s+name="robots"\s+content=")[^"]*("[^>]*>)/i, "$1index, follow$2");
+  fs.writeFileSync(destination, html, "utf8");
   item.publishedAt = new Date().toISOString();
   console.log(`Published ${item.destination}`);
 }
