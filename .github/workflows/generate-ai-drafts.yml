@@ -30,7 +30,7 @@ jobs:
       - name: Generate three drafts
         env:
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY || secrets.Gemini_API_Key }}
-          GEMINI_MODEL: gemini-2.0-flash
+          GEMINI_MODEL: gemini-3.6-flash
         run: npm run generate:drafts
       - name: Check generated draft HTML
         run: |

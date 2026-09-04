@@ -60,8 +60,9 @@ async function resolveModel() {
   if (!response.ok) throw new Error(`Gemini models request returned HTTP ${response.status}. Check that the key is a Google AI Studio Gemini key with Generative Language API access. Details: ${await response.text()}`);
   const data = await response.json();
   const models = (data.models || []).filter((model) => model.supportedGenerationMethods?.includes("generateContent"));
-  const preferred = process.env.GEMINI_MODEL || "gemini-2.0-flash";
-  const selected = models.find((model) => model.name === `models/${preferred}`) || models.find((model) => /gemini/i.test(model.name));
+  const preferred = process.env.GEMINI_MODEL || "gemini-3.6-flash";
+  const usable = models.filter((model) => !/gemini-2\.5-flash/i.test(model.name));
+  const selected = usable.find((model) => model.name === `models/${preferred}`) || usable.find((model) => /gemini-3\.6-flash/i.test(model.name)) || usable.find((model) => /gemini.*flash/i.test(model.name));
   if (!selected) throw new Error("Gemini returned no model supporting generateContent");
   console.log(`Using Gemini model: ${selected.name.replace(/^models\//, "")}`);
   return selected.name.replace(/^models\//, "");
