@@ -51,6 +51,7 @@ for (const { item } of due) {
 
   fs.mkdirSync(path.dirname(destination), { recursive: true });
   let html = fs.readFileSync(source, "utf8");
+  html = html.replace(/(href|src)="\.\.\/\.\.\//g, '$1="../');
   const canonical = `https://snapaura.space/${item.destination.replace(/\\/g, "/")}`;
   html = html.replace(/<link\s+rel="canonical"\s+href="[^"]*"\s*\/?>/i, `<link rel="canonical" href="${canonical}">`);
   html = html.replace(/(<meta\s+name="robots"\s+content=")[^"]*("[^>]*>)/i, "$1index, follow$2");

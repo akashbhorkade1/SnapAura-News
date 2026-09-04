@@ -104,7 +104,7 @@ function renderArticle(article, story) {
   <meta property="og:type" content="article">
   <meta property="og:locale" content="${locale}">
   <link rel="canonical" href="${canonical}">
-  <link rel="stylesheet" href="../css/styles.css">
+  <link rel="stylesheet" href="../../css/styles.css">
   <script type="application/ld+json">${schema}</script>
 </head>
 <body>
@@ -112,13 +112,13 @@ function renderArticle(article, story) {
     <article>
       <h1>${article.title}</h1>
       <p class="post-meta">SnapAura News Desk - ${TODAY}</p>
-      <img src="../${story.source.image}" alt="${article.title}" width="800" height="450">
+      <img src="../../${story.source.image}" alt="${article.title}" width="800" height="450">
       ${article.bodyHtml}
       <p class="snap-source small">${article.sourceLine} <a href="${story.link}" rel="noopener noreferrer">Original report</a></p>
-      <p><a href="../${categoryPage}">More ${story.source.category} coverage</a></p>
+      <p><a href="../../${categoryPage}">More ${story.source.category} coverage</a></p>
     </article>
   </main>
-  <footer><a href="../privacy-policy.html">Privacy Policy</a> <a href="https://www.facebook.com/snapaura"><i class="fab fa-facebook"></i></a></footer>
+  <footer><a href="../../privacy-policy.html">Privacy Policy</a> <a href="https://www.facebook.com/snapaura"><i class="fab fa-facebook"></i></a></footer>
 </body>
 </html>
 `;
