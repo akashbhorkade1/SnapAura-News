@@ -111,10 +111,10 @@ async function main() {
   const seen = existingText();
   const stories = (await Promise.all(SOURCES.map(getStories))).flat().filter((story) => !seen.includes(story.link));
   if (stories.length < 3) throw new Error("Fewer than three new stories were found in the configured feeds");
-  for (const story of stories.slice(0, 3)) {
+  for (const [index, story] of stories.slice(0, 3).entries()) {
     const article = await createArticle(story);
     const rendered = renderArticle(article, story);
-    const output = path.join(OUTPUT_DIR, path.basename(rendered.relative));
+    const output = path.join(OUTPUT_DIR, `${String(index + 1).padStart(2, "0")}-${path.basename(rendered.relative)}`);
     fs.writeFileSync(output, rendered.html, "utf8");
     console.log(`Draft created: drafts/generated/${path.basename(output)} (${story.source.category})`);
   }
