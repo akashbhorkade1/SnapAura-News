@@ -69,7 +69,7 @@ async function resolveModel() {
 }
 
 async function createArticle(story, model) {
-  const prompt = `You are an editor for SnapAura News. Create one original, fact-based ${story.source.language} article from the supplied source lead. Do not invent facts, quotes, numbers, or claims. Attribute every reported fact to the named source and clearly mark uncertainty. Write 600-850 words, with 3-5 HTML h2 headings and paragraph tags. Return ONLY valid JSON with keys title, description, bodyHtml, sourceLine. title must be under 60 characters and description under 155 characters. The bodyHtml must not include html, head, script, style, or article tags. Include a useful context section and a closing paragraph.\n\nCategory: ${story.source.category}\nSource title: ${story.title}\nSource description: ${story.description}\nSource URL: ${story.link}`;
+  const prompt = `You are an editor for SnapAura News. Create one original, fact-based ${story.source.language} article from the supplied source lead. Do not invent facts, quotes, numbers, or claims. Attribute every reported fact to the named source and clearly mark uncertainty. Write 600-850 words, with 3-5 HTML h2 headings and paragraph tags. Return ONLY valid JSON with keys title, description, keywords, bodyHtml, sourceLine. title must be under 60 characters and description under 155 characters. keywords must be a short comma-separated list. sourceLine must name the original publication, not say only generic words such as reliable sources. The bodyHtml must not include html, head, script, style, or article tags. Include a useful context section and a closing paragraph.\n\nCategory: ${story.source.category}\nSource title: ${story.title}\nSource description: ${story.description}\nSource URL: ${story.link}`;
   const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${encodeURIComponent(process.env.GEMINI_API_KEY.trim())}`, {
     method: "POST",
     headers: { "content-type": "application/json" },
@@ -82,14 +82,84 @@ async function createArticle(story, model) {
   return JSON.parse(text);
 }
 
+function findRelatedArticle(category, currentFile) {
+  const categoryDir = path.join(ROOT, category);
+  if (!fs.existsSync(categoryDir)) return null;
+  const candidate = fs.readdirSync(categoryDir).find((file) => file.endsWith(".html") && file !== currentFile);
+  if (!candidate) return null;
+  const html = fs.readFileSync(path.join(categoryDir, candidate), "utf8");
+  const title = (html.match(/<title>([^<]+)</i) || ["", candidate])[1].replace(/\s*[-–]\s*SnapAura.*$/i, "").trim();
+  return { href: `../../${category}/${candidate}`, title };
+}
+
 function renderArticle(article, story) {
-  const relative = `${story.source.category}/${slugify(article.title)}.html`;
+  const filename = `${slugify(article.title)}.html`;
+  const relative = `${story.source.category}/${filename}`;
   const canonical = `${BASE_URL}/${relative}`;
   const locale = story.source.language === "English" ? "en_IN" : "hi_IN";
-  const schema = JSON.stringify({ "@context": "https://schema.org", "@type": "NewsArticle", headline: article.title, image: [`${BASE_URL}/${story.source.image}`], datePublished: TODAY, author: { "@type": "Organization", name: "SnapAura" }, description: article.description });
+  const language = story.source.language === "English" ? "en" : story.source.language === "Hindi" ? "hi" : "mr";
   const categoryPage = story.source.category === "Cricket" ? "cricket.html" : `${story.source.category}.html`;
+  const relatedHeading = language === "en" ? "Related coverage" : language === "hi" ? "संबंधित खबरें" : "संबंधित बातम्या";
+  const related = findRelatedArticle(story.source.category, filename);
+  const relatedHtml = related ? `<hr class="my-5"><div class="related-post"><h3>${relatedHeading}</h3><a href="${related.href}">${related.title}</a></div>` : "";
+  const pageKey = slugify(article.title);
+  const schema = JSON.stringify({ "@context": "https://schema.org", "@type": "NewsArticle", headline: article.title, image: [`${BASE_URL}/${story.source.image}`], datePublished: TODAY, author: { "@type": "Organization", name: "SnapAura" }, description: article.description });
   const html = `<!DOCTYPE html>
-<html lang="${story.source.language === "English" ? "en" : "hi"}">
+<html lang="${language}">
+<head>
+  <meta charset="utf-8">
+  <meta name="google-adsense-account" content="ca-pub-1892357947938832">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <meta name="author" content="SnapAura News Desk">
+  <meta name="robots" content="noindex, nofollow">
+  <title>${article.title} - SnapAura</title>
+  <meta name="description" content="${article.description}">
+  <meta name="keywords" content="${article.keywords || story.source.category}">
+  <meta name="news_keywords" content="${article.keywords || story.source.category}">
+  <meta property="og:title" content="${article.title} - SnapAura">
+  <meta property="og:description" content="${article.description}">
+  <meta property="og:image" content="${BASE_URL}/${story.source.image}">
+  <meta property="og:url" content="${canonical}">
+  <meta property="og:type" content="article">
+  <meta property="og:locale" content="${locale}">
+  <meta property="article:published_time" content="${TODAY}T00:00:00+05:30">
+  <meta property="article:section" content="${story.source.category}">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="${article.title} - SnapAura">
+  <meta name="twitter:description" content="${article.description}">
+  <meta name="twitter:image" content="${BASE_URL}/${story.source.image}">
+  <link rel="canonical" href="${canonical}">
+  <link rel="icon" type="image/x-icon" href="../../assets/favicon.ico">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,700;1,400;1,700&family=Merriweather:wght@400;700&family=Open+Sans:wght@400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.3.0/css/all.min.css" crossorigin="anonymous">
+  <link rel="stylesheet" href="../../css/styles.css">
+  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1892357947938832" crossorigin="anonymous"></script>
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-DJQ7J0Y2RG"></script>
+  <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','G-DJQ7J0Y2RG');</script>
+  <script type="application/ld+json">${schema}</script>
+</head>
+<body>
+  <div class="top-brand-bar"><div class="container d-flex justify-content-center align-items-center flex-wrap py-2"><div class="brand-links d-flex flex-wrap gap-3"><a href="../../index.html">SnapAura Space</a><a class="nav-link" href="../../bollywood.html">SnapAura Hindi</a><a class="nav-link" href="../../web-series.html">SnapAura OTT</a><a class="nav-link" href="../../Career.html">SnapAura Career</a></div></div></div>
+  <nav class="category-nav"><ul class="d-flex flex-wrap justify-content-center gap-4 py-2 list-unstyled mb-0"><li><a class="nav-link" href="../../latest.html">Latest</a></li><li><a class="nav-link" href="../../bollywood.html">Bollywood</a></li><li><a class="nav-link" href="../../web-series.html">Web Series</a></li><li><a class="nav-link" href="../../Review/">Reviews</a></li><li><a class="nav-link" href="../../cricket.html">Cricket</a></li><li><a class="nav-link" href="../../Career.html">Career</a></li><li><a class="nav-link" href="../../Current-Affairs.html">Current Affairs</a></li></ul></nav>
+  <header class="masthead clean-header"><div class="container position-relative px-4 px-lg-5 text-center"><div class="post-heading"><h1 class="post-title">${article.title}</h1><span class="meta">SnapAura ${story.source.category} Desk - ${TODAY}</span><hr class="purple-divider"></div></div></header>
+  <article class="mb-4"><div class="container px-4 px-lg-5"><div class="row justify-content-center"><div class="col-md-10 col-lg-8 col-xl-7">
+      <img src="../../${story.source.image}" alt="${article.title}" class="snap-image" width="800" height="450">
+      ${article.bodyHtml}
+      <p class="snap-source small text-muted">${article.sourceLine} <a href="${story.link}" rel="noopener noreferrer">Original report</a></p>
+      <p><a href="../../${categoryPage}">More ${story.source.category} coverage</a></p>
+      ${relatedHtml}
+      <div class="engagement-bar"><button id="like-btn" aria-label="Like">Like <span id="like-count">0</span></button><button id="dislike-btn" aria-label="Dislike">Dislike <span id="dislike-count">0</span></button><button id="share-btn" aria-label="Share">Share</button></div>
+    </div></div></div></article>
+  <footer class="bg-dark text-light pt-5 pb-3"><div class="container"><div class="row"><div class="col-md-3"><h5>SnapAura</h5><p>SnapAura is an entertainment &amp; career updates platform bringing you the latest on Bollywood, web series, and the film industry.</p></div><div class="col-md-3"><h5>Categories</h5><ul class="list-unstyled"><li><a href="${BASE_URL}/bollywood.html" class="text-light">Bollywood</a></li><li><a href="${BASE_URL}/web-series.html" class="text-light">Web Series</a></li><li><a href="${BASE_URL}/cricket.html" class="text-light">Cricket</a></li><li><a href="${BASE_URL}/Career.html" class="text-light">Career</a></li></ul></div><div class="col-md-3"><h5>Quick Links</h5><ul class="list-unstyled"><li><a href="${BASE_URL}/index.html" class="text-light">Home</a></li><li><a href="${BASE_URL}/about.html" class="text-light">About</a></li><li><a href="${BASE_URL}/contact.html" class="text-light">Contact Us</a></li><li><a href="${BASE_URL}/privacy-policy.html" class="text-light">Privacy Policy</a></li></ul></div><div class="col-md-3"><h5>Social Media</h5><a href="https://www.facebook.com/profile.php?id=100067758124332" class="text-light me-2"><i class="fab fa-facebook-f"></i></a><a href="https://www.instagram.com/snapaura.space" class="text-light me-2"><i class="fab fa-instagram"></i></a><a href="https://youtube.com/@snapaura-space" class="text-light"><i class="fab fa-youtube"></i></a></div></div><hr class="bg-secondary"><div class="text-center small">© 2026 SnapAura | Trusted Entertainment &amp; Career Updates | <a href="#top" class="text-light">Back to Top</a></div></div></footer>
+  <script src="../../js/scripts.js"></script><script>const pageKey='${pageKey}';for(const type of ['likes','dislikes'])document.getElementById(type==='likes'?'like-count':'dislike-count').textContent=localStorage.getItem(type+'_'+pageKey)||'0';document.getElementById('like-btn').onclick=()=>{const k='likes_'+pageKey;localStorage.setItem(k,Number(localStorage.getItem(k)||0)+1);location.reload();};document.getElementById('dislike-btn').onclick=()=>{const k='dislikes_'+pageKey;localStorage.setItem(k,Number(localStorage.getItem(k)||0)+1);location.reload();};document.getElementById('share-btn').onclick=()=>navigator.share?navigator.share({title:document.title,url:location.href}):navigator.clipboard.writeText(location.href);</script>
+</body>
+</html>
+`;
+  return { relative, html };
+}
+/* <html lang="${story.source.language === "English" ? "en" : "hi"}">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -135,6 +205,7 @@ function renderArticle(article, story) {
 `;
   return { relative, html };
 }
+*/
 
 async function main() {
   if (!process.env.GEMINI_API_KEY) throw new Error("GEMINI_API_KEY is required");
