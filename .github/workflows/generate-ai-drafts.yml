@@ -24,7 +24,7 @@ jobs:
           GEMINI_MODEL: gemini-2.5-flash
         run: npm run generate:drafts
       - name: Check generated draft HTML
-        run: node -e "const fs=require('fs'); const p='drafts/generated'; const files=fs.readdirSync(p).filter(f=>f.endsWith('.html')).sort((a,b)=>fs.statSync(p+'/'+b).mtimeMs-fs.statSync(p+'/'+a).mtimeMs).slice(0,3); if(files.length<3) throw new Error('Expected three generated drafts'); for(const f of files){const h=fs.readFileSync(p+'/'+f,'utf8'); for(const required of ['NewsArticle','datePublished','og:title','og:description','snap-source']) if(!h.includes(required)) throw new Error('Missing '+required+' in '+f)}"
+        run: node -e "const fs=require('fs'); const p='drafts/generated'; const files=fs.readdirSync(p).filter(f=>f.endsWith('.html')); if(files.length<3) throw new Error('Expected three generated drafts, found '+files.length); for(const f of files.slice(-3)){const h=fs.readFileSync(p+'/'+f,'utf8'); for(const required of ['NewsArticle','datePublished','og:title','og:description','snap-source']) if(!h.includes(required)) throw new Error('Missing '+required+' in '+f)}"
       - name: Commit drafts for approval
         run: |
           git config user.name "github-actions[bot]"

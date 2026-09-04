@@ -68,7 +68,41 @@ function renderArticle(article, story) {
   const relative = `${story.source.category}/${slugify(article.title)}.html`;
   const canonical = `${BASE_URL}/${relative}`;
   const locale = story.source.language === "English" ? "en_IN" : "hi_IN";
-  return { relative, html: `<!DOCTYPE html>\n<html lang="${story.source.language === "English" ? "en" : "hi"}">\n<head>\n  <meta charset="utf-8">\n  <meta name="viewport" content="width=device-width, initial-scale=1">\n  <meta name="author" content="SnapAura News Desk">\n  <meta name="robots" content="noindex, nofollow">\n  <title>${article.title} - SnapAura</title>\n  <meta name="description" content="${article.description}">\n  <meta property="og:title" content="${article.title} - SnapAura">\n  <meta property="og:description" content="${article.description}">\n  <meta property="og:image" content="${BASE_URL}/${story.source.image}">\n  <meta property="og:url" content="${canonical}">\n  <meta property="og:type" content="article">\n  <meta property="og:locale" content="${locale}">\n  <link rel="stylesheet" href="../css/styles.css">\n  <script type="application/ld+json">${JSON.stringify({ "@context": "https://schema.org", "@type": "NewsArticle", headline: article.title, image: [`${BASE_URL}/${story.source.image}`], datePublished: TODAY, author: { "@type": "Organization", name: "SnapAura" }, description: article.description })}</script>\n</head>\n<body>\n  <main class="container px-4 px-lg-5 py-4">\n    <article>\n      <h1>${article.title}</h1>\n      <p class="post-meta">SnapAura News Desk - ${TODAY}</p>\n      <img src="../${story.source.image.replace(/^assets\//, "assets/")}" alt="${article.title}" width="800" height="450">\n      ${article.bodyHtml}\n      <p class="snap-source small">${article.sourceLine} <a href="${story.link}" rel="noopener noreferrer">Original report</a></p>\n      <p><a href="../${story.source.category === "Cricket" ? "cricket.html" : `${story.source.category}.html`}">More ${story.source.category} coverage</a></p>\n    </article>\n  </main>\n</body>\n</html>\n` };
+  const schema = JSON.stringify({ "@context": "https://schema.org", "@type": "NewsArticle", headline: article.title, image: [`${BASE_URL}/${story.source.image}`], datePublished: TODAY, author: { "@type": "Organization", name: "SnapAura" }, description: article.description });
+  const categoryPage = story.source.category === "Cricket" ? "cricket.html" : `${story.source.category}.html`;
+  const html = `<!DOCTYPE html>
+<html lang="${story.source.language === "English" ? "en" : "hi"}">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="author" content="SnapAura News Desk">
+  <meta name="robots" content="noindex, nofollow">
+  <title>${article.title} - SnapAura</title>
+  <meta name="description" content="${article.description}">
+  <meta property="og:title" content="${article.title} - SnapAura">
+  <meta property="og:description" content="${article.description}">
+  <meta property="og:image" content="${BASE_URL}/${story.source.image}">
+  <meta property="og:url" content="${canonical}">
+  <meta property="og:type" content="article">
+  <meta property="og:locale" content="${locale}">
+  <link rel="stylesheet" href="../css/styles.css">
+  <script type="application/ld+json">${schema}</script>
+</head>
+<body>
+  <main class="container px-4 px-lg-5 py-4">
+    <article>
+      <h1>${article.title}</h1>
+      <p class="post-meta">SnapAura News Desk - ${TODAY}</p>
+      <img src="../${story.source.image}" alt="${article.title}" width="800" height="450">
+      ${article.bodyHtml}
+      <p class="snap-source small">${article.sourceLine} <a href="${story.link}" rel="noopener noreferrer">Original report</a></p>
+      <p><a href="../${categoryPage}">More ${story.source.category} coverage</a></p>
+    </article>
+  </main>
+</body>
+</html>
+`;
+  return { relative, html };
 }
 
 async function main() {
