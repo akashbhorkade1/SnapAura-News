@@ -1,0 +1,63 @@
+name: CI — Validate & Generate
+
+on:
+  push:
+    branches: [master]
+  pull_request:
+    branches: [master]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run validation
+        run: npm run validate
+
+  generate-artifacts:
+    needs: validate
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/master' && github.event_name == 'push'
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Generate sitemap
+        run: npm run generate:sitemap
+
+      - name: Generate RSS
+        run: npm run generate:rss
+
+      - name: Commit artifacts
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add sitemap.xml rss.xml
+          if git diff --cached --quiet; then
+            echo "No changes to sitemap.xml or rss.xml"
+          else
+            git commit -m "Auto-generate sitemap.xml & rss.xml"
+            git push
+          fi

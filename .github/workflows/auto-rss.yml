@@ -1,4 +1,4 @@
-name: Auto Generate Sitemap
+name: Auto Generate RSS Feed
 
 on:
   push:
@@ -11,7 +11,7 @@ permissions:
   contents: write
 
 jobs:
-  generate:
+  generate-rss:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -25,17 +25,17 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      - name: Generate sitemap.xml
-        run: npm run generate:sitemap
+      - name: Generate RSS
+        run: npm run generate:rss
 
-      - name: Commit and push sitemap
+      - name: Commit RSS
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add sitemap.xml
+          git add rss.xml
           if git diff --cached --quiet; then
-            echo "No changes to sitemap.xml"
+            echo "No changes to rss.xml"
           else
-            git commit -m "Auto-generate sitemap.xml"
+            git commit -m "Auto-generate rss.xml"
             git push
           fi

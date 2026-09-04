@@ -1,0 +1,25 @@
+{
+  "name": "snapaura-news",
+  "version": "1.0.0",
+  "private": true,
+  "description": "SnapAura Space — Multi-category digital news & entertainment platform",
+  "scripts": {
+    "validate": "node scripts/validate.js",
+    "validate:articles": "node scripts/validate.js --articles",
+    "validate:seo": "node scripts/validate.js --seo",
+    "validate:links": "node scripts/validate.js --links",
+    "validate:trust": "node scripts/validate.js --trust",
+    "validate:footer": "node scripts/validate.js --footer",
+    "publish:queued": "node scripts/publish-queued.js",
+    "generate:drafts": "node scripts/generate-ai-drafts.js",
+    "generate:sitemap": "node scripts/generate-sitemap.js",
+    "generate:rss": "node scripts/generate-rss.js",
+    "serve": "npx serve . -l 3000",
+    "check:all": "npm run validate && npm run generate:sitemap && npm run generate:rss"
+  },
+  "devDependencies": {
+    "glob": "^10.3.10",
+    "html-validate": "^8.9.0",
+    "serve": "^14.2.1"
+  }
+}
