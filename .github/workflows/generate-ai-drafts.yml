@@ -30,7 +30,7 @@ jobs:
       - name: Check Gemini model access
         env:
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY || secrets.Gemini_API_Key }}
-          GEMINI_MODEL: gemini-2.5-flash
+          GEMINI_MODEL: gemini-2.0-flash
         run: |
           status=$(curl --silent --show-error --output /tmp/gemini-model.json --write-out "%{http_code}" "https://generativelanguage.googleapis.com/v1beta/models/${GEMINI_MODEL}?key=${GEMINI_API_KEY}")
           if [ "$status" != "200" ]; then
@@ -42,7 +42,7 @@ jobs:
       - name: Generate three drafts
         env:
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY || secrets.Gemini_API_Key }}
-          GEMINI_MODEL: gemini-2.5-flash
+          GEMINI_MODEL: gemini-2.0-flash
         run: npm run generate:drafts
       - name: Check generated draft HTML
         run: |
