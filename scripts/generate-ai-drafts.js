@@ -21,8 +21,13 @@ function xmlDecode(value) {
 }
 
 async function getStories(source) {
-  const response = await fetch(source.feed, { headers: { "user-agent": "SnapAura-News/1.0" } });
-  if (!response.ok) throw new Error(`${source.category} feed returned ${response.status}`);
+  let response;
+  try {
+    response = await fetch(source.feed, { headers: { "user-agent": "SnapAura-News/1.0" } });
+  } catch (error) {
+    throw new Error(`${source.category} feed request failed: ${error.message}`);
+  }
+  if (!response.ok) throw new Error(`${source.category} feed returned HTTP ${response.status}`);
   const xml = await response.text();
   return [...xml.matchAll(/<item>([\s\S]*?)<\/item>/gi)].slice(0, 5).map((match) => {
     const item = match[1];
@@ -109,7 +114,10 @@ async function main() {
   if (!process.env.GEMINI_API_KEY) throw new Error("GEMINI_API_KEY is required");
   fs.mkdirSync(OUTPUT_DIR, { recursive: true });
   const seen = existingText();
-  const stories = (await Promise.all(SOURCES.map(getStories))).flat().filter((story) => !seen.includes(story.link));
+  const results = await Promise.allSettled(SOURCES.map(getStories));
+  const feedErrors = results.filter((result) => result.status === "rejected").map((result) => result.reason.message);
+  const stories = results.filter((result) => result.status === "fulfilled").flatMap((result) => result.value).filter((story) => !seen.includes(story.link));
+  if (feedErrors.length > 0) console.warn(`Feed warnings: ${feedErrors.join("; ")}`);
   if (stories.length < 3) throw new Error("Fewer than three new stories were found in the configured feeds");
   for (const [index, story] of stories.slice(0, 3).entries()) {
     const article = await createArticle(story);
