@@ -5,7 +5,7 @@ const path = require("path");
 
 const ROOT = path.resolve(__dirname, "..");
 const QUEUE_PATH = path.join(ROOT, "drafts", "queue.json");
-const DAILY_LIMIT = 3;
+const DAILY_LIMIT = 5;
 const today = new Date().toISOString().slice(0, 10);
 
 function fail(message) {

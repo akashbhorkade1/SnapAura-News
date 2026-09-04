@@ -8,13 +8,8 @@ const OUTPUT_DIR = path.join(ROOT, "drafts", "generated");
 const BASE_URL = "https://snapaura.space";
 const TODAY = new Date().toISOString().slice(0, 10);
 
-const SOURCES = [
-  { category: "bollywood", language: "Hindi", feed: "https://news.google.com/rss/search?q=Bollywood+when:1d&hl=en-IN&gl=IN&ceid=IN:en", image: "assets/img/the-bluff-review.jpg" },
-  { category: "web-series", language: "Hindi", feed: "https://news.google.com/rss/search?q=OTT+web+series+India+when:1d&hl=en-IN&gl=IN&ceid=IN:en", image: "assets/img/the-bluff-review.jpg" },
-  { category: "Cricket", language: "English", feed: "https://news.google.com/rss/search?q=cricket+India+when:1d&hl=en-IN&gl=IN&ceid=IN:en", image: "assets/img/ind-vs-zim-t20.jpg" },
-  { category: "Career", language: "English", feed: "https://news.google.com/rss/search?q=India+jobs+exams+education+when:1d&hl=en-IN&gl=IN&ceid=IN:en", image: "assets/img/ssb-constable-bharti-2026.jpg" },
-  { category: "Current-Affairs", language: "Hindi", feed: "https://news.google.com/rss/search?q=India+current+affairs+when:1d&hl=en-IN&gl=IN&ceid=IN:en", image: "assets/img/the-bluff-review.jpg" },
-];
+const ENTERTAINMENT_TERMS = /bollywood|movie|film|actor|actress|celebrity|singer|song|ott|netflix|web series|trailer|review|music|television|tv|bigg boss|reality show/i;
+const DEFAULT_IMAGE = "assets/img/the-bluff-review.jpg";
 
 function xmlDecode(value) {
   return value.replace(/<!\[CDATA\[([\s\S]*?)\]\]>/g, "$1").replace(/<[^>]+>/g, "").replace(/&amp;/g, "&").replace(/&quot;/g, '"').replace(/&#39;/g, "'").replace(/&lt;/g, "<").replace(/&gt;/g, ">").trim();
@@ -34,6 +29,42 @@ async function getStories(source) {
     const read = (tag) => xmlDecode((item.match(new RegExp(`<${tag}[^>]*>([\\s\\S]*?)<\\/${tag}>`, "i")) || ["", ""])[1]);
     return { title: read("title"), link: read("link"), description: read("description"), source: source };
   }).filter((story) => story.title && story.link);
+}
+
+function parseItems(xml) {
+  return [...xml.matchAll(/<item>([\s\S]*?)<\/item>/gi)].map((match) => {
+    const item = match[1];
+    const read = (tag) => xmlDecode((item.match(new RegExp(`<${tag}[^>]*>([\\s\\S]*?)<\\/${tag}>`, "i")) || ["", ""])[1]);
+    return { title: read("title"), link: read("link"), description: read("description"), traffic: read("ht:approx_traffic") };
+  }).filter((item) => item.title && item.link);
+}
+
+function trafficNumber(value) {
+  const match = String(value).replace(/,/g, "").match(/[\d.]+/);
+  return match ? Number(match[0]) * (/m/i.test(value) ? 1000000 : /k/i.test(value) ? 1000 : 1) : 0;
+}
+
+async function getTrendingEntertainmentStories(seen) {
+  const trendsResponse = await fetch("https://trends.google.com/trending/rss?geo=IN", { headers: { "user-agent": "SnapAura-News/1.0" } });
+  if (!trendsResponse.ok) throw new Error(`Google Trends RSS returned HTTP ${trendsResponse.status}`);
+  const trends = parseItems(await trendsResponse.text());
+  const candidates = [];
+  for (const trend of trends.slice(0, 40)) {
+    const query = encodeURIComponent(`${trend.title} entertainment when:1d`);
+    const response = await fetch(`https://news.google.com/rss/search?q=${query}&hl=en-IN&gl=IN&ceid=IN:en`, { headers: { "user-agent": "SnapAura-News/1.0" } });
+    if (!response.ok) continue;
+    const news = parseItems(await response.text()).find((item) => ENTERTAINMENT_TERMS.test(`${trend.title} ${item.title} ${item.description}`) && !seen.includes(item.link));
+    if (!news) continue;
+    candidates.push({
+      ...news,
+      title: `${trend.title}: ${news.title}`,
+      trend: trend.title,
+      trendTraffic: trend.traffic,
+      source: { category: "bollywood", language: "Hindi", image: DEFAULT_IMAGE },
+    });
+    if (candidates.length === 5) break;
+  }
+  return candidates.sort((a, b) => trafficNumber(b.trendTraffic) - trafficNumber(a.trendTraffic));
 }
 
 function slugify(value) {
@@ -69,7 +100,7 @@ async function resolveModel() {
 }
 
 async function createArticle(story, model) {
-  const prompt = `You are an editor for SnapAura News. Create one original, fact-based ${story.source.language} article from the supplied source lead. Do not invent facts, quotes, numbers, or claims. Attribute every reported fact to the named source and clearly mark uncertainty. Write 600-850 words, with 3-5 HTML h2 headings and paragraph tags. Return ONLY valid JSON with keys title, description, keywords, bodyHtml, sourceLine. title must be under 60 characters and description under 155 characters. keywords must be a short comma-separated list. sourceLine must name the original publication, not say only generic words such as reliable sources. The bodyHtml must not include html, head, script, style, or article tags. Include a useful context section and a closing paragraph.\n\nCategory: ${story.source.category}\nSource title: ${story.title}\nSource description: ${story.description}\nSource URL: ${story.link}`;
+  const prompt = `You are an editor for SnapAura News. Create one original, fact-based ${story.source.language} article from the supplied source lead. Do not invent facts, quotes, numbers, or claims. Attribute every reported fact to the named source and clearly mark uncertainty. Write 600-850 words, with 3-5 HTML h2 headings and paragraph tags. Return ONLY valid JSON with keys title, description, keywords, bodyHtml, sourceLine. title must be under 60 characters and description under 155 characters. keywords must be a short comma-separated list. sourceLine must name the original publication, not say only generic words such as reliable sources. Mention the Google trend topic only as context; do not claim its traffic number is a fact. The bodyHtml must not include html, head, script, style, or article tags. Include a useful context section and a closing paragraph.\n\nGoogle trend topic: ${story.trend || "none"}\nCategory: ${story.source.category}\nSource title: ${story.title}\nSource description: ${story.description}\nSource URL: ${story.link}`;
   const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${encodeURIComponent(process.env.GEMINI_API_KEY.trim())}`, {
     method: "POST",
     headers: { "content-type": "application/json" },
@@ -212,12 +243,9 @@ async function main() {
   fs.mkdirSync(OUTPUT_DIR, { recursive: true });
   const model = await resolveModel();
   const seen = existingText();
-  const results = await Promise.allSettled(SOURCES.map(getStories));
-  const feedErrors = results.filter((result) => result.status === "rejected").map((result) => result.reason.message);
-  const stories = results.filter((result) => result.status === "fulfilled").flatMap((result) => result.value).filter((story) => !seen.includes(story.link));
-  if (feedErrors.length > 0) console.warn(`Feed warnings: ${feedErrors.join("; ")}`);
-  if (stories.length < 3) throw new Error("Fewer than three new stories were found in the configured feeds");
-  for (const [index, story] of stories.slice(0, 3).entries()) {
+  const stories = await getTrendingEntertainmentStories(seen);
+  if (stories.length < 5) throw new Error(`Fewer than five new entertainment trends were found; found ${stories.length}`);
+  for (const [index, story] of stories.slice(0, 5).entries()) {
     const article = await createArticle(story, model);
     const rendered = renderArticle(article, story);
     const output = path.join(OUTPUT_DIR, `${String(index + 1).padStart(2, "0")}-${path.basename(rendered.relative)}`);
