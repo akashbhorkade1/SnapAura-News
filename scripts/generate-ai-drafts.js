@@ -44,6 +44,15 @@ function trafficNumber(value) {
   return match ? Number(match[0]) * (/m/i.test(value) ? 1000000 : /k/i.test(value) ? 1000 : 1) : 0;
 }
 
+async function resolveSourceUrl(url) {
+  try {
+    const response = await fetch(url, { redirect: "follow", headers: { "user-agent": "SnapAura-News/1.0" } });
+    return response.url || url;
+  } catch {
+    return url;
+  }
+}
+
 async function getTrendingEntertainmentStories(seen) {
   const trendsResponse = await fetch("https://trends.google.com/trending/rss?geo=IN", { headers: { "user-agent": "SnapAura-News/1.0" } });
   if (!trendsResponse.ok) throw new Error(`Google Trends RSS returned HTTP ${trendsResponse.status}`);
@@ -64,7 +73,8 @@ async function getTrendingEntertainmentStories(seen) {
     });
     if (candidates.length === 5) break;
   }
-  return candidates.sort((a, b) => trafficNumber(b.trendTraffic) - trafficNumber(a.trendTraffic));
+  const resolved = await Promise.all(candidates.map(async (story) => ({ ...story, sourceUrl: await resolveSourceUrl(story.link) })));
+  return resolved.sort((a, b) => trafficNumber(b.trendTraffic) - trafficNumber(a.trendTraffic));
 }
 
 function slugify(value) {
@@ -100,7 +110,7 @@ async function resolveModel() {
 }
 
 async function createArticle(story, model) {
-  const prompt = `You are an editor for SnapAura News. Create one original, fact-based ${story.source.language} article from the supplied source lead. Do not invent facts, quotes, numbers, or claims. Attribute every reported fact to the named source and clearly mark uncertainty. Write 600-850 words, with 3-5 HTML h2 headings and paragraph tags. Return ONLY valid JSON with keys title, description, keywords, bodyHtml, sourceLine. title must be under 60 characters and description under 155 characters. keywords must be a short comma-separated list. sourceLine must name the original publication, not say only generic words such as reliable sources. Mention the Google trend topic only as context; do not claim its traffic number is a fact. The bodyHtml must not include html, head, script, style, or article tags. Include a useful context section and a closing paragraph.\n\nGoogle trend topic: ${story.trend || "none"}\nCategory: ${story.source.category}\nSource title: ${story.title}\nSource description: ${story.description}\nSource URL: ${story.link}`;
+  const prompt = `You are an editor for SnapAura News. Create one original, fact-based ${story.source.language} article from the supplied source lead. Do not invent facts, quotes, numbers, or claims. Attribute every reported fact to the named source and clearly mark uncertainty. Write 600-850 words, with 3-5 HTML h2 headings and paragraph tags. Return ONLY valid JSON with keys title, description, keywords, bodyHtml, sourceLine. title must be under 60 characters and description under 155 characters. keywords must be a short comma-separated list. sourceLine must name the original publication, not say only generic words such as reliable sources. Mention the Google trend topic only as context; do not claim its traffic number is a fact. The bodyHtml must not include html, head, script, style, or article tags. Include a useful context section and a closing paragraph.\n\nGoogle trend topic: ${story.trend || "none"}\nCategory: ${story.source.category}\nSource title: ${story.title}\nSource description: ${story.description}\nSource URL: ${story.sourceUrl || story.link}`;
   const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${encodeURIComponent(process.env.GEMINI_API_KEY.trim())}`, {
     method: "POST",
     headers: { "content-type": "application/json" },
@@ -134,7 +144,7 @@ function renderArticle(article, story) {
   const related = findRelatedArticle(story.source.category, filename);
   const relatedHtml = related ? `<hr class="my-5"><div class="related-post"><h3>${relatedHeading}</h3><a href="${related.href}">${related.title}</a></div>` : "";
   const pageKey = slugify(article.title);
-  const schema = JSON.stringify({ "@context": "https://schema.org", "@type": "NewsArticle", headline: article.title, image: [`${BASE_URL}/${story.source.image}`], datePublished: TODAY, author: { "@type": "Organization", name: "SnapAura" }, description: article.description });
+  const schema = JSON.stringify({ "@context": "https://schema.org", "@type": "NewsArticle", headline: article.title, image: [`${BASE_URL}/${story.source.image}`], datePublished: TODAY, author: { "@type": "Organization", name: "SnapAura" }, publisher: { "@type": "Organization", name: "SnapAura" }, description: article.description });
   const html = `<!DOCTYPE html>
 <html lang="${language}">
 <head>
@@ -209,7 +219,7 @@ function renderArticle(article, story) {
   <article class="mb-4"><div class="container px-4 px-lg-5"><div class="row justify-content-center"><div class="col-md-10 col-lg-8 col-xl-7">
       <img src="../../${story.source.image}" alt="${article.title}" class="snap-image" width="800" height="450">
       ${article.bodyHtml}
-      <p class="snap-source small text-muted">${article.sourceLine} <a href="${story.link}" rel="noopener noreferrer">Original report</a></p>
+      <p class="snap-source small text-muted">${article.sourceLine} <a href="${story.sourceUrl || story.link}" rel="noopener noreferrer">Original report</a></p>
       <p><a href="../../${categoryPage}">More ${story.source.category} coverage</a></p>
       ${relatedHtml}
       <div class="engagement-bar"><button id="like-btn" aria-label="Like">Like <span id="like-count">0</span></button><button id="dislike-btn" aria-label="Dislike">Dislike <span id="dislike-count">0</span></button><button id="share-btn" aria-label="Share">Share</button></div>
