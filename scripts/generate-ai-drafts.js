@@ -103,6 +103,7 @@ function renderArticle(article, story) {
   <meta property="og:url" content="${canonical}">
   <meta property="og:type" content="article">
   <meta property="og:locale" content="${locale}">
+  <link rel="canonical" href="${canonical}">
   <link rel="stylesheet" href="../css/styles.css">
   <script type="application/ld+json">${schema}</script>
 </head>
@@ -117,6 +118,7 @@ function renderArticle(article, story) {
       <p><a href="../${categoryPage}">More ${story.source.category} coverage</a></p>
     </article>
   </main>
+  <footer><a href="../privacy-policy.html">Privacy Policy</a> <a href="https://www.facebook.com/snapaura"><i class="fab fa-facebook"></i></a></footer>
 </body>
 </html>
 `;
