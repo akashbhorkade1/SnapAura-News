@@ -172,9 +172,40 @@ function renderArticle(article, story) {
   <script type="application/ld+json">${schema}</script>
 </head>
 <body>
-  <div class="top-brand-bar"><div class="container d-flex justify-content-center align-items-center flex-wrap py-2"><div class="brand-links d-flex flex-wrap gap-3"><a href="../../index.html">SnapAura Space</a><a class="nav-link" href="../../bollywood.html">SnapAura Hindi</a><a class="nav-link" href="../../web-series.html">SnapAura OTT</a><a class="nav-link" href="../../Career.html">SnapAura Career</a></div></div></div>
-  <nav class="category-nav"><ul class="d-flex flex-wrap justify-content-center gap-4 py-2 list-unstyled mb-0"><li><a class="nav-link" href="../../latest.html">Latest</a></li><li><a class="nav-link" href="../../bollywood.html">Bollywood</a></li><li><a class="nav-link" href="../../web-series.html">Web Series</a></li><li><a class="nav-link" href="../../Review/">Reviews</a></li><li><a class="nav-link" href="../../cricket.html">Cricket</a></li><li><a class="nav-link" href="../../Career.html">Career</a></li><li><a class="nav-link" href="../../Current-Affairs.html">Current Affairs</a></li></ul></nav>
-  <header class="masthead clean-header"><div class="container position-relative px-4 px-lg-5 text-center"><div class="post-heading"><h1 class="post-title">${article.title}</h1><span class="meta">SnapAura ${story.source.category} Desk - ${TODAY}</span><hr class="purple-divider"></div></div></header>
+  <div class="top-brand-bar">
+    <div class="container d-flex justify-content-center align-items-center flex-wrap py-2">
+      <div class="brand-links d-flex flex-wrap gap-3">
+        <a href="../../index.html">SnapAura Space</a>
+        <a class="nav-link" href="../../bollywood.html">SnapAura Hindi</a>
+        <a class="nav-link" href="../../web-series.html">SnapAura OTT</a>
+        <a class="nav-link" href="../../Career.html">SnapAura Career</a>
+      </div>
+    </div>
+  </div>
+  <nav class="category-nav">
+    <ul class="d-flex flex-wrap justify-content-center gap-4 py-2 list-unstyled mb-0">
+      <li><a class="nav-link" href="../../latest.html">Latest</a></li>
+      <li><a class="nav-link" href="../../bollywood.html">Bollywood</a></li>
+      <li><a class="nav-link" href="../../web-series.html">Web Series</a></li>
+      <li><a class="nav-link" href="../../Review/">Reviews</a></li>
+      <li><a class="nav-link" href="../../cricket.html">Cricket</a></li>
+      <li><a class="nav-link" href="../../Career.html">Career</a></li>
+      <li><a class="nav-link" href="../../Current-Affairs.html">Current Affairs</a></li>
+    </ul>
+  </nav>
+  <header class="masthead clean-header">
+    <div class="container position-relative px-4 px-lg-5 text-center">
+      <div class="row gx-4 gx-lg-5 justify-content-center">
+        <div class="col-md-10 col-lg-8 col-xl-7">
+          <div class="post-heading">
+            <h1 class="post-title">${article.title}</h1>
+            <span class="meta">SnapAura ${story.source.category} Desk – ${TODAY}</span>
+            <hr class="purple-divider" />
+          </div>
+        </div>
+      </div>
+    </div>
+  </header>
   <article class="mb-4"><div class="container px-4 px-lg-5"><div class="row justify-content-center"><div class="col-md-10 col-lg-8 col-xl-7">
       <img src="../../${story.source.image}" alt="${article.title}" class="snap-image" width="800" height="450">
       ${article.bodyHtml}
