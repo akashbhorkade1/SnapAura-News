@@ -16,4 +16,4 @@ The scheduled GitHub Action publishes up to three due entries per day. After pub
 
 The daily AI workflow saves three new candidates in `drafts/generated/`. Review and edit them first. To approve one, move it into `drafts/`, change its robots tag to `index, follow`, and add it to `queue.json` with the desired `publishDate`.
 
-The generator uses the GitHub Actions secret `GEMINI_API_KEY` and the Gemini `gemini-2.0-flash` model.
+The generator uses the GitHub Actions secret `GEMINI_API_KEY` and automatically selects a Gemini model that supports `generateContent` for that key.

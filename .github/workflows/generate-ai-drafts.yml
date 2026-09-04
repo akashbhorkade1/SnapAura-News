@@ -27,18 +27,6 @@ jobs:
             exit 1
           fi
           echo "Gemini API key is available to the workflow."
-      - name: Check Gemini model access
-        env:
-          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY || secrets.Gemini_API_Key }}
-          GEMINI_MODEL: gemini-2.0-flash
-        run: |
-          status=$(curl --silent --show-error --output /tmp/gemini-model.json --write-out "%{http_code}" "https://generativelanguage.googleapis.com/v1beta/models/${GEMINI_MODEL}?key=${GEMINI_API_KEY}")
-          if [ "$status" != "200" ]; then
-            echo "Gemini model check failed with HTTP $status:"
-            cat /tmp/gemini-model.json
-            exit 1
-          fi
-          echo "Gemini model ${GEMINI_MODEL} is available."
       - name: Generate three drafts
         env:
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY || secrets.Gemini_API_Key }}

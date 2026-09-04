@@ -54,9 +54,20 @@ function existingText() {
   return files.join("\n");
 }
 
-async function createArticle(story) {
+async function resolveModel() {
+  const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models?key=${encodeURIComponent(process.env.GEMINI_API_KEY)}`);
+  if (!response.ok) throw new Error(`Gemini models request returned HTTP ${response.status}: ${await response.text()}`);
+  const data = await response.json();
+  const models = (data.models || []).filter((model) => model.supportedGenerationMethods?.includes("generateContent"));
+  const preferred = process.env.GEMINI_MODEL || "gemini-2.0-flash";
+  const selected = models.find((model) => model.name === `models/${preferred}`) || models.find((model) => /gemini/i.test(model.name));
+  if (!selected) throw new Error("Gemini returned no model supporting generateContent");
+  console.log(`Using Gemini model: ${selected.name.replace(/^models\//, "")}`);
+  return selected.name.replace(/^models\//, "");
+}
+
+async function createArticle(story, model) {
   const prompt = `You are an editor for SnapAura News. Create one original, fact-based ${story.source.language} article from the supplied source lead. Do not invent facts, quotes, numbers, or claims. Attribute every reported fact to the named source and clearly mark uncertainty. Write 600-850 words, with 3-5 HTML h2 headings and paragraph tags. Return ONLY valid JSON with keys title, description, bodyHtml, sourceLine. title must be under 60 characters and description under 155 characters. The bodyHtml must not include html, head, script, style, or article tags. Include a useful context section and a closing paragraph.\n\nCategory: ${story.source.category}\nSource title: ${story.title}\nSource description: ${story.description}\nSource URL: ${story.link}`;
-  const model = process.env.GEMINI_MODEL || "gemini-2.0-flash";
   const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${encodeURIComponent(process.env.GEMINI_API_KEY)}`, {
     method: "POST",
     headers: { "content-type": "application/json" },
@@ -113,6 +124,7 @@ function renderArticle(article, story) {
 async function main() {
   if (!process.env.GEMINI_API_KEY) throw new Error("GEMINI_API_KEY is required");
   fs.mkdirSync(OUTPUT_DIR, { recursive: true });
+  const model = await resolveModel();
   const seen = existingText();
   const results = await Promise.allSettled(SOURCES.map(getStories));
   const feedErrors = results.filter((result) => result.status === "rejected").map((result) => result.reason.message);
@@ -120,7 +132,7 @@ async function main() {
   if (feedErrors.length > 0) console.warn(`Feed warnings: ${feedErrors.join("; ")}`);
   if (stories.length < 3) throw new Error("Fewer than three new stories were found in the configured feeds");
   for (const [index, story] of stories.slice(0, 3).entries()) {
-    const article = await createArticle(story);
+    const article = await createArticle(story, model);
     const rendered = renderArticle(article, story);
     const output = path.join(OUTPUT_DIR, `${String(index + 1).padStart(2, "0")}-${path.basename(rendered.relative)}`);
     fs.writeFileSync(output, rendered.html, "utf8");
