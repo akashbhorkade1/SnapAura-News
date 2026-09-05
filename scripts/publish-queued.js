@@ -73,7 +73,7 @@ if (!Array.isArray(queue)) process.exit(1);
 
 const due = queue
   .map((item, index) => ({ item, index }))
-  .filter(({ item }) => item.publishDate && item.publishDate <= today && !item.publishedAt)
+  .filter(({ item }) => item.publishDate && item.publishDate <= today && item.approvedAt && !item.publishedAt)
   .sort((a, b) => a.item.publishDate.localeCompare(b.item.publishDate))
   .slice(0, DAILY_LIMIT);
 

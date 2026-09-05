@@ -18,4 +18,17 @@ The daily trend workflow saves five new candidates in `drafts/generated/`. Revie
 
 Generated drafts are retained for 24 hours. After that they are deleted automatically. When a queued draft is published, it is moved into its `destination` path and removed from `drafts/generated/`.
 
+Publishing is approval-locked. A queue entry must include `approvedAt` before the publish workflow can move it live:
+
+```json
+{
+  "source": "drafts/generated/career-post.html",
+  "destination": "Career/career-post.html",
+  "publishDate": "2026-09-06",
+  "approvedAt": "2026-09-05T12:00:00+05:30"
+}
+```
+
+Generated drafts remain `noindex, nofollow` until publication. Career rewrites must retain the original publisher attribution and original important links for editorial and rights review.
+
 The generator uses the GitHub Actions secret `GEMINI_API_KEY` and selects the available `gemini-3.6-flash` model, skipping the unavailable `gemini-2.5-flash` model.
