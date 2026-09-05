@@ -5,6 +5,8 @@ const path = require("path");
 
 const ROOT = path.resolve(__dirname, "..");
 const QUEUE_PATH = path.join(ROOT, "drafts", "queue.json");
+const GENERATED_DIR = path.join(ROOT, "drafts", "generated");
+const MANIFEST_PATH = path.join(GENERATED_DIR, ".retention.json");
 const DAILY_LIMIT = 5;
 const today = new Date().toISOString().slice(0, 10);
 
@@ -36,10 +38,31 @@ function updateCategoryHub(destination, html) {
   fs.writeFileSync(hubPath, hubHtml, "utf8");
 }
 
+function cleanupExpiredDrafts() {
+  if (!fs.existsSync(MANIFEST_PATH)) return;
+  let manifest;
+  try {
+    manifest = JSON.parse(fs.readFileSync(MANIFEST_PATH, "utf8"));
+  } catch {
+    return;
+  }
+  const now = Date.now();
+  for (const [file, generatedAt] of Object.entries(manifest)) {
+    if (now - new Date(generatedAt).getTime() <= 24 * 60 * 60 * 1000) continue;
+    const filePath = path.join(GENERATED_DIR, file);
+    if (fs.existsSync(filePath)) fs.unlinkSync(filePath);
+    delete manifest[file];
+    console.log(`Removed expired draft: drafts/generated/${file}`);
+  }
+  fs.writeFileSync(MANIFEST_PATH, `${JSON.stringify(manifest, null, 2)}\n`, "utf8");
+}
+
 if (!fs.existsSync(QUEUE_PATH)) {
   console.log("No publish queue found; nothing to publish.");
   process.exit(0);
 }
+
+cleanupExpiredDrafts();
 
 const queue = JSON.parse(fs.readFileSync(QUEUE_PATH, "utf8"));
 if (!Array.isArray(queue)) fail("drafts/queue.json must contain an array.");
@@ -80,6 +103,12 @@ for (const { item } of due) {
   html = html.replace(/(<meta\s+property="og:url"\s+content=")[^"]*("[^>]*>)/i, `$1${canonical}$2`);
   html = html.replace(/(<meta\s+name="robots"\s+content=")[^"]*("[^>]*>)/i, "$1index, follow$2");
   fs.writeFileSync(destination, html, "utf8");
+  fs.unlinkSync(source);
+  if (fs.existsSync(MANIFEST_PATH)) {
+    const manifest = JSON.parse(fs.readFileSync(MANIFEST_PATH, "utf8"));
+    delete manifest[path.basename(source)];
+    fs.writeFileSync(MANIFEST_PATH, `${JSON.stringify(manifest, null, 2)}\n`, "utf8");
+  }
   updateCategoryHub(item.destination.replace(/\\/g, "/"), html);
   item.publishedAt = new Date().toISOString();
   console.log(`Published ${item.destination}`);

@@ -5,6 +5,8 @@ const path = require("path");
 
 const ROOT = path.resolve(__dirname, "..");
 const OUTPUT_DIR = path.join(ROOT, "drafts", "generated");
+const MANIFEST_PATH = path.join(OUTPUT_DIR, ".retention.json");
+const RETENTION_MS = 24 * 60 * 60 * 1000;
 const BASE_URL = "https://snapaura.space";
 const TODAY = new Date().toISOString().slice(0, 10);
 
@@ -93,6 +95,26 @@ function existingText() {
   }
   walk(ROOT);
   return files.join("\n");
+}
+
+function loadRetentionManifest() {
+  if (!fs.existsSync(MANIFEST_PATH)) return {};
+  try {
+    return JSON.parse(fs.readFileSync(MANIFEST_PATH, "utf8"));
+  } catch {
+    return {};
+  }
+}
+
+function removeExpiredDrafts(manifest) {
+  const now = Date.now();
+  for (const [file, generatedAt] of Object.entries(manifest)) {
+    if (now - new Date(generatedAt).getTime() <= RETENTION_MS) continue;
+    const filePath = path.join(OUTPUT_DIR, file);
+    if (fs.existsSync(filePath)) fs.unlinkSync(filePath);
+    delete manifest[file];
+    console.log(`Removed expired draft: drafts/generated/${file}`);
+  }
 }
 
 async function resolveModel() {
@@ -282,6 +304,8 @@ function renderArticle(article, story) {
 async function main() {
   if (!process.env.GEMINI_API_KEY) throw new Error("GEMINI_API_KEY is required");
   fs.mkdirSync(OUTPUT_DIR, { recursive: true });
+  const retentionManifest = loadRetentionManifest();
+  removeExpiredDrafts(retentionManifest);
   const model = await resolveModel();
   const seen = existingText();
   const stories = await getTrendingEntertainmentStories(seen);
@@ -291,8 +315,10 @@ async function main() {
     const rendered = renderArticle(article, story);
     const output = path.join(OUTPUT_DIR, `${String(index + 1).padStart(2, "0")}-${path.basename(rendered.relative)}`);
     fs.writeFileSync(output, rendered.html, "utf8");
+    retentionManifest[path.basename(output)] = new Date().toISOString();
     console.log(`Draft created: drafts/generated/${path.basename(output)} (${story.source.category})`);
   }
+  fs.writeFileSync(MANIFEST_PATH, `${JSON.stringify(retentionManifest, null, 2)}\n`, "utf8");
 }
 
 main().catch((error) => { console.error(error.message); process.exitCode = 1; });

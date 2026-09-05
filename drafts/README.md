@@ -16,4 +16,6 @@ The scheduled GitHub Action publishes up to three due entries per day. After pub
 
 The daily trend workflow saves five new candidates in `drafts/generated/`. Review and edit them first. To approve one, move it into `drafts/`, change its robots tag to `index, follow`, and add it to `queue.json` with the desired `publishDate`.
 
+Generated drafts are retained for 24 hours. After that they are deleted automatically. When a queued draft is published, it is moved into its `destination` path and removed from `drafts/generated/`.
+
 The generator uses the GitHub Actions secret `GEMINI_API_KEY` and selects the available `gemini-3.6-flash` model, skipping the unavailable `gemini-2.5-flash` model.
