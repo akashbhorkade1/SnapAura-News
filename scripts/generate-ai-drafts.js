@@ -6,6 +6,7 @@ const path = require("path");
 const ROOT = path.resolve(__dirname, "..");
 const OUTPUT_DIR = path.join(ROOT, "drafts", "generated");
 const MANIFEST_PATH = path.join(OUTPUT_DIR, ".retention.json");
+const QUEUE_PATH = path.join(ROOT, "drafts", "queue.json");
 const RETENTION_MS = 24 * 60 * 60 * 1000;
 const BASE_URL = "https://snapaura.space";
 const INDIA_TIME_ZONE = "Asia/Kolkata";
@@ -171,6 +172,22 @@ function removeExpiredDrafts(manifest) {
     if (fs.existsSync(filePath)) fs.unlinkSync(filePath);
     delete manifest[file];
     console.log(`Removed expired draft: drafts/generated/${file}`);
+  }
+}
+
+function addToPublishQueue(source, destination) {
+  let queue = [];
+  if (fs.existsSync(QUEUE_PATH)) {
+    try {
+      queue = JSON.parse(fs.readFileSync(QUEUE_PATH, "utf8"));
+    } catch {
+      queue = [];
+    }
+  }
+  if (!Array.isArray(queue)) queue = [];
+  if (!queue.some((item) => item.source === source || item.destination === destination)) {
+    queue.push({ source, destination, publishDate: TODAY });
+    fs.writeFileSync(QUEUE_PATH, `${JSON.stringify(queue, null, 2)}\n`, "utf8");
   }
 }
 
@@ -380,6 +397,7 @@ async function main() {
     const output = path.join(OUTPUT_DIR, `${String(index + 1).padStart(2, "0")}-${path.basename(rendered.relative)}`);
     fs.writeFileSync(output, rendered.html, "utf8");
     retentionManifest[path.basename(output)] = new Date().toISOString();
+    addToPublishQueue(`drafts/generated/${path.basename(output)}`, rendered.relative);
     console.log(`Draft created: drafts/generated/${path.basename(output)} (${story.source.category})`);
   }
   fs.writeFileSync(MANIFEST_PATH, `${JSON.stringify(retentionManifest, null, 2)}\n`, "utf8");
