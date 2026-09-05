@@ -25,17 +25,20 @@ function updateCategoryHub(destination, html) {
     "Current-Affairs": "Current-Affairs.html",
   };
   const hub = hubs[category];
-  if (!hub) return;
-  const hubPath = path.join(ROOT, hub);
-  if (!fs.existsSync(hubPath) || html.includes(`href="${destination}"`)) return;
   const title = (html.match(/<h1[^>]*>([^<]+)</i) || ["", "New SnapAura article"])[1].trim();
   const description = (html.match(/<meta\s+name="description"\s+content="([^"]*)"/i) || ["", "Read the latest SnapAura update."])[1];
   const image = (html.match(/<meta\s+property="og:image"\s+content="([^"]*)"/i) || ["", "https://snapaura.space/assets/img/the-bluff-review.jpg"])[1];
   const imagePath = image.replace("https://snapaura.space/", "");
   const card = `\n          <div class="post-preview">\n            <a href="${destination}" style="text-decoration: none;">\n              <div class="post-preview-img-container">\n                <span class="badge-music-special">${category.toUpperCase()}</span>\n                <img src="${imagePath}" alt="${title}" class="snap-image" width="800" height="450">\n              </div>\n              <div class="mt-3">\n                <h2 class="post-title">${title}</h2>\n                <p>${description}</p>\n              </div>\n            </a>\n            <p class="post-meta">SnapAura News Desk</p>\n          </div>\n          <hr class="my-4" />\n`;
-  let hubHtml = fs.readFileSync(hubPath, "utf8");
-  hubHtml = hubHtml.replace(/\s*<\/section>/i, `${card}        </section>`);
-  fs.writeFileSync(hubPath, hubHtml, "utf8");
+  const pages = [hub, "latest.html"].filter(Boolean);
+  for (const page of pages) {
+    const pagePath = path.join(ROOT, page);
+    if (!fs.existsSync(pagePath)) continue;
+    let pageHtml = fs.readFileSync(pagePath, "utf8");
+    if (pageHtml.includes(`href="${destination}"`)) continue;
+    pageHtml = pageHtml.replace(/\s*<\/section>/i, `${card}        </section>`);
+    fs.writeFileSync(pagePath, pageHtml, "utf8");
+  }
 }
 
 function cleanupExpiredDrafts() {
