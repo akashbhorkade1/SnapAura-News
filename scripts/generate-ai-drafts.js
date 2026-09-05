@@ -8,7 +8,8 @@ const OUTPUT_DIR = path.join(ROOT, "drafts", "generated");
 const MANIFEST_PATH = path.join(OUTPUT_DIR, ".retention.json");
 const RETENTION_MS = 24 * 60 * 60 * 1000;
 const BASE_URL = "https://snapaura.space";
-const TODAY = new Date().toISOString().slice(0, 10);
+const INDIA_TIME_ZONE = "Asia/Kolkata";
+const TODAY = new Intl.DateTimeFormat("en-CA", { timeZone: INDIA_TIME_ZONE, year: "numeric", month: "2-digit", day: "2-digit" }).format(new Date());
 
 const ENTERTAINMENT_TERMS = /bollywood|movie|film|actor|actress|celebrity|singer|song|ott|netflix|web series|trailer|review|music|television|tv|bigg boss|reality show/i;
 const DEFAULT_IMAGE = "assets/img/the-bluff-review.jpg";
@@ -37,7 +38,8 @@ function parseItems(xml) {
   return [...xml.matchAll(/<item>([\s\S]*?)<\/item>/gi)].map((match) => {
     const item = match[1];
     const read = (tag) => xmlDecode((item.match(new RegExp(`<${tag}[^>]*>([\\s\\S]*?)<\\/${tag}>`, "i")) || ["", ""])[1]);
-    return { title: read("title"), link: read("link"), description: read("description"), traffic: read("ht:approx_traffic") };
+    const raw = (tag) => (item.match(new RegExp(`<${tag}[^>]*>([\\s\\S]*?)<\\/${tag}>`, "i")) || ["", ""])[1];
+    return { title: read("title"), link: read("link"), description: read("description"), content: read("content:encoded"), rawContent: raw("content:encoded"), pubDate: read("pubDate"), traffic: read("ht:approx_traffic") };
   }).filter((item) => item.title && item.link);
 }
 
@@ -77,6 +79,61 @@ async function getTrendingEntertainmentStories(seen) {
   }
   const resolved = await Promise.all(candidates.map(async (story) => ({ ...story, sourceUrl: await resolveSourceUrl(story.link) })));
   return resolved.sort((a, b) => trafficNumber(b.trendTraffic) - trafficNumber(a.trendTraffic));
+}
+
+async function getNewsStory(query, category, language, seen) {
+  const url = `https://news.google.com/rss/search?q=${encodeURIComponent(`${query} when:1d`)}&hl=en-IN&gl=IN&ceid=IN:en`;
+  const response = await fetch(url, { headers: { "user-agent": "SnapAura-News/1.0" } });
+  if (!response.ok) throw new Error(`${category} news feed returned HTTP ${response.status}`);
+  const story = parseItems(await response.text()).find((item) => !seen.includes(item.link));
+  if (!story) throw new Error(`No new ${category} story found`);
+  return { ...story, sourceUrl: await resolveSourceUrl(story.link), source: { category, language, image: DEFAULT_IMAGE } };
+}
+
+async function getMajhiStory(seen, currentAffairs = false) {
+  const response = await fetch("https://majhinaukri.in/feed/", { headers: { "user-agent": "SnapAura-News/1.0" } });
+  if (!response.ok) throw new Error(`Majhi Naukri feed returned HTTP ${response.status}`);
+  const items = parseItems(await response.text());
+  const story = items.find((item) => !seen.includes(item.link) && (currentAffairs ? /current affairs/i.test(`${item.title} ${item.description}`) : !/current affairs/i.test(`${item.title} ${item.description}`)));
+  if (!story) throw new Error(`No new Majhi Naukri ${currentAffairs ? "Current Affairs" : "Career"} story found`);
+  let pageContent = story.rawContent || story.description || "";
+  try {
+    const pageResponse = await fetch(story.link, { headers: { "user-agent": "SnapAura-News/1.0" } });
+    if (pageResponse.ok) pageContent = await pageResponse.text();
+  } catch {}
+  const mainContent = pageContent.match(/<article[\s\S]*?<\/article>/i)?.[0] || pageContent.match(/class=["'][^"']*(?:entry-content|post-content)[^"']*["'][\s\S]*?<\/div>/i)?.[0] || pageContent;
+  const importantLinks = [...mainContent.matchAll(/<a\b[^>]*href=["']([^"']+)["'][^>]*>/gi)]
+    .map((match) => match[1])
+    .filter((link) => /^https?:\/\//i.test(link));
+  const cleanContent = mainContent.replace(/<script[\s\S]*?<\/script>/gi, "").replace(/<style[\s\S]*?<\/style>/gi, "").replace(/<[^>]+>/g, " ").replace(/\s+/g, " ").slice(0, 18000);
+  return { ...story, sourceUrl: story.link, description: story.description, rawContent: cleanContent, importantLinks, source: { category: currentAffairs ? "Current-Affairs" : "Career", language: currentAffairs ? "Marathi" : "English", image: DEFAULT_IMAGE } };
+}
+
+function scheduleLabel() {
+  const weekday = new Intl.DateTimeFormat("en-US", { timeZone: INDIA_TIME_ZONE, weekday: "short" }).format(new Date());
+  const sunday = weekday === "Sun";
+  const firstOfMonth = Number(TODAY.slice(8, 10)) === 1;
+  if (sunday && firstOfMonth) return "weekly and monthly";
+  if (sunday) return "weekly";
+  if (firstOfMonth) return "monthly";
+  return "daily";
+}
+
+async function getScheduledStories(seen) {
+  const stories = await Promise.all([
+    getNewsStory("Bollywood entertainment", "bollywood", "Hindi", seen),
+    getNewsStory("Indian OTT web series Netflix", "web-series", "Hindi", seen),
+    getNewsStory("India cricket", "Cricket", "English", seen),
+    getMajhiStory(seen),
+    getNewsStory("India current affairs", "Current-Affairs", "Marathi", seen),
+  ]);
+  const label = scheduleLabel();
+  if (label !== "daily") {
+    const extra = await getMajhiStory(seen, true);
+    extra.schedule = label;
+    stories.push(extra);
+  }
+  return stories;
 }
 
 function slugify(value) {
@@ -132,7 +189,9 @@ async function resolveModel() {
 }
 
 async function createArticle(story, model) {
-  const prompt = `You are an editor for SnapAura News. Create one original, fact-based ${story.source.language} article from the supplied source lead. Do not invent facts, quotes, numbers, or claims. Attribute every reported fact to the named source and clearly mark uncertainty. Write 600-850 words, with 3-5 HTML h2 headings and paragraph tags. Return ONLY valid JSON with keys title, description, keywords, bodyHtml, sourceLine. title must be under 60 characters and description under 155 characters. keywords must be a short comma-separated list. sourceLine must name the original publication, not say only generic words such as reliable sources. Mention the Google trend topic only as context; do not claim its traffic number is a fact. The bodyHtml must not include html, head, script, style, or article tags. Include a useful context section and a closing paragraph.\n\nGoogle trend topic: ${story.trend || "none"}\nCategory: ${story.source.category}\nSource title: ${story.title}\nSource description: ${story.description}\nSource URL: ${story.sourceUrl || story.link}`;
+  const careerRules = story.source.category === "Career" ? "Create one article containing clearly labelled English, Hindi, and Marathi sections. Preserve every original important application link supplied in the source inside an HTML Important Links section. Do not invent or alter URLs. Keep source attribution to Majhi Naukri." : "";
+  const currentRules = story.source.category === "Current-Affairs" ? `This is a ${story.schedule || "daily"} Current Affairs article. Use a dated, exam-useful roundup structure and state the coverage period accurately.` : "";
+  const prompt = `You are an editor for SnapAura News. Create one original, fact-based article from the supplied source lead. Do not invent facts, quotes, numbers, or claims. Attribute every reported fact to the named source and clearly mark uncertainty. Write 600-850 words, with 3-5 HTML h2 headings and paragraph tags. Return ONLY valid JSON with keys title, description, keywords, bodyHtml, sourceLine. title must be under 60 characters and description under 155 characters. keywords must be a short comma-separated list. sourceLine must name the original publication. The bodyHtml must not include html, head, script, style, or article tags. Include a useful context section and a closing paragraph. ${careerRules} ${currentRules}\n\nGoogle trend topic: ${story.trend || "none"}\nCategory: ${story.source.category}\nSource title: ${story.title}\nSource description: ${story.description}\nSource page content: ${(story.rawContent || "").slice(0, 18000)}\nSource URL: ${story.sourceUrl || story.link}\nOriginal important links: ${(story.importantLinks || []).join("\n")}`;
   const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${encodeURIComponent(process.env.GEMINI_API_KEY.trim())}`, {
     method: "POST",
     headers: { "content-type": "application/json" },
@@ -142,7 +201,12 @@ async function createArticle(story, model) {
   const data = await response.json();
   const text = data.candidates?.[0]?.content?.parts?.[0]?.text;
   if (!text) throw new Error("Gemini returned no article content");
-  return JSON.parse(text);
+  const article = JSON.parse(text);
+  if (story.source.category === "Career" && story.importantLinks?.length) {
+    const links = story.importantLinks.map((link) => `<li><a href="${link}" target="_blank" rel="noopener noreferrer">${link}</a></li>`).join("");
+    article.bodyHtml += `<h2>Important Links</h2><ul>${links}</ul>`;
+  }
+  return article;
 }
 
 function findRelatedArticle(category, currentFile) {
@@ -308,9 +372,9 @@ async function main() {
   removeExpiredDrafts(retentionManifest);
   const model = await resolveModel();
   const seen = existingText();
-  const stories = await getTrendingEntertainmentStories(seen);
-  if (stories.length < 5) throw new Error(`Fewer than five new entertainment trends were found; found ${stories.length}`);
-  for (const [index, story] of stories.slice(0, 5).entries()) {
+  const stories = await getScheduledStories(seen);
+  if (stories.length < 5) throw new Error(`Fewer than five scheduled category stories were found; found ${stories.length}`);
+  for (const [index, story] of stories.entries()) {
     const article = await createArticle(story, model);
     const rendered = renderArticle(article, story);
     const output = path.join(OUTPUT_DIR, `${String(index + 1).padStart(2, "0")}-${path.basename(rendered.relative)}`);

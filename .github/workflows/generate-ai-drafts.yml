@@ -1,4 +1,4 @@
-name: Generate Daily Article Drafts
+name: Generate Scheduled Category Article Drafts
 
 on:
   schedule:
@@ -27,7 +27,7 @@ jobs:
             exit 1
           fi
           echo "Gemini API key is available to the workflow."
-      - name: Generate five trend drafts
+      - name: Generate scheduled category drafts
         env:
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY || secrets.Gemini_API_Key }}
           GEMINI_MODEL: gemini-3.6-flash
