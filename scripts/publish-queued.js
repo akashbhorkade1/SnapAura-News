@@ -8,7 +8,7 @@ const QUEUE_PATH = path.join(ROOT, "drafts", "queue.json");
 const GENERATED_DIR = path.join(ROOT, "drafts", "generated");
 const MANIFEST_PATH = path.join(GENERATED_DIR, ".retention.json");
 const DAILY_LIMIT = 5;
-const today = new Date().toISOString().slice(0, 10);
+const today = new Intl.DateTimeFormat("en-CA", { timeZone: "Asia/Kolkata", year: "numeric", month: "2-digit", day: "2-digit" }).format(new Date());
 
 function fail(message) {
   console.error(`Publish queue error: ${message}`);
@@ -71,6 +71,16 @@ const queue = JSON.parse(fs.readFileSync(QUEUE_PATH, "utf8"));
 if (!Array.isArray(queue)) fail("drafts/queue.json must contain an array.");
 if (!Array.isArray(queue)) process.exit(1);
 
+let queueChanged = false;
+for (let i = queue.length - 1; i >= 0; i--) {
+  const entry = queue[i];
+  if (!entry.publishedAt && entry.source && !fs.existsSync(path.resolve(ROOT, entry.source))) {
+    console.log(`Removed stale queue entry (draft missing): ${entry.source}`);
+    queue.splice(i, 1);
+    queueChanged = true;
+  }
+}
+
 const due = queue
   .map((item, index) => ({ item, index }))
   .filter(({ item }) => item.publishDate && item.publishDate <= today && !item.publishedAt)
@@ -117,7 +127,7 @@ for (const { item } of due) {
   console.log(`Published ${item.destination}`);
 }
 
-if (due.length > 0) {
+if (queueChanged || due.length > 0) {
   fs.writeFileSync(QUEUE_PATH, `${JSON.stringify(queue, null, 2)}\n`, "utf8");
 }
 

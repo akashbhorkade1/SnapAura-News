@@ -8,6 +8,10 @@ on:
 permissions:
   contents: write
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: false
+
 jobs:
   publish:
     runs-on: ubuntu-latest
@@ -23,7 +27,7 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      - name: Publish up to three queued articles
+      - name: Publish up to five queued articles
         run: npm run publish:queued
 
       - name: Validate published site structure

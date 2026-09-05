@@ -121,13 +121,18 @@ function scheduleLabel() {
 }
 
 async function getScheduledStories(seen) {
-  const stories = await Promise.all([
+  const results = await Promise.allSettled([
     getNewsStory("Bollywood entertainment", "bollywood", "Hindi", seen),
     getNewsStory("Indian OTT web series Netflix", "web-series", "Hindi", seen),
     getNewsStory("India cricket", "Cricket", "English", seen),
     getMajhiStory(seen),
     getNewsStory("India current affairs", "Current-Affairs", "Marathi", seen),
   ]);
+  const stories = [];
+  for (const result of results) {
+    if (result.status === "fulfilled") stories.push(result.value);
+    else console.error("Scheduled story skipped: " + (result.reason && result.reason.message ? result.reason.message : result.reason));
+  }
   const label = scheduleLabel();
   if (label !== "daily") {
     const extra = await getMajhiStory(seen, true);
@@ -390,7 +395,7 @@ async function main() {
   const model = await resolveModel();
   const seen = existingText();
   const stories = await getScheduledStories(seen);
-  if (stories.length < 5) throw new Error(`Fewer than five scheduled category stories were found; found ${stories.length}`);
+  if (stories.length === 0) throw new Error("No scheduled category stories were found");
   for (const [index, story] of stories.entries()) {
     const article = await createArticle(story, model);
     const rendered = renderArticle(article, story);

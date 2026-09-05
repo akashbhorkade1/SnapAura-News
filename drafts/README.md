@@ -12,7 +12,7 @@ Put finished article HTML files in this directory and add an entry to `queue.jso
 ]
 ```
 
-The scheduled GitHub Action publishes up to three due entries per day. After publishing, it records `publishedAt`, regenerates `rss.xml` and `sitemap.xml`, and commits the changes. Articles still need to meet the validation and editorial rules before being queued.
+The scheduled GitHub Action publishes up to five due entries per day. After publishing, it records `publishedAt`, regenerates `rss.xml` and `sitemap.xml`, and commits the changes. Articles still need to meet the validation and editorial rules before being queued.
 
 The daily scheduled workflow saves one draft each for Bollywood, Web Series, Cricket, Career, and Current Affairs in `drafts/generated/` and adds each draft to `queue.json` for same-day publishing. Career drafts contain English, Hindi, and Marathi sections based on the latest Majhi Naukri feed post and preserve its important links. On Sundays it also creates a weekly Current Affairs draft; on the first day of each month it creates a monthly Current Affairs draft.
 

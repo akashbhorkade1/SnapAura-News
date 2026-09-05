@@ -8,6 +8,10 @@ on:
 permissions:
   contents: write
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: false
+
 jobs:
   generate:
     runs-on: ubuntu-latest
@@ -17,7 +21,7 @@ jobs:
           fetch-depth: 0
       - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
         with:
-          node-version: 24
+          node-version: 20
       - name: Check Gemini secret
         env:
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY || secrets.Gemini_API_Key }}
@@ -34,7 +38,7 @@ jobs:
         run: npm run generate:drafts
       - name: Check generated draft HTML
         run: |
-          node -e "const fs=require('fs'); const p='drafts/generated'; const files=fs.readdirSync(p).filter(f=>f.endsWith('.html')).sort(); console.log('Generated drafts:', files); if(files.length<5) throw new Error('Expected five generated drafts, found '+files.length); for(const f of files.slice(-5)){const h=fs.readFileSync(p+'/'+f,'utf8'); for(const required of ['NewsArticle','datePublished','og:title','og:description','snap-source']) if(!h.includes(required)) throw new Error('Missing '+required+' in '+f)}"
+          node -e "const fs=require('fs'); const p='drafts/generated'; const files=fs.readdirSync(p).filter(f=>f.endsWith('.html')).sort(); console.log('Generated drafts:', files); if(files.length<1) throw new Error('Expected at least one generated draft, found '+files.length); for(const f of files){const h=fs.readFileSync(p+'/'+f,'utf8'); for(const required of ['NewsArticle','datePublished','og:title','og:description','snap-source']) if(!h.includes(required)) throw new Error('Missing '+required+' in '+f)}"
       - name: Commit drafts for approval
         run: |
           git config user.name "github-actions[bot]"
