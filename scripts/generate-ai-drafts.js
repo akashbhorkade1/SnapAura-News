@@ -11,6 +11,8 @@ const RETENTION_MS = 24 * 60 * 60 * 1000;
 const BASE_URL = "https://snapaura.space";
 const INDIA_TIME_ZONE = "Asia/Kolkata";
 const TODAY = new Intl.DateTimeFormat("en-CA", { timeZone: INDIA_TIME_ZONE, year: "numeric", month: "2-digit", day: "2-digit" }).format(new Date());
+const GEMINI_MAX_ATTEMPTS = Math.max(1, Number.parseInt(process.env.GEMINI_MAX_ATTEMPTS || "4", 10) || 4);
+const RETRYABLE_GEMINI_STATUS_CODES = new Set([408, 429, 500, 502, 503, 504]);
 
 const ENTERTAINMENT_TERMS = /bollywood|movie|film|actor|actress|celebrity|singer|song|ott|netflix|web series|trailer|review|music|television|tv|bigg boss|reality show/i;
 const DEFAULT_IMAGE = "assets/img/the-bluff-review.jpg";
@@ -210,17 +212,50 @@ async function resolveModel() {
   return selected.name.replace(/^models\//, "");
 }
 
+function sleep(milliseconds) {
+  return new Promise((resolve) => setTimeout(resolve, milliseconds));
+}
+
+function retryDelay(response, attempt) {
+  const retryAfterSeconds = Number.parseFloat(response?.headers.get("retry-after"));
+  if (Number.isFinite(retryAfterSeconds) && retryAfterSeconds > 0) return Math.ceil(retryAfterSeconds * 1000);
+  return Math.min(1000 * 2 ** (attempt - 1), 8000);
+}
+
 async function createArticle(story, model) {
   const careerRules = story.source.category === "Career" ? "Create one article containing clearly labelled English, Hindi, and Marathi sections. Preserve every original important application link supplied in the source inside an HTML Important Links section. Do not invent or alter URLs. Keep source attribution to Majhi Naukri." : "";
   const currentRules = story.source.category === "Current-Affairs" ? `This is a ${story.schedule || "daily"} Current Affairs article. Use a dated, exam-useful roundup structure and state the coverage period accurately.` : "";
   const prompt = `You are an editor for SnapAura News. Create one original, fact-based article from the supplied source lead. Do not invent facts, quotes, numbers, or claims. Attribute every reported fact to the named source and clearly mark uncertainty. Write 600-850 words, with 3-5 HTML h2 headings and paragraph tags. Return ONLY valid JSON with keys title, description, keywords, bodyHtml, sourceLine. title must be under 60 characters and description under 155 characters. keywords must be a short comma-separated list. sourceLine must name the original publication. The bodyHtml must not include html, head, script, style, or article tags. Include a useful context section and a closing paragraph. ${careerRules} ${currentRules}\n\nGoogle trend topic: ${story.trend || "none"}\nCategory: ${story.source.category}\nSource title: ${story.title}\nSource description: ${story.description}\nSource page content: ${(story.rawContent || "").slice(0, 18000)}\nSource URL: ${story.sourceUrl || story.link}\nOriginal important links: ${(story.importantLinks || []).join("\n")}`;
-  const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${encodeURIComponent(process.env.GEMINI_API_KEY.trim())}`, {
+  const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${encodeURIComponent(process.env.GEMINI_API_KEY.trim())}`;
+  const request = {
     method: "POST",
     headers: { "content-type": "application/json" },
     body: JSON.stringify({ generationConfig: { temperature: 0.2, responseMimeType: "application/json" }, contents: [{ role: "user", parts: [{ text: prompt }] }] }),
-  });
-  if (!response.ok) throw new Error(`Gemini generateContent returned HTTP ${response.status}. Check API access, quota, and key restrictions. Details: ${await response.text()}`);
-  const data = await response.json();
+  };
+  let data;
+  for (let attempt = 1; attempt <= GEMINI_MAX_ATTEMPTS; attempt += 1) {
+    let response;
+    try {
+      response = await fetch(url, request);
+    } catch (error) {
+      if (attempt === GEMINI_MAX_ATTEMPTS) throw new Error(`Gemini generateContent request failed after ${attempt} attempts: ${error.message}`);
+      const delay = retryDelay(null, attempt);
+      console.warn(`Gemini request failed (${error.message}); retrying in ${delay / 1000}s (attempt ${attempt + 1}/${GEMINI_MAX_ATTEMPTS}).`);
+      await sleep(delay);
+      continue;
+    }
+    if (response.ok) {
+      data = await response.json();
+      break;
+    }
+    const details = await response.text();
+    if (!RETRYABLE_GEMINI_STATUS_CODES.has(response.status) || attempt === GEMINI_MAX_ATTEMPTS) {
+      throw new Error(`Gemini generateContent returned HTTP ${response.status}. Check API access, quota, and key restrictions. Details: ${details}`);
+    }
+    const delay = retryDelay(response, attempt);
+    console.warn(`Gemini generateContent returned HTTP ${response.status}; retrying in ${delay / 1000}s (attempt ${attempt + 1}/${GEMINI_MAX_ATTEMPTS}).`);
+    await sleep(delay);
+  }
   const text = data.candidates?.[0]?.content?.parts?.[0]?.text;
   if (!text) throw new Error("Gemini returned no article content");
   const article = JSON.parse(text);
