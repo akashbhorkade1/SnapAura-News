@@ -309,6 +309,7 @@ function run() {
 
   const articleFiles = allFiles.filter((f) => {
     const rel = path.relative(ROOT, f).replace(/\\/g, "/");
+    if (rel.endsWith("/index.html")) return false; // category hub pages (e.g. Review/index.html)
     return isArticlePage(rel) || isRootArticle(rel);
   });
 
