@@ -37,7 +37,7 @@ body {
    ========================================= */
 .top-brand-bar {
     display: none;
-    background-color: #111;
+    background-color: var(--bs-dark);
     color: #fff;
     padding: 10px 0;
     font-size: 0.85rem;
@@ -71,9 +71,9 @@ body {
 }
 
 .category-nav {
-    border-bottom: 1px solid #eee;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.2);
     padding: 15px 0;
-    background: #fff;
+    background: var(--bs-dark);
 }
 
 .category-nav ul {
@@ -86,16 +86,23 @@ body {
 }
 
 .category-nav a {
-    color: #333;
+    color: #fff;
     font-weight: 700;
     text-decoration: none;
     font-size: 0.95rem;
+}
+
+.category-nav a:hover,
+.category-nav a:focus-visible {
+    color: var(--bs-gold);
 }
 
 /* =========================================
    3. Masthead & Title
    ========================================= */
 header.masthead {
+    background-color: var(--bs-dark);
+    color: #fff;
     padding: 1.5rem 0;
     text-align: center;
 }
