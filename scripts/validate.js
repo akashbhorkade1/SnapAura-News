@@ -173,8 +173,9 @@ function validateArticle(relPath, html) {
   const ogDesc = extractMeta(html, "og:description");
   if (!ogDesc) issues.push("OG:DESCRIPTION: Missing");
 
+  const imageOptional = relPath.startsWith("Career/") || relPath.startsWith("Career\\") || relPath.startsWith("Current-Affairs/") || relPath.startsWith("Current-Affairs\\");
   const ogImage = extractMeta(html, "og:image");
-  if (!ogImage) issues.push("OG:IMAGE: Missing");
+  if (!ogImage && !imageOptional) issues.push("OG:IMAGE: Missing");
 
   const schemaTypes = extractSchemaType(html);
   if (!schemaTypes.includes("NewsArticle")) {

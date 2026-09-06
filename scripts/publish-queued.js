@@ -7,7 +7,7 @@ const ROOT = path.resolve(__dirname, "..");
 const QUEUE_PATH = path.join(ROOT, "drafts", "queue.json");
 const GENERATED_DIR = path.join(ROOT, "drafts", "generated");
 const MANIFEST_PATH = path.join(GENERATED_DIR, ".retention.json");
-const DAILY_LIMIT = 5;
+const IMAGELESS_CATEGORIES = new Set(["Career", "Current-Affairs"]);
 const today = new Intl.DateTimeFormat("en-CA", { timeZone: "Asia/Kolkata", year: "numeric", month: "2-digit", day: "2-digit" }).format(new Date());
 
 function fail(message) {
@@ -29,7 +29,8 @@ function updateCategoryHub(destination, html) {
   const description = (html.match(/<meta\s+name="description"\s+content="([^"]*)"/i) || ["", "Read the latest SnapAura update."])[1];
   const image = (html.match(/<meta\s+property="og:image"\s+content="([^"]*)"/i) || ["", "https://snapaura.space/assets/img/the-bluff-review.jpg"])[1];
   const imagePath = image.replace("https://snapaura.space/", "");
-  const card = `\n          <div class="post-preview">\n            <a href="${destination}" style="text-decoration: none;">\n              <div class="post-preview-img-container">\n                <span class="badge-music-special">${category.toUpperCase()}</span>\n                <img src="${imagePath}" alt="${title}" class="snap-image" width="800" height="450">\n              </div>\n              <div class="mt-3">\n                <h2 class="post-title">${title}</h2>\n                <p>${description}</p>\n              </div>\n            </a>\n            <p class="post-meta">SnapAura News Desk</p>\n          </div>\n          <hr class="my-4" />\n`;
+  const imageCard = IMAGELESS_CATEGORIES.has(category) ? "" : `              <div class="post-preview-img-container">\n                <span class="badge-music-special">${category.toUpperCase()}</span>\n                <img src="${imagePath}" alt="${title}" class="snap-image" width="800" height="450">\n              </div>\n`;
+  const card = `\n          <div class="post-preview">\n            <a href="${destination}" style="text-decoration: none;">\n${imageCard}              <div class="mt-3">\n                <h2 class="post-title">${title}</h2>\n                <p>${description}</p>\n              </div>\n            </a>\n            <p class="post-meta">SnapAura News Desk</p>\n          </div>\n          <hr class="my-4" />\n`;
   const pages = [hub, "latest.html"].filter(Boolean);
   for (const page of pages) {
     const pagePath = path.join(ROOT, page);
@@ -84,8 +85,7 @@ for (let i = queue.length - 1; i >= 0; i--) {
 const due = queue
   .map((item, index) => ({ item, index }))
   .filter(({ item }) => item.publishDate && item.publishDate <= today && !item.publishedAt)
-  .sort((a, b) => a.item.publishDate.localeCompare(b.item.publishDate))
-  .slice(0, DAILY_LIMIT);
+  .sort((a, b) => a.item.publishDate.localeCompare(b.item.publishDate));
 
 for (const { item } of due) {
   if (!item.source || !item.destination) {
@@ -131,4 +131,4 @@ if (queueChanged || due.length > 0) {
   fs.writeFileSync(QUEUE_PATH, `${JSON.stringify(queue, null, 2)}\n`, "utf8");
 }
 
-console.log(`Published ${due.length} article(s) today; daily limit is ${DAILY_LIMIT}.`);
+console.log(`Published ${due.length} queued article(s).`);

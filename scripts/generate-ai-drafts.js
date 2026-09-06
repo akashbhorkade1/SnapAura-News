@@ -13,6 +13,7 @@ const INDIA_TIME_ZONE = "Asia/Kolkata";
 const TODAY = new Intl.DateTimeFormat("en-CA", { timeZone: INDIA_TIME_ZONE, year: "numeric", month: "2-digit", day: "2-digit" }).format(new Date());
 const GEMINI_MAX_ATTEMPTS = Math.max(1, Number.parseInt(process.env.GEMINI_MAX_ATTEMPTS || "4", 10) || 4);
 const RETRYABLE_GEMINI_STATUS_CODES = new Set([408, 429, 500, 502, 503, 504]);
+const IMAGELESS_CATEGORIES = new Set(["Career", "Current-Affairs"]);
 
 const ENTERTAINMENT_TERMS = /bollywood|movie|film|actor|actress|celebrity|singer|song|ott|netflix|web series|trailer|review|music|television|tv|bigg boss|reality show/i;
 const DEFAULT_IMAGE = "assets/img/the-bluff-review.jpg";
@@ -287,7 +288,14 @@ function renderArticle(article, story) {
   const related = findRelatedArticle(story.source.category, filename);
   const relatedHtml = related ? `<hr class="my-5"><div class="related-post"><h3>${relatedHeading}</h3><a href="${related.href}">${related.title}</a></div>` : "";
   const pageKey = slugify(article.title);
-  const schema = JSON.stringify({ "@context": "https://schema.org", "@type": "NewsArticle", headline: article.title, image: [`${BASE_URL}/${story.source.image}`], datePublished: TODAY, author: { "@type": "Organization", name: "SnapAura" }, publisher: { "@type": "Organization", name: "SnapAura" }, description: article.description });
+  const showImage = !IMAGELESS_CATEGORIES.has(story.source.category);
+  const schema = JSON.stringify({ "@context": "https://schema.org", "@type": "NewsArticle", headline: article.title, ...(showImage ? { image: [`${BASE_URL}/${story.source.image}`] } : {}), datePublished: TODAY, author: { "@type": "Organization", name: "SnapAura" }, publisher: { "@type": "Organization", name: "SnapAura" }, description: article.description });
+  const imageMetadata = showImage ? `  <meta property="og:image" content="${BASE_URL}/${story.source.image}">
+  <meta name="twitter:image" content="${BASE_URL}/${story.source.image}">
+` : "";
+  const articleImage = showImage ? `      <img src="../../${story.source.image}" alt="${article.title}" class="snap-image" width="800" height="450">
+` : "";
+  const twitterCard = showImage ? "summary_large_image" : "summary";
   const html = `<!DOCTYPE html>
 <html lang="${language}">
 <head>
@@ -302,16 +310,14 @@ function renderArticle(article, story) {
   <meta name="news_keywords" content="${article.keywords || story.source.category}">
   <meta property="og:title" content="${article.title} - SnapAura">
   <meta property="og:description" content="${article.description}">
-  <meta property="og:image" content="${BASE_URL}/${story.source.image}">
-  <meta property="og:url" content="${canonical}">
+${imageMetadata}  <meta property="og:url" content="${canonical}">
   <meta property="og:type" content="article">
   <meta property="og:locale" content="${locale}">
   <meta property="article:published_time" content="${TODAY}T00:00:00+05:30">
   <meta property="article:section" content="${story.source.category}">
-  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:card" content="${twitterCard}">
   <meta name="twitter:title" content="${article.title} - SnapAura">
   <meta name="twitter:description" content="${article.description}">
-  <meta name="twitter:image" content="${BASE_URL}/${story.source.image}">
   <link rel="canonical" href="${canonical}">
   <link rel="icon" type="image/x-icon" href="../../assets/favicon.ico">
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -360,8 +366,7 @@ function renderArticle(article, story) {
     </div>
   </header>
   <article class="mb-4"><div class="container px-4 px-lg-5"><div class="row justify-content-center"><div class="col-md-10 col-lg-8 col-xl-7">
-      <img src="../../${story.source.image}" alt="${article.title}" class="snap-image" width="800" height="450">
-      ${article.bodyHtml}
+${articleImage}      ${article.bodyHtml}
       <p class="snap-source small text-muted">${article.sourceLine} <a href="${story.sourceUrl || story.link}" rel="noopener noreferrer">Original report</a></p>
       <p><a href="../../${categoryPage}">More ${story.source.category} coverage</a></p>
       ${relatedHtml}

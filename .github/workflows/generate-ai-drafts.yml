@@ -1,4 +1,4 @@
-name: Generate Scheduled Category Article Drafts
+name: Generate and Publish Scheduled Articles
 
 on:
   schedule:
@@ -31,7 +31,7 @@ jobs:
             exit 1
           fi
           echo "Gemini API key is available to the workflow."
-      - name: Generate scheduled category drafts
+      - name: Generate scheduled category articles
         env:
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY || secrets.Gemini_API_Key }}
           GEMINI_MODEL: gemini-3.6-flash
@@ -39,14 +39,27 @@ jobs:
       - name: Check generated draft HTML
         run: |
           node -e "const fs=require('fs'); const p='drafts/generated'; const files=fs.readdirSync(p).filter(f=>f.endsWith('.html')).sort(); console.log('Generated drafts:', files); if(files.length<1) throw new Error('Expected at least one generated draft, found '+files.length); for(const f of files){const h=fs.readFileSync(p+'/'+f,'utf8'); for(const required of ['NewsArticle','datePublished','og:title','og:description','snap-source']) if(!h.includes(required)) throw new Error('Missing '+required+' in '+f)}"
-      - name: Commit drafts for approval
+      - name: Publish generated articles immediately
+        run: npm run publish:queued
+      - name: Validate published site structure
+        run: |
+          npm run validate:seo
+          npm run validate:links
+          npm run validate:trust
+          npm run validate:footer
+      - name: Regenerate RSS and sitemap
+        run: |
+          npm run generate:rss
+          npm run generate:sitemap
+      - name: Commit published articles and generated files
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add drafts/generated drafts/queue.json
+          git add drafts/generated drafts/queue.json rss.xml sitemap.xml
+          git add -- '*.html'
           if git diff --cached --quiet; then
-            echo "No new drafts"
+            echo "No new articles"
           else
-            git commit -m "Generate daily article drafts"
+            git commit -m "Publish scheduled articles"
             git push
           fi
