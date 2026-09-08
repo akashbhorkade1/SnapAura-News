@@ -31,13 +31,17 @@ function updateCategoryHub(destination, html) {
   const imagePath = image.replace("https://snapaura.space/", "");
   const imageCard = IMAGELESS_CATEGORIES.has(category) ? "" : `              <div class="post-preview-img-container">\n                <span class="badge-music-special">${category.toUpperCase()}</span>\n                <img src="${imagePath}" alt="${title}" class="snap-image" width="800" height="450">\n              </div>\n`;
   const card = `\n          <div class="post-preview">\n            <a href="${destination}" style="text-decoration: none;">\n${imageCard}              <div class="mt-3">\n                <h2 class="post-title">${title}</h2>\n                <p>${description}</p>\n              </div>\n            </a>\n            <p class="post-meta">SnapAura News Desk</p>\n          </div>\n          <hr class="my-4" />\n`;
-  const pages = [hub, "latest.html"].filter(Boolean);
+  const pages = [hub, "latest.html", "index.html"].filter(Boolean);
   for (const page of pages) {
     const pagePath = path.join(ROOT, page);
     if (!fs.existsSync(pagePath)) continue;
     let pageHtml = fs.readFileSync(pagePath, "utf8");
     if (pageHtml.includes(`href="${destination}"`)) continue;
-    pageHtml = pageHtml.replace(/\s*<\/section>/i, `${card}        </section>`);
+    if (page === "index.html") {
+      pageHtml = pageHtml.replace(/\s*<div id="automation-cards"><\/div>/i, `${card}        <div id="automation-cards"></div>`);
+    } else {
+      pageHtml = pageHtml.replace(/\s*<\/section>/i, `${card}        </section>`);
+    }
     fs.writeFileSync(pagePath, pageHtml, "utf8");
   }
 }
@@ -80,6 +84,14 @@ for (let i = queue.length - 1; i >= 0; i--) {
     queue.splice(i, 1);
     queueChanged = true;
   }
+}
+
+for (const item of queue
+  .filter((entry) => entry.publishedAt && entry.destination)
+  .sort((a, b) => b.publishedAt.localeCompare(a.publishedAt))) {
+  const destination = path.resolve(ROOT, item.destination);
+  if (!destination.startsWith(ROOT) || !fs.existsSync(destination)) continue;
+  updateCategoryHub(item.destination.replace(/\\/g, "/"), fs.readFileSync(destination, "utf8"));
 }
 
 const due = queue
