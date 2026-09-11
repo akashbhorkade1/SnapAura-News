@@ -105,12 +105,107 @@ async function getMajhiStory(seen, currentAffairs = false) {
     const pageResponse = await fetch(story.link, { headers: { "user-agent": "SnapAura-News/1.0" } });
     if (pageResponse.ok) pageContent = await pageResponse.text();
   } catch {}
-  const mainContent = pageContent.match(/<article[\s\S]*?<\/article>/i)?.[0] || pageContent.match(/class=["'][^"']*(?:entry-content|post-content)[^"']*["'][\s\S]*?<\/div>/i)?.[0] || pageContent;
-  const importantLinks = [...mainContent.matchAll(/<a\b[^>]*href=["']([^"']+)["'][^>]*>/gi)]
-    .map((match) => match[1])
-    .filter((link) => /^https?:\/\//i.test(link));
-  const cleanContent = mainContent.replace(/<script[\s\S]*?<\/script>/gi, "").replace(/<style[\s\S]*?<\/style>/gi, "").replace(/<[^>]+>/g, " ").replace(/\s+/g, " ").slice(0, 18000);
-  return { ...story, sourceUrl: story.link, description: story.description, rawContent: cleanContent, importantLinks, source: { category: currentAffairs ? "Current-Affairs" : "Career", language: currentAffairs ? "Marathi" : "English", image: DEFAULT_IMAGE } };
+  const extracted = extractArticleBody(pageContent, story.link);
+  return { ...story, sourceUrl: story.link, description: story.description, rawContent: extracted.text, importantLinks: extracted.links, source: { category: currentAffairs ? "Current-Affairs" : "Career", language: currentAffairs ? "Marathi" : "English", image: DEFAULT_IMAGE } };
+}
+
+// Patterns that identify site-chrome links which must never be treated as
+// article "important links": source-site nav/footer/tool menus, social
+// follow buttons, and share-intent URLs. A previous incident published a
+// Career article with ~155 anchors because the full majhinaukri.in page
+// (nav, tools menu, share widgets) was scraped into the draft.
+const CHROME_LINK_PATTERNS = [
+  /\/tools\//i,
+  /\/games?\b/i,
+  /\/mock-?test/i,
+  /\/quizzes?\b/i,
+  /\/calculators?\b/i,
+  /\/category\//i,
+  /\/tag\//i,
+  /\/tags\//i,
+  /\/topics?\//i,
+  /\/current-recruitment\/?$/i,
+  /\/sarkari-naukri\/?$/i,
+  /\/results?\/?$/i,
+  /\/admit-?cards?\/?$/i,
+  /\/answer-?keys?\/?$/i,
+  /\/syllabus\/?$/i,
+  /play\.google\.com\/store/i,
+  /apps\.apple\.com/i,
+  /api\.whatsapp\.com\/send/i,
+  /wa\.me\//i,
+  /whatsapp\.com\/channel/i,
+  /t\.me\//i,
+  /telegram\.me\//i,
+  /twitter\.com\/intent/i,
+  /x\.com\/intent/i,
+  /facebook\.com\/sharer/i,
+  /linkedin\.com\/share/i,
+  /pinterest\.com\/pin/i,
+  /mailto:/i,
+  /#respond|#comments?|#reply/i,
+  /\/author\//i,
+  /\/page\/\d+/i,
+  /\/feed\/?$/i,
+  /\/sitemap/i,
+  /\.(css|js|png|jpe?g|gif|svg|webp|ico|woff2?)(\?|$)/i,
+];
+
+const CHROME_TEXT_PATTERNS = [
+  /^(home|about( us)?|contact( us)?|privacy policy|terms|disclaimer|sitemap|advertise|write for us)$/i,
+  /^(follow|share|subscribe|download (our |the )?app|join (us )?on|get job alerts)$/i,
+  /^(facebook|instagram|twitter|\bx\b|telegram|whatsapp|youtube|linkedin)$/i,
+  /^(tools?|games?|mock ?tests?|quizzes|calculators?|typing tests?)$/i,
+  /^(current recruitment|sarkari naukri|results?|admit cards?|answer keys?|syllabus)$/i,
+];
+
+function extractArticleBody(pageHtml, sourceUrl) {
+  if (!/<[a-z][\s>]/i.test(pageHtml)) {
+    // Source is already plain text (e.g. RSS content) — nothing to strip.
+    return { text: pageHtml.replace(/\s+/g, " ").slice(0, 18000), links: [] };
+  }
+  // 1. Drop whole-page chrome containers before looking for the article body.
+  let html = pageHtml
+    .replace(/<header[\s\S]*?<\/header>/gi, " ")
+    .replace(/<footer[\s\S]*?<\/footer>/gi, " ")
+    .replace(/<nav[\s\S]*?<\/nav>/gi, " ")
+    .replace(/<aside[\s\S]*?<\/aside>/gi, " ")
+    .replace(/<!--[\s\S]*?-->/g, " ")
+    .replace(/<script[\s\S]*?<\/script>/gi, " ")
+    .replace(/<style[\s\S]*?<\/style>/gi, " ")
+    .replace(/<form[\s\S]*?<\/form>/gi, " ");
+  // 2. Prefer the real article body: <article>, then entry/post content divs.
+  const body =
+    html.match(/<article[\s\S]*?<\/article>/i)?.[0] ||
+    html.match(/<div[^>]*class=["'][^"']*(?:entry-content|post-content|article-content|td-post-content|single-post-content)[^"']*["'][\s\S]*?<\/div\s*>\s*(?:<\/div\s*>)?/i)?.[0] ||
+    html;
+  // 3. Remove leftover chrome widgets commonly embedded inside the body.
+  const cleaned = body
+    .replace(/<div[^>]*class=["'][^"']*(?:share|social|follow|subscribe|newsletter|related-posts?|author-box|post-navigation|comments?|widget|sidebar|breadcrumb|tags?)[^"']*["'][\s\S]*?<\/div\s*>/gi, " ")
+    .replace(/<ul[^>]*class=["'][^"']*(?:share|social|follow)[^"']*["'][\s\S]*?<\/ul\s*>/gi, " ");
+  // 4. Collect candidate "important links" and discard anything that looks
+  // like site navigation, tools, social follow, or share-intent URLs.
+  const seen = new Set();
+  const links = [];
+  for (const match of cleaned.matchAll(/<a\b[^>]*href=["']([^"']+)["'][^>]*>([\s\S]{0,200}?)<\/a\s*>/gi)) {
+    let href = match[1].trim();
+    const linkText = match[2].replace(/<[^>]+>/g, " ").replace(/\s+/g, " ").trim();
+    if (!/^https?:\/\//i.test(href)) continue;
+    try {
+      href = new URL(href, sourceUrl).toString();
+    } catch {
+      continue;
+    }
+    if (CHROME_LINK_PATTERNS.some((re) => re.test(href))) continue;
+    if (linkText && CHROME_TEXT_PATTERNS.some((re) => re.test(linkText))) continue;
+    const key = href.toLowerCase().replace(/\/$/, "");
+    if (seen.has(key)) continue;
+    seen.add(key);
+    links.push(href);
+    if (links.length >= 8) break;
+  }
+  const text = cleaned.replace(/<[^>]+>/g, " ").replace(/\s+/g, " ").slice(0, 18000);
+  return { text, links };
 }
 
 function scheduleLabel() {
@@ -224,7 +319,7 @@ function retryDelay(response, attempt) {
 }
 
 async function createArticle(story, model) {
-  const careerRules = story.source.category === "Career" ? "Create one article containing clearly labelled English, Hindi, and Marathi sections. Preserve every original important application link supplied in the source inside an HTML Important Links section. Do not invent or alter URLs. Keep source attribution to Majhi Naukri." : "";
+  const careerRules = story.source.category === "Career" ? "Create one article containing clearly labelled English, Hindi, and Marathi sections. The Important Links section must contain ONLY the small curated set of source-supplied application links (official notification PDF, apply-online portal, official department site — at most 8 links). NEVER copy site navigation, footer links, tool/game/calculator/mock-test pages, category/tag archives, social follow buttons, app-download links, or WhatsApp/Telegram/X share-intent URLs into the article. If a supplied source link looks like site navigation or a share widget rather than a genuine application resource, omit it. Total <a> tags in bodyHtml must stay under 15. Do not invent or alter URLs. Keep source attribution to Majhi Naukri." : "";
   const currentRules = story.source.category === "Current-Affairs" ? `This is a ${story.schedule || "daily"} Current Affairs article. Use a dated, exam-useful roundup structure and state the coverage period accurately.` : "";
   const prompt = `You are an editor for SnapAura News. Create one original, fact-based article from the supplied source lead. Do not invent facts, quotes, numbers, or claims. Attribute every reported fact to the named source and clearly mark uncertainty. Write 600-850 words, with 3-5 HTML h2 headings and paragraph tags. Return ONLY valid JSON with keys title, description, keywords, bodyHtml, sourceLine. title must be under 60 characters and description under 155 characters. keywords must be a short comma-separated list. sourceLine must name the original publication. The bodyHtml must not include html, head, script, style, or article tags. Include a useful context section and a closing paragraph. ${careerRules} ${currentRules}\n\nGoogle trend topic: ${story.trend || "none"}\nCategory: ${story.source.category}\nSource title: ${story.title}\nSource description: ${story.description}\nSource page content: ${(story.rawContent || "").slice(0, 18000)}\nSource URL: ${story.sourceUrl || story.link}\nOriginal important links: ${(story.importantLinks || []).join("\n")}`;
   const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${encodeURIComponent(process.env.GEMINI_API_KEY.trim())}`;
@@ -260,11 +355,32 @@ async function createArticle(story, model) {
   const text = data.candidates?.[0]?.content?.parts?.[0]?.text;
   if (!text) throw new Error("Gemini returned no article content");
   const article = JSON.parse(text);
-  if (story.source.category === "Career" && story.importantLinks?.length) {
-    const links = story.importantLinks.map((link) => `<li><a href="${link}" target="_blank" rel="noopener noreferrer">${link}</a></li>`).join("");
-    article.bodyHtml += `<h2>Important Links</h2><ul>${links}</ul>`;
-  }
+  sanitizeArticleBody(article);
   return article;
+}
+
+// Safety net so the generator can never again publish a Career article
+// stuffed with source-site chrome: keep at most 8 curated links, strip
+// share/nav/tool/social anchors, and drop any auto-appended link dump
+// that would push the body past 15 anchors. Everything removed here is
+// scraper noise, never a genuine application resource.
+function sanitizeArticleBody(article) {
+  if (!article || typeof article.bodyHtml !== "string") return;
+  let html = article.bodyHtml.replace(/<script[\s\S]*?<\/script>/gi, " ").replace(/<style[\s\S]*?<\/style>/gi, " ");
+  html = html.replace(/<a\b[^>]*href=["']([^"']+)["'][^>]*>[\s\S]*?<\/a\s*>/gi, (tag, href) => {
+    const url = String(href || "").trim();
+    if (!/^https?:\/\//i.test(url)) return tag;
+    if (CHROME_LINK_PATTERNS.some((re) => re.test(url))) return "";
+    return tag;
+  });
+  const anchorCount = (html.match(/<a\b/gi) || []).length;
+  if (anchorCount > 15) {
+    // Prefer to drop the appended Important Links dump first: it is the
+    // known failure mode (155 raw majhinaukri.in URLs in one <ul>).
+    const withoutDump = html.replace(/<h2[^>]*>\s*Important Links\s*<\/h2\s*>\s*<ul[\s\S]*?<\/ul\s*>/i, "");
+    html = (withoutDump.match(/<a\b/gi) || []).length <= anchorCount ? withoutDump : html;
+  }
+  article.bodyHtml = html;
 }
 
 function findRelatedArticle(category, currentFile) {
@@ -448,4 +564,13 @@ async function main() {
   fs.writeFileSync(MANIFEST_PATH, `${JSON.stringify(retentionManifest, null, 2)}\n`, "utf8");
 }
 
-main().catch((error) => { console.error(error.message); process.exitCode = 1; });
+if (process.env.NODE_ENV === "test") {
+  module.exports = {
+    extractArticleBody,
+    sanitizeArticleBody,
+    CHROME_LINK_PATTERNS,
+    CHROME_TEXT_PATTERNS,
+  };
+} else {
+  main().catch((error) => { console.error(error.message); process.exitCode = 1; });
+}

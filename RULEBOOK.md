@@ -115,7 +115,7 @@ Using AI to draft articles isn't itself a problem for Google — publishing raw,
 ## 8. Legal & Trust Pages
 - **Privacy Policy** — must be linked in the footer of *every* page. Currently missing on index, bollywood, cricket, and other category pages — add it everywhere.
 - **About page** — has the right structure (Mission/Vision/Story + category grid); the copy itself needs correcting to describe SnapAura as a Bollywood/entertainment-led platform, not a current-affairs/politics/tech site.
-- **Contact page** — Formspree integration (form ID `xbdznrwe`) — confirm submissions are actually arriving in the inbox, not just that the form visually submits on the front end.
+- **Contact page** — Formspree integration (form ID `xbdznrve` — verified 2026-09-11: POST test returns HTTP 200 `{"ok":true}`; the old `xbdznrwe` ID returns 404 "Form not found") — confirm submissions are actually arriving in the inbox, not just that the form visually submits on the front end.
 - These three pages plus visible author bylines are exactly what AdSense reviewers use to judge whether a real, accountable publisher is behind the site — treat them as seriously as the articles themselves.
 
 ---
