@@ -2,6 +2,8 @@
 
 *Internal reference for writing, building, and maintaining snapaura.space. Use this when drafting an article, building a new page, briefing a writer, or prepping for AdSense re-application.*
 
+> **Career automation note:** `scripts/generate-ai-drafts.js` encodes the Career Gen Z / mobile-first template (`CAREER_LINK_POLICY` + `CAREER_STYLE_GUIDE`). Career drafts are English-first with an At-a-Glance card, "Can I Apply?", Key Information cards, source-backed deadline callout, "What should I do now?" (max 4 steps), curated 1–3 official Important Links (notification PDF / apply portal / official site only, never invented), "More Career Updates" (max 3), and mobile-first card CSS. The sanitizer rebuilds Important Links from curated source URLs and strips chrome/social/tool links.
+
 ---
 
 ## 1. Site Snapshot
@@ -54,7 +56,7 @@ Suggested default per category — confirm/adjust against what your actual audie
 
 ### 4.2 Structure
 Every article should have:
-1. **Headline** — specific and accurate, not clickbait that the body doesn't deliver on
+1. **Headline** — specific and accurate, not clickbait that the body doesn't deliver on (Career: user-focused, intent-first, e.g. "SSC CHSL 2026: 2,536 Vacancies — Check Eligibility, Fee & Last Date", never keyword-stuffed)
 2. **Lead paragraph** — who/what/when/where in the first 2–3 sentences
 3. **Body** — 3–5 sections with subheadings once you're past ~400 words
 4. **Context paragraph** — why this matters, what led here, how it connects to other coverage
@@ -76,7 +78,15 @@ Using AI to draft articles isn't itself a problem for Google — publishing raw,
 - Add something the AI couldn't: a local angle, a specific comparison, an opinion, a detail from actually watching/following the story.
 - Rewrite at least the lead and closing in your own voice — a page that reads identically to a hundred other AI-generated summaries of the same news is exactly the "low value" pattern to avoid.
 
-### 4.6 Tone
+### 4.7 Career Recruitment Articles (automated template)
+Career posts follow a Gen Z, mobile-first brief, enforced by `scripts/generate-ai-drafts.js` (not per-article edits):
+- **First screen:** user-focused headline + 1–2 sentence summary + "At a Glance" card (Organization, Posts, Vacancies, Qualification, Age Limit, Fee, Last Date, Location; "To be announced" when unknown, never guessed).
+- **Required order:** At a Glance → "Can I Apply?" (scannable eligibility) → Key Information cards (no repetition) → source-backed deadline callout only (no fake urgency) → "What should I do now?" (max 4 steps) → Important Links (curated only) → source-transparency line (SnapAura is not the issuing authority).
+- **Important Links:** keep the section in every recruitment article with ONLY 1–3 official links from the original notification/source (notification PDF, apply portal, official website). Never invent URLs; omit missing ones; dedupe; never add mock tests, calculators, tools, apps, social/messaging links, linktree, promos, category pages, or unrelated articles.
+- **Style:** fast, direct, conversational-but-credible, action-oriented; concise 500–650 words; short paragraphs, bullets, responsive cards/tables, selective emoji markers only; English-first single language (Marathi/Hindi only as short practical notes, never triple-duplicate blocks); start with facts, no filler intros.
+- **Trust/SEO/AdSense:** unique intent-first title (<60 chars), useful meta description (<155 chars), canonical, NewsArticle schema, accurate date + author, natural keywords; "More Career Updates" shows max 3 genuinely relevant Career links; global nav/footer stay separate from Important Links; user understands the opportunity in ~30 seconds and can act without link-hopping.
+
+### 4.8 Tone
 - Conversational but reads like reporting, not gossip.
 - Avoid all-caps headlines and stacked exclamation points.
 

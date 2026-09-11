@@ -114,6 +114,15 @@ async function getMajhiStory(seen, currentAffairs = false) {
 // follow buttons, and share-intent URLs. A previous incident published a
 // Career article with ~155 anchors because the full majhinaukri.in page
 // (nav, tools menu, share widgets) was scraped into the draft.
+//
+// Career IMPORTANT-LINKS policy (see CAREER_LINK_POLICY below): only
+//   1. official recruitment notification PDF
+//   2. official online application portal
+//   3. official website of the recruiting organisation
+// may survive as "Important Links" (1-3 links max, never invented).
+// Everything else — mock tests, calculators, tools, app downloads,
+// Telegram/WhatsApp/social, linktree, promos, category/tag archives,
+// unrelated articles — is chrome and must be dropped.
 const CHROME_LINK_PATTERNS = [
   /\/tools\//i,
   /\/games?\b/i,
@@ -148,6 +157,11 @@ const CHROME_LINK_PATTERNS = [
   /\/page\/\d+/i,
   /\/feed\/?$/i,
   /\/sitemap/i,
+  /twitter\.com\//i,
+  /(^|\.)x\.com\//i,
+  /youtube\.com\//i,
+  /youtu\.be\//i,
+  /linkedin\.com\//i,
   /\.(css|js|png|jpe?g|gif|svg|webp|ico|woff2?)(\?|$)/i,
 ];
 
@@ -157,7 +171,29 @@ const CHROME_TEXT_PATTERNS = [
   /^(facebook|instagram|twitter|\bx\b|telegram|whatsapp|youtube|linkedin)$/i,
   /^(tools?|games?|mock ?tests?|quizzes|calculators?|typing tests?)$/i,
   /^(current recruitment|sarkari naukri|results?|admit cards?|answer keys?|syllabus)$/i,
+  /mock ?test/i,
+  /calculator/i,
+  /download.*app|app.*download/i,
+  /join.*(telegram|whatsapp)/i,
 ];
+
+// Career automation: curated-official-links-only policy + Gen Z template.
+// Only 3 slots exist: notification PDF, apply portal, official website.
+const CAREER_LINK_POLICY = "Keep an 'Important Links' section with ONLY official links from the original notification/source: (1) Notification PDF, (2) Online Application portal, (3) Official Website. Never invent URLs; omit a missing link. Dedupe URLs; max 3 links; never add mock tests, calculators, tools, apps, Telegram/WhatsApp/social, linktree, promos, category pages, or unrelated articles.";
+
+const CAREER_STYLE_GUIDE = "GEN Z, mobile-first, scannable, conversational-but-credible, action-oriented. First screen: user headline + 1-2 sentence summary + At-a-Glance card (Organization, Posts, Vacancies, Qualification, Age Limit, Fee, Last Date, Location; use 'To be announced' when unknown, never guess). Required order: At a Glance, 'Can I Apply?', Key Information cards (Posts/Qualification/Age/Fee/Dates/Location/Selection, no repetition), deadline callout only for source-backed active dates (no fake urgency), 'What should I do now?' max 4 steps, Important Links (curated only), source-transparency line (SnapAura is NOT the authority; notification is primary). Concise 500-650 words, short paras, bullets, responsive cards/tables, selective emoji markers only. English-first single language; Marathi/Hindi only as short practical notes, never 3 duplicate blocks. SEO: unique intent-first title under 60 chars, no stuffing. Max 2-3 relevant 'More Career Updates' links; global nav/footer stay separate. Philosophy: open, understand in 30s, check eligibility, act.";
+
+// Returns notification|apply|website|null for a scraped URL + label.
+function classifyCareerLink(href, linkText) {
+  const url = String(href || "");
+  const text = String(linkText || "").toLowerCase();
+  if (/\.pdf(\?|#|$)/i.test(url)) return "notification";
+  if (/notification|advertisement|\badvt\b/i.test(url + " " + text)) return "notification";
+  if (/apply|application|registration|recruit|online-form|apply-online/i.test(url + " " + text)) return "apply";
+  if (/\.(gov\.in|nic\.in|org\.in|ac\.in|edu\.in)(\/|$)/i.test(url)) return "website";
+  if (/official[- ]?website|department[- ]?(site|portal)/i.test(text)) return "website";
+  return null;
+}
 
 function extractArticleBody(pageHtml, sourceUrl) {
   if (!/<[a-z][\s>]/i.test(pageHtml)) {
@@ -183,8 +219,8 @@ function extractArticleBody(pageHtml, sourceUrl) {
   const cleaned = body
     .replace(/<div[^>]*class=["'][^"']*(?:share|social|follow|subscribe|newsletter|related-posts?|author-box|post-navigation|comments?|widget|sidebar|breadcrumb|tags?)[^"']*["'][\s\S]*?<\/div\s*>/gi, " ")
     .replace(/<ul[^>]*class=["'][^"']*(?:share|social|follow)[^"']*["'][\s\S]*?<\/ul\s*>/gi, " ");
-  // 4. Collect candidate "important links" and discard anything that looks
-  // like site navigation, tools, social follow, or share-intent URLs.
+  // 4. Collect candidate links (label + URL) and discard chrome:
+  // site nav, tools, social follow, share-intent URLs.
   const seen = new Set();
   const links = [];
   for (const match of cleaned.matchAll(/<a\b[^>]*href=["']([^"']+)["'][^>]*>([\s\S]{0,200}?)<\/a\s*>/gi)) {
@@ -201,8 +237,8 @@ function extractArticleBody(pageHtml, sourceUrl) {
     const key = href.toLowerCase().replace(/\/$/, "");
     if (seen.has(key)) continue;
     seen.add(key);
-    links.push(href);
-    if (links.length >= 8) break;
+    links.push(linkText ? (linkText + " | " + href) : href);
+    if (links.length >= 30) break;
   }
   const text = cleaned.replace(/<[^>]+>/g, " ").replace(/\s+/g, " ").slice(0, 18000);
   return { text, links };
@@ -319,9 +355,9 @@ function retryDelay(response, attempt) {
 }
 
 async function createArticle(story, model) {
-  const careerRules = story.source.category === "Career" ? "Create one article containing clearly labelled English, Hindi, and Marathi sections. The Important Links section must contain ONLY the small curated set of source-supplied application links (official notification PDF, apply-online portal, official department site — at most 8 links). NEVER copy site navigation, footer links, tool/game/calculator/mock-test pages, category/tag archives, social follow buttons, app-download links, or WhatsApp/Telegram/X share-intent URLs into the article. If a supplied source link looks like site navigation or a share widget rather than a genuine application resource, omit it. Total <a> tags in bodyHtml must stay under 15. Do not invent or alter URLs. Keep source attribution to Majhi Naukri." : "";
+  const careerRules = story.source.category === "Career" ? `CAREER MODE (Gen Z, mobile-first recruitment brief; English-first single language). ${CAREER_LINK_POLICY} ${CAREER_STYLE_GUIDE} Use "To be announced" for unknown dates and label provisional vacancies as provisional.` : "";
   const currentRules = story.source.category === "Current-Affairs" ? `This is a ${story.schedule || "daily"} Current Affairs article. Use a dated, exam-useful roundup structure and state the coverage period accurately.` : "";
-  const prompt = `You are an editor for SnapAura News. Create one original, fact-based article from the supplied source lead. Do not invent facts, quotes, numbers, or claims. Attribute every reported fact to the named source and clearly mark uncertainty. Write 600-850 words, with 3-5 HTML h2 headings and paragraph tags. Return ONLY valid JSON with keys title, description, keywords, bodyHtml, sourceLine. title must be under 60 characters and description under 155 characters. keywords must be a short comma-separated list. sourceLine must name the original publication. The bodyHtml must not include html, head, script, style, or article tags. Include a useful context section and a closing paragraph. ${careerRules} ${currentRules}\n\nGoogle trend topic: ${story.trend || "none"}\nCategory: ${story.source.category}\nSource title: ${story.title}\nSource description: ${story.description}\nSource page content: ${(story.rawContent || "").slice(0, 18000)}\nSource URL: ${story.sourceUrl || story.link}\nOriginal important links: ${(story.importantLinks || []).join("\n")}`;
+  const prompt = `You are an editor for SnapAura News. Create one original, fact-based article from the supplied source lead. Do not invent facts, quotes, numbers, or claims. Attribute every reported fact to the named source and clearly mark uncertainty. Write 600-850 words (Career: 500-650 words of real facts), with 3-5 HTML h2 headings and paragraph tags. Return ONLY valid JSON with keys title, description, keywords, bodyHtml, sourceLine. title must be under 60 characters and description under 155 characters. keywords must be a short comma-separated list. sourceLine must name the original publication. The bodyHtml must not include html, head, script, style, or article tags. Include a useful context section and a closing paragraph. ${careerRules} ${currentRules}\n\nGoogle trend topic: ${story.trend || "none"}\nCategory: ${story.source.category}\nSource title: ${story.title}\nSource description: ${story.description}\nSource page content: ${(story.rawContent || "").slice(0, 18000)}\nSource URL: ${story.sourceUrl || story.link}\nOriginal important links: ${(story.importantLinks || []).join("\n")}`;
   const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${encodeURIComponent(process.env.GEMINI_API_KEY.trim())}`;
   const request = {
     method: "POST",
@@ -355,16 +391,13 @@ async function createArticle(story, model) {
   const text = data.candidates?.[0]?.content?.parts?.[0]?.text;
   if (!text) throw new Error("Gemini returned no article content");
   const article = JSON.parse(text);
-  sanitizeArticleBody(article);
+  sanitizeArticleBody(article, story);
   return article;
 }
 
-// Safety net so the generator can never again publish a Career article
-// stuffed with source-site chrome: keep at most 8 curated links, strip
-// share/nav/tool/social anchors, and drop any auto-appended link dump
-// that would push the body past 15 anchors. Everything removed here is
-// scraper noise, never a genuine application resource.
-function sanitizeArticleBody(article) {
+// Safety net: Career bodies keep at most 3 curated official links and 12
+// anchors total. Everything removed is scraper chrome, never genuine.
+function sanitizeArticleBody(article, story) {
   if (!article || typeof article.bodyHtml !== "string") return;
   let html = article.bodyHtml.replace(/<script[\s\S]*?<\/script>/gi, " ").replace(/<style[\s\S]*?<\/style>/gi, " ");
   html = html.replace(/<a\b[^>]*href=["']([^"']+)["'][^>]*>[\s\S]*?<\/a\s*>/gi, (tag, href) => {
@@ -374,7 +407,12 @@ function sanitizeArticleBody(article) {
     return tag;
   });
   const anchorCount = (html.match(/<a\b/gi) || []).length;
-  if (anchorCount > 15) {
+  const isCareer = story && story.source && story.source.category === "Career";
+  const maxAnchors = isCareer ? 12 : 15;
+  if (isCareer) {
+    html = enforceCareerImportantLinks(html, story);
+  }
+  if (anchorCount > maxAnchors) {
     // Prefer to drop the appended Important Links dump first: it is the
     // known failure mode (155 raw majhinaukri.in URLs in one <ul>).
     const withoutDump = html.replace(/<h2[^>]*>\s*Important Links\s*<\/h2\s*>\s*<ul[\s\S]*?<\/ul\s*>/i, "");
@@ -383,26 +421,105 @@ function sanitizeArticleBody(article) {
   article.bodyHtml = html;
 }
 
-function findRelatedArticle(category, currentFile) {
+function escapeHtmlAttr(value) {
+  return String(value == null ? "" : value).replace(/&/g, "&amp;").replace(/"/g, "&quot;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+}
+
+// Rebuild Career Important Links from curated official URLs only.
+// Labels fixed; hrefs are curated source URLs (never invented).
+// Returns "" when nothing official survived (omit, don't guess).
+function buildCareerImportantLinks(curated) {
+  const list = (Array.isArray(curated) ? curated : []).slice(0, 3);
+  if (list.length === 0) return "";
+  const labelFor = function (url) {
+    const slot = classifyCareerLink(url, "");
+    if (slot === "notification") return "Notification (PDF)";
+    if (slot === "apply") return "Online Application";
+    return "Official Website";
+  };
+  const items = list.map(function (url) { return "  <li><a href=\"" + escapeHtmlAttr(url) + "\" rel=\"noopener noreferrer nofollow\">" + labelFor(url) + "</a></li>"; }).join("\n");
+  return "<h2>Important Links</h2>\n<p>Preserved application and information links from the original notification source:</p>\n<ul class=\"snap-important-links\">\n" + items + "\n</ul>";
+}
+
+function curateCareerLinks(links) {
+  const picked = { notification: null, apply: null, website: null };
+  const seen = {};
+  const queue = Array.isArray(links) ? links : [];
+  const cands = [];
+  for (const entry of queue) {
+    const line = String(entry == null ? "" : entry).trim();
+    if (!line) continue;
+    const m = line.match(/https?:\/\/[^\s|<>"]+/i);
+    const url = m ? m[0].trim() : "";
+    if (!url) continue;
+    const label = line.replace(url, " ").trim();
+    cands.push({ url: url, label: label });
+  }
+  const rank = function (c) {
+    const slot = classifyCareerLink(c.url, c.label);
+    if (slot === "notification") return 0;
+    if (slot === "apply") return 1;
+    if (slot === "website") return 2;
+    return 9;
+  };
+  cands.sort(function (a, b) { return rank(a) - rank(b); });
+  for (const c of cands) {
+    const key = c.url.toLowerCase().replace(/\/$/, "");
+    if (seen[key]) continue;
+    seen[key] = true;
+    const slot = classifyCareerLink(c.url, c.label);
+    if (!slot || picked[slot]) continue;
+    try { picked[slot] = new URL(c.url).toString(); } catch (e) { continue; }
+    if (picked.notification && picked.apply && picked.website) break;
+  }
+  const out = [];
+  if (picked.notification) out.push(picked.notification);
+  if (picked.apply) out.push(picked.apply);
+  if (picked.website) out.push(picked.website);
+  return out.slice(0, 3);
+}
+
+// Replace ANY model-written Important Links block with the curated one.
+// Also strips model-invented anchors that match banned chrome patterns.
+function enforceCareerImportantLinks(html, story) {
+  let out = String(html == null ? "" : html);
+  const curated = curateCareerLinks(story && story.importantLinks ? story.importantLinks : []);
+  const block = buildCareerImportantLinks(curated);
+  const pattern = /<h2[^>]*>\s*Important Links[^<]*<\/h2\s*>\s*(<p[^>]*>[\s\S]{0,400}?<\/p\s*>)?\s*<ul[\s\S]*?<\/ul\s*>/i;
+  if (pattern.test(out)) { out = out.replace(pattern, block || ""); }
+  else if (block) { out = out + "\n" + block; }
+  return out;
+}
+
+function findRelatedArticles(category, currentFile, limit) {
   const categoryDir = path.join(ROOT, category);
-  if (!fs.existsSync(categoryDir)) return null;
-  const candidate = fs.readdirSync(categoryDir).find((file) => file.endsWith(".html") && file !== currentFile);
-  if (!candidate) return null;
-  const html = fs.readFileSync(path.join(categoryDir, candidate), "utf8");
-  const title = (html.match(/<title>([^<]+)</i) || ["", candidate])[1].replace(/\s*[-–]\s*SnapAura.*$/i, "").trim();
-  return { href: `../../${category}/${candidate}`, title };
+  if (!fs.existsSync(categoryDir)) return [];
+  const max = Math.max(1, Math.min(3, Number(limit) || 2));
+  const files = fs.readdirSync(categoryDir).filter(function (f) { return f.endsWith(".html") && f !== currentFile; }).slice(0, max);
+  const out = [];
+  for (const file of files) {
+    let title = file;
+    try {
+      const page = fs.readFileSync(path.join(categoryDir, file), "utf8");
+      const m = page.match(/<title>([^<]+)</i);
+      title = (m ? m[1] : file).replace(/\s*[-–]\s*SnapAura.*$/i, "").trim() || file;
+    } catch (e) { title = file; }
+    out.push({ href: ("../../" + category + "/" + file), title: title });
+  }
+  return out;
 }
 
 function renderArticle(article, story) {
   const filename = `${slugify(article.title)}.html`;
   const relative = `${story.source.category}/${filename}`;
   const canonical = `${BASE_URL}/${relative}`;
-  const locale = story.source.language === "English" ? "en_IN" : "hi_IN";
-  const language = story.source.language === "English" ? "en" : story.source.language === "Hindi" ? "hi" : "mr";
-  const categoryPage = story.source.category === "Cricket" ? "cricket.html" : `${story.source.category}.html`;
-  const relatedHeading = language === "en" ? "Related coverage" : language === "hi" ? "संबंधित खबरें" : "संबंधित बातम्या";
-  const related = findRelatedArticle(story.source.category, filename);
-  const relatedHtml = related ? `<hr class="my-5"><div class="related-post"><h3>${relatedHeading}</h3><a href="${related.href}">${related.title}</a></div>` : "";
+  const isCareer = story.source.category === "Career";
+  const locale = "en_IN";
+  const language = "en";
+  const categoryPage = `${story.source.category}.html`;
+  const related = isCareer ? findRelatedArticles(story.source.category, filename, 3) : findRelatedArticles(story.source.category, filename, 1);
+  const relatedHeading = isCareer ? "More Career Updates" : "Related coverage";
+  const relatedHtml = related.length === 0 ? "" : `<hr class="my-5"><div class="related-post"><h3>${relatedHeading}</h3>` + related.map(function (r) { return `<a href="${r.href}">${r.title}</a>`; }).join("") + `</div>`;
   const pageKey = slugify(article.title);
   const showImage = !IMAGELESS_CATEGORIES.has(story.source.category);
   const schema = JSON.stringify({ "@context": "https://schema.org", "@type": "NewsArticle", headline: article.title, ...(showImage ? { image: [`${BASE_URL}/${story.source.image}`] } : {}), datePublished: TODAY, author: { "@type": "Organization", name: "SnapAura" }, publisher: { "@type": "Organization", name: "SnapAura" }, description: article.description });
@@ -412,6 +529,7 @@ function renderArticle(article, story) {
   const articleImage = showImage ? `      <img src="../../${story.source.image}" alt="${article.title}" class="snap-image" width="800" height="450">
 ` : "";
   const twitterCard = showImage ? "summary_large_image" : "summary";
+  const careerCss = isCareer ? "  <style>.snap-glance{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:18px 0;padding:16px;border:1px solid #e9ecef;border-radius:14px;background:#f8f9fa;}.snap-glance div{background:#fff;border:1px solid #eef0f2;border-radius:10px;padding:10px 12px;font-size:.92rem;}.snap-glance strong{display:block;font-size:.78rem;text-transform:uppercase;letter-spacing:.04em;color:#6c757d;margin-bottom:2px;}.snap-deadline{border-left:4px solid #dc3545;background:#fff5f5;border-radius:12px;padding:14px 16px;margin:18px 0;}.snap-important-links{list-style:none;padding:0;margin:12px 0;display:grid;gap:10px;}.snap-important-links a{display:block;padding:12px 16px;border:1px solid #dee2e6;border-radius:12px;text-decoration:none;font-weight:600;min-height:44px;}.snap-key{overflow-x:auto;margin:14px 0;border:1px solid #e9ecef;border-radius:12px;}.snap-key table{width:100%;border-collapse:collapse;min-width:320px;}.snap-key th,.snap-key td{text-align:left;padding:10px 12px;border-bottom:1px solid #eef0f2;font-size:.93rem;}.related-post{display:grid;gap:10px;}.related-post a{display:block;padding:10px 12px;border:1px solid #e9ecef;border-radius:10px;text-decoration:none;}@media (max-width:576px){.snap-glance{grid-template-columns:1fr;}}</style>\n" : "";
   const html = `<!DOCTYPE html>
 <html lang="${language}">
 <head>
@@ -441,7 +559,7 @@ ${imageMetadata}  <meta property="og:url" content="${canonical}">
   <link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,700;1,400;1,700&family=Merriweather:wght@400;700&family=Open+Sans:wght@400;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.3.0/css/all.min.css" crossorigin="anonymous">
   <link rel="stylesheet" href="../../css/styles.css">
-  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1892357947938832" crossorigin="anonymous"></script>
+${careerCss}  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1892357947938832" crossorigin="anonymous"></script>
   <script async src="https://www.googletagmanager.com/gtag/js?id=G-DJQ7J0Y2RG"></script>
   <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','G-DJQ7J0Y2RG');</script>
   <script type="application/ld+json">${schema}</script>
@@ -568,6 +686,12 @@ if (process.env.NODE_ENV === "test") {
   module.exports = {
     extractArticleBody,
     sanitizeArticleBody,
+    classifyCareerLink,
+    curateCareerLinks,
+    buildCareerImportantLinks,
+    enforceCareerImportantLinks,
+    CAREER_LINK_POLICY,
+    CAREER_STYLE_GUIDE,
     CHROME_LINK_PATTERNS,
     CHROME_TEXT_PATTERNS,
   };
