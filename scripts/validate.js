@@ -140,6 +140,59 @@ function hasInternalLinks(html, relPath) {
   });
 }
 
+// Career template v2 structural checks (EN core + MR quick guide, curated
+// official links, no marketing CTAs). Enforced site-wide for Career articles.
+const CAREER_REQUIRED_SECTIONS = [
+  ["CAREER: Missing At-a-Glance card", /At a Glance|snap-glance/i],
+  ["CAREER: Missing 'Can I Apply?' section", /Can I Apply\?/i],
+  ["CAREER: Missing 'मराठीत झटपट समजून घ्या' quick guide", /मराठीत झटपट/i],
+  ["CAREER: Missing Important Links section", /Important Links/i],
+];
+
+const CAREER_BANNED_CTAS = [
+  "CAREER: Banned marketing CTA (CLICK HERE / APPLY NOW style)", /click\s*here(\s*!{2,}|!)/i,
+  "CAREER: Banned marketing CTA (APPLY NOW style)", /apply\s*now(\s*!{2,}|!)/i,
+  "CAREER: Banned clickbait phrase (Golden Opportunity)", /golden\s*opportunity/i,
+  "CAREER: Banned clickbait phrase (BEST GOVERNMENT JOB)", /best\s*government\s*job/i,
+  "CAREER: Banned clickbait phrase (Life-changing)", /life[- ]changing\s*(job|opportunity)/i,
+];
+
+const CAREER_CHROME_LINK_RE = /majhinaukri\.in\/(tools|mock|tag|category|hall|result|current|new-updates|latest|career|notice-board|exam-time-table)|mocktest\.majhinaukri|games\.majhinaukri|tools\.majhinaukri|t\.me\/|whatsapp\.com\/channel|api\.whatsapp\.com|facebook\.com\/sharer|twitter\.com\/intent|x\.com\/intent|instagram\.com\/|play\.google\.com|linktr\.ee/i;
+
+function articleRegion(html) {
+  const m = html.match(/<article\b[^>]*>[\s\S]*?<\/article>/i);
+  return m ? m[0] : "";
+}
+
+function validateCareerTemplate(relPath, html, issues) {
+  if (!relPath.startsWith("Career/") && !relPath.startsWith("Career\\")) return;
+
+  const region = articleRegion(html);
+  for (const [msg, re] of CAREER_REQUIRED_SECTIONS) {
+    if (!re.test(region)) issues.push(msg);
+  }
+
+  for (let i = 0; i < CAREER_BANNED_CTAS.length; i += 2) {
+    if (CAREER_BANNED_CTAS[i + 1].test(region)) issues.push(CAREER_BANNED_CTAS[i]);
+  }
+
+  // Curated Important Links: max 3 anchors, official URLs only.
+  const linksMatch = region.match(/Important Links[\s\S]{0,200}?<ul[^>]*>([\s\S]*?)<\/ul>/i);
+  if (linksMatch) {
+    const items = [...linksMatch[1].matchAll(/<a\b[^>]*href=["']([^"']+)["']/gi)];
+    if (items.length > 3) issues.push(`CAREER: Important Links has ${items.length} links (max 3)`);
+    for (const item of items) {
+      if (CAREER_CHROME_LINK_RE.test(item[1])) {
+        issues.push("CAREER: Non-official link inside Important Links section");
+        break;
+      }
+    }
+  }
+
+  const anchors = (region.match(/<a\b/gi) || []).length;
+  if (anchors > 12) issues.push(`CAREER: ${anchors} links in article body (max 12)`);
+}
+
 function validateArticle(relPath, html) {
   const issues = [];
   const text = readTextContent(html);
@@ -220,6 +273,7 @@ function validateArticle(relPath, html) {
     issues.push("LANG: Missing lang attribute on <html>");
   }
 
+  validateCareerTemplate(relPath, html, issues);
   return { wordCount, issues };
 }
 

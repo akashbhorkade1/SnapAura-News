@@ -177,11 +177,13 @@ const CHROME_TEXT_PATTERNS = [
   /join.*(telegram|whatsapp)/i,
 ];
 
-// Career automation: curated-official-links-only policy + Gen Z template.
-// Only 3 slots exist: notification PDF, apply portal, official website.
-const CAREER_LINK_POLICY = "Keep an 'Important Links' section with ONLY official links from the original notification/source: (1) Notification PDF, (2) Online Application portal, (3) Official Website. Never invent URLs; omit a missing link. Dedupe URLs; max 3 links; never add mock tests, calculators, tools, apps, Telegram/WhatsApp/social, linktree, promos, category pages, or unrelated articles.";
+// Career automation: curated-official-links-only policy + Gen Z template v2.
+// Only 3 slots exist: notification PDF/page, apply portal, official website.
+const CAREER_LINK_POLICY = "Keep an 'Important Links' section with ONLY official links from the original notification/source: (1) Notification PDF or notification page, (2) Online Application portal, (3) Official Website. Never invent URLs; omit a missing link. Dedupe URLs; max 3 links; never add mock tests, calculators, tools, apps, Telegram/WhatsApp/social, linktree, promos, category pages, or unrelated articles. CTA labels stay calm and useful ('Notification & Online Application', 'Official Website') - never 'CLICK HERE!!!', 'APPLY NOW!!!' or other aggressive marketing language.";
 
-const CAREER_STYLE_GUIDE = "GEN Z, mobile-first, scannable, conversational-but-credible, action-oriented. First screen: user headline + 1-2 sentence summary + At-a-Glance card (Organization, Posts, Vacancies, Qualification, Age Limit, Fee, Last Date, Location; use 'To be announced' when unknown, never guess). Required order: At a Glance, 'Can I Apply?', Key Information cards (Posts/Qualification/Age/Fee/Dates/Location/Selection, no repetition), deadline callout only for source-backed active dates (no fake urgency), 'What should I do now?' max 4 steps, Important Links (curated only), source-transparency line (SnapAura is NOT the authority; notification is primary). Concise 500-650 words, short paras, bullets, responsive cards/tables, selective emoji markers only. English-first single language; Marathi/Hindi only as short practical notes, never 3 duplicate blocks. SEO: unique intent-first title under 60 chars, no stuffing. Max 2-3 relevant 'More Career Updates' links; global nav/footer stay separate. Philosophy: open, understand in 30s, check eligibility, act.";
+// Career template v2: English complete core + Marathi quick guide (NOT a
+// translation). Flow and style rules every Career article must follow.
+const CAREER_STYLE_GUIDE = "CAREER TEMPLATE V2 (English core + Marathi quick guide; Gen Z, mobile-first, accuracy overrides engagement). FLOW in this order: (1) Hook: 1-2 sentence lead answering what job, how many vacancies, who can apply, and the last date. (2) At-a-Glance card: Organization, Posts, Vacancies, Qualification, Age, Fee, Last Date, Location - use 'To be announced' if unknown, never guess. (3) 'Can I Apply?' with short sub-blocks: Qualification, Experience (if required), Age, Other requirements - only what the source supports - followed by one neutral decision line. (4) 'Why This Job?' with 2-4 practical points ONLY if the source supports them; never clickbait like 'Golden Opportunity' or 'BEST GOVERNMENT JOB'. (5) 'Important Dates' as a small timeline table (Applications Open, Last Date, Exam Date), last date emphasized. (6) 'Application Fee' as a category/fee table - only categories the source lists. (7) 'Selection Process' as short steps ONLY if in the source, otherwise exactly: 'Selection process: Check the official notification.' (8) 'Quick Eligibility Check' as a self-checklist (qualification, experience, age, documents, deadline) that never claims the reader is eligible. (9) 'What should I do now?' up to 5 practical steps, ending with saving application/confirmation details. (10) Background only if genuinely useful, max 80-100 words, never generic institutional filler. (11) 'मराठीत झटपट समजून घ्या' (with 🇮🇳 marker): a natural, conversational Marathi QUICK GUIDE - 3-4 sentences plus 4-6 bullet micro-cards like '🎓 शिक्षण: B.Sc Nursing / GNM' - NEVER a word-for-word translation of the English; use everyday Marathi mixed with common English words (job, vacancy, form, last date), avoid Sanskritized or bureaucratic constructions. (12) Important Links (see link policy). STYLE: simple, modern, Indian-job-seeker-friendly English; short paragraphs; emoji only as section markers (🔥📅🎓🎂💰🏢💼📝🚀✅); mention the reporting source once - ongoing transparency comes from the source line, not repeated citations; say 'Not specified in the available source' for gaps; no fixed word target - complete but concise, a 2-4 minute read; never pad or repeat.";
 
 // Returns notification|apply|website|null for a scraped URL + label.
 function classifyCareerLink(href, linkText) {
@@ -355,9 +357,9 @@ function retryDelay(response, attempt) {
 }
 
 async function createArticle(story, model) {
-  const careerRules = story.source.category === "Career" ? `CAREER MODE (Gen Z, mobile-first recruitment brief; English-first single language). ${CAREER_LINK_POLICY} ${CAREER_STYLE_GUIDE} Use "To be announced" for unknown dates and label provisional vacancies as provisional.` : "";
+  const careerRules = story.source.category === "Career" ? `CAREER MODE (bilingual English core + Marathi quick guide; template v2). ${CAREER_LINK_POLICY} ${CAREER_STYLE_GUIDE} Use "To be announced" for unknown dates, "Not specified in the available source" for other gaps, and label provisional vacancies as provisional.` : "";
   const currentRules = story.source.category === "Current-Affairs" ? `This is a ${story.schedule || "daily"} Current Affairs article. Use a dated, exam-useful roundup structure and state the coverage period accurately.` : "";
-  const prompt = `You are an editor for SnapAura News. Create one original, fact-based article from the supplied source lead. Do not invent facts, quotes, numbers, or claims. Attribute every reported fact to the named source and clearly mark uncertainty. Write 600-850 words (Career: 500-650 words of real facts), with 3-5 HTML h2 headings and paragraph tags. Return ONLY valid JSON with keys title, description, keywords, bodyHtml, sourceLine. title must be under 60 characters and description under 155 characters. keywords must be a short comma-separated list. sourceLine must name the original publication. The bodyHtml must not include html, head, script, style, or article tags. Include a useful context section and a closing paragraph. ${careerRules} ${currentRules}\n\nGoogle trend topic: ${story.trend || "none"}\nCategory: ${story.source.category}\nSource title: ${story.title}\nSource description: ${story.description}\nSource page content: ${(story.rawContent || "").slice(0, 18000)}\nSource URL: ${story.sourceUrl || story.link}\nOriginal important links: ${(story.importantLinks || []).join("\n")}`;
+  const prompt = `You are an editor for SnapAura News. Create one original, fact-based article from the supplied source lead. Do not invent facts, quotes, numbers, or claims. Attribute every reported fact to the named source and clearly mark uncertainty. Write 600-850 words (Career: complete but concise - a 2-4 minute read, never pad; use one h2 section per template-v2 flow step so the section count follows the flow). Return ONLY valid JSON with keys title, description, keywords, bodyHtml, sourceLine. title must be under 60 characters and description under 155 characters. keywords must be a short comma-separated list. sourceLine must name the original publication. The bodyHtml must not include html, head, script, style, or article tags. Include a useful context section and a closing paragraph. ${careerRules} ${currentRules}\n\nGoogle trend topic: ${story.trend || "none"}\nCategory: ${story.source.category}\nSource title: ${story.title}\nSource description: ${story.description}\nSource page content: ${(story.rawContent || "").slice(0, 18000)}\nSource URL: ${story.sourceUrl || story.link}\nOriginal important links: ${(story.importantLinks || []).join("\n")}`;
   const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${encodeURIComponent(process.env.GEMINI_API_KEY.trim())}`;
   const request = {
     method: "POST",
@@ -394,6 +396,39 @@ async function createArticle(story, model) {
   sanitizeArticleBody(article, story);
   return article;
 }
+// Marketing/clickbait CTAs banned in Career bodies (template v2 §17, §21).
+const BANNED_CTA_PATTERNS = [
+  /click\s*here(\s*!{2,}|!)/gi,
+  /apply\s*now(\s*!{2,}|!)/gi,
+  /golden\s*opportunity/gi,
+  /best\s*government\s*job/gi,
+  /life[- ]changing\s*(job|opportunity)/gi,
+  /don'?t\s*miss(\s*this)?\s*!{2,}/gi,
+  /limited\s*time\s*(offer|chance)/gi,
+  /hurry\s*!{1,}/gi,
+];
+
+// Career template v2 structural check: warn (never fabricate) when a
+// required section is missing from a Career body.
+function careerStructureWarnings(html) {
+  const warnings = [];
+  const required = [
+    ["At a Glance card", /At a Glance|snap-glance/i],
+    ["Can I Apply? section", /Can I Apply\?/i],
+    ["Marathi quick guide", /मराठीत झटपट/i],
+    ["Important Links section", /Important Links/i],
+  ];
+  for (const [name, re] of required) {
+    if (!re.test(html)) warnings.push("missing " + name);
+  }
+  return warnings;
+}
+
+function stripBannedCtas(html) {
+  let out = html;
+  for (const re of BANNED_CTA_PATTERNS) out = out.replace(re, "");
+  return out.replace(/!{2,}/g, "!");
+}
 
 // Safety net: Career bodies keep at most 3 curated official links and 12
 // anchors total. Everything removed is scraper chrome, never genuine.
@@ -410,7 +445,12 @@ function sanitizeArticleBody(article, story) {
   const isCareer = story && story.source && story.source.category === "Career";
   const maxAnchors = isCareer ? 12 : 15;
   if (isCareer) {
+    html = stripBannedCtas(html);
     html = enforceCareerImportantLinks(html, story);
+    const warnings = careerStructureWarnings(html);
+    if (warnings.length > 0) {
+      console.warn(`Career template v2 warnings: ${warnings.join("; ")}.`);
+    }
   }
   if (anchorCount > maxAnchors) {
     // Prefer to drop the appended Important Links dump first: it is the
@@ -529,7 +569,7 @@ function renderArticle(article, story) {
   const articleImage = showImage ? `      <img src="../../${story.source.image}" alt="${article.title}" class="snap-image" width="800" height="450">
 ` : "";
   const twitterCard = showImage ? "summary_large_image" : "summary";
-  const careerCss = isCareer ? "  <style>.snap-glance{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:18px 0;padding:16px;border:1px solid #e9ecef;border-radius:14px;background:#f8f9fa;}.snap-glance div{background:#fff;border:1px solid #eef0f2;border-radius:10px;padding:10px 12px;font-size:.92rem;}.snap-glance strong{display:block;font-size:.78rem;text-transform:uppercase;letter-spacing:.04em;color:#6c757d;margin-bottom:2px;}.snap-deadline{border-left:4px solid #dc3545;background:#fff5f5;border-radius:12px;padding:14px 16px;margin:18px 0;}.snap-important-links{list-style:none;padding:0;margin:12px 0;display:grid;gap:10px;}.snap-important-links a{display:block;padding:12px 16px;border:1px solid #dee2e6;border-radius:12px;text-decoration:none;font-weight:600;min-height:44px;}.snap-key{overflow-x:auto;margin:14px 0;border:1px solid #e9ecef;border-radius:12px;}.snap-key table{width:100%;border-collapse:collapse;min-width:320px;}.snap-key th,.snap-key td{text-align:left;padding:10px 12px;border-bottom:1px solid #eef0f2;font-size:.93rem;}.related-post{display:grid;gap:10px;}.related-post a{display:block;padding:10px 12px;border:1px solid #e9ecef;border-radius:10px;text-decoration:none;}@media (max-width:576px){.snap-glance{grid-template-columns:1fr;}}</style>\n" : "";
+  const careerCss = isCareer ? "  <style>.snap-glance{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:18px 0;padding:16px;border:1px solid #e9ecef;border-radius:14px;background:#f8f9fa;}.snap-glance div{background:#fff;border:1px solid #eef0f2;border-radius:10px;padding:10px 12px;font-size:.92rem;}.snap-glance strong{display:block;font-size:.78rem;text-transform:uppercase;letter-spacing:.04em;color:#6c757d;margin-bottom:2px;}.snap-deadline{border-left:4px solid #dc3545;background:#fff5f5;border-radius:12px;padding:14px 16px;margin:18px 0;}.snap-important-links{list-style:none;padding:0;margin:12px 0;display:grid;gap:10px;}.snap-important-links a{display:block;padding:12px 16px;border:1px solid #dee2e6;border-radius:12px;text-decoration:none;font-weight:600;min-height:44px;}.snap-key{overflow-x:auto;margin:14px 0;border:1px solid #e9ecef;border-radius:12px;}.snap-key table{width:100%;border-collapse:collapse;min-width:320px;}.snap-key th,.snap-key td{text-align:left;padding:10px 12px;border-bottom:1px solid #eef0f2;font-size:.93rem;}.related-post{display:grid;gap:10px;}.related-post a{display:block;padding:10px 12px;border:1px solid #e9ecef;border-radius:10px;text-decoration:none;}.snap-why{list-style:none;padding:12px 14px;margin:14px 0;background:#fffdf2;border:1px solid #fff3cd;border-left:4px solid #ffc107;border-radius:12px;}.snap-why li{padding:3px 0;font-size:.94rem;}.snap-elig{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:14px 0;}.snap-elig div{background:#fff;border:1px solid #eef0f2;border-radius:10px;padding:10px 12px;font-size:.93rem;}.snap-elig strong{display:block;font-size:.78rem;text-transform:uppercase;letter-spacing:.04em;color:#6c757d;margin-bottom:3px;}.snap-check{list-style:none;padding:12px 14px;margin:14px 0;background:#f8f9fa;border:1px solid #e9ecef;border-radius:12px;}.snap-check li{padding:4px 0;font-size:.94rem;}.snap-mr{background:#fff8f1;border:1px solid #ffe0b2;border-radius:14px;padding:14px 16px;margin:16px 0;}.snap-mr ul{list-style:none;padding:0;margin:10px 0 0;display:grid;grid-template-columns:1fr 1fr;gap:8px;}.snap-mr li{background:#fff;border:1px solid #f2e6d8;border-radius:10px;padding:8px 10px;font-size:.9rem;}@media (max-width:576px){.snap-glance{grid-template-columns:1fr;}.snap-elig{grid-template-columns:1fr;}.snap-mr ul{grid-template-columns:1fr;}}</style>\n" : "";
   const html = `<!DOCTYPE html>
 <html lang="${language}">
 <head>
@@ -690,6 +730,9 @@ if (process.env.NODE_ENV === "test") {
     curateCareerLinks,
     buildCareerImportantLinks,
     enforceCareerImportantLinks,
+    careerStructureWarnings,
+    stripBannedCtas,
+    BANNED_CTA_PATTERNS,
     CAREER_LINK_POLICY,
     CAREER_STYLE_GUIDE,
     CHROME_LINK_PATTERNS,
