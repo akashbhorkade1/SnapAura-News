@@ -38,7 +38,7 @@ jobs:
         run: npm run generate:drafts
       - name: Check generated draft HTML
         run: |
-          node -e "const fs=require('fs'); const p='drafts/generated'; const files=fs.readdirSync(p).filter(f=>f.endsWith('.html')).sort(); console.log('Generated drafts:', files); if(files.length<1) throw new Error('Expected at least one generated draft, found '+files.length); for(const f of files){const h=fs.readFileSync(p+'/'+f,'utf8'); for(const required of ['NewsArticle','datePublished','og:title','og:description','snap-source']) if(!h.includes(required)) throw new Error('Missing '+required+' in '+f)}"
+          node -e "const fs=require('fs'); const p='drafts/generated'; const files=fs.readdirSync(p).filter(f=>f.endsWith('.html')).sort(); console.log('Generated drafts:', files); if(files.length<1) throw new Error('Expected at least one generated draft, found '+files.length); for(const f of files){const h=fs.readFileSync(p+'/'+f,'utf8'); for(const required of ['NewsArticle','datePublished','og:title','og:description']) if(!h.includes(required)) throw new Error('Missing '+required+' in '+f); const isCareer=/article:section[^>]*content="Career"/i.test(h); if(!isCareer && !h.includes('snap-source')) throw new Error('Missing snap-source in '+f)}"
       - name: Publish generated articles immediately
         run: npm run publish:queued
       - name: Validate published site structure

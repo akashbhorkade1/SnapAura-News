@@ -145,7 +145,7 @@ function hasInternalLinks(html, relPath) {
 const CAREER_REQUIRED_SECTIONS = [
   ["CAREER: Missing At-a-Glance card", /At a Glance|snap-glance/i],
   ["CAREER: Missing 'Can I Apply?' section", /Can I Apply\?/i],
-  ["CAREER: Missing 'मराठीत झटपट समजून घ्या' quick guide", /मराठीत झटपट/i],
+  ["CAREER: Missing Marathi full-coverage section", /मराठीत/i],
   ["CAREER: Missing Important Links section", /Important Links/i],
 ];
 
@@ -191,6 +191,22 @@ function validateCareerTemplate(relPath, html, issues) {
 
   const anchors = (region.match(/<a\b/gi) || []).length;
   if (anchors > 12) issues.push(`CAREER: ${anchors} links in article body (max 12)`);
+
+  // Career pages have no separate source footer line ("Source: … Original report").
+  if (/SnapAura is not the recruiting authority/i.test(region) || />Original report<\/a>/i.test(region)) {
+    issues.push("CAREER: Remove the 'Source: … Original report' footer line from Career pages");
+  }
+
+  // Marathi section must mirror the English core (at least ~30% of its words;
+  // the old "quick guide" pattern sat around 8-10%, a full mirror is far higher).
+  const mrMatch = region.match(/<h2[^>]*>[^<]*मराठीत[\s\S]*?(?=<h2\b|<\/article>)/i);
+  if (mrMatch) {
+    const mrWords = readTextContent(mrMatch[0]).split(/\s+/).filter(Boolean).length;
+    const enWords = readTextContent(region.replace(mrMatch[0], "")).split(/\s+/).filter(Boolean).length;
+    if (mrWords < enWords * 0.3) {
+      issues.push(`CAREER: Marathi section is only a summary (~${mrWords} words vs ~${enWords} English words) — full Marathi coverage mirroring the English content is required`);
+    }
+  }
 }
 
 function validateArticle(relPath, html) {
