@@ -185,6 +185,75 @@ const CAREER_LINK_POLICY = "Keep an 'Important Links' section with ONLY official
 // translation). Flow and style rules every Career article must follow.
 const CAREER_STYLE_GUIDE = "CAREER TEMPLATE V3 (English complete core + FULL Marathi coverage; Gen Z, mobile-first, accuracy overrides engagement). FLOW in this order: (1) Hook: 1-2 sentence lead answering what job, how many vacancies, who can apply, and the last date. (2) At-a-Glance card: Organization, Posts, Vacancies, Qualification, Age, Fee, Last Date, Location - use 'To be announced' if unknown, never guess. (3) 'Can I Apply?' with short sub-blocks: Qualification, Experience (if required), Age, Other requirements - only what the source supports - followed by one neutral decision line. (4) 'Why This Job?' with 2-4 practical points ONLY if the source supports them; never clickbait like 'Golden Opportunity' or 'BEST GOVERNMENT JOB'. (5) 'Important Dates' as a small timeline table (Applications Open, Last Date, Exam Date), last date emphasized. (6) 'Application Fee' as a category/fee table - only categories the source lists. (7) 'Selection Process' as short steps ONLY if in the source, otherwise exactly: 'Selection process: Check the official notification.' (8) 'Quick Eligibility Check' as a self-checklist (qualification, experience, age, documents, deadline) that never claims the reader is eligible. (9) 'What should I do now?' up to 5 practical steps, ending with saving application/confirmation details. (10) Background only if genuinely useful, max 80-100 words, never generic institutional filler. (11) 'मराठीत झटपट समजून घ्या' (with 🇮🇳 marker): a FULL Marathi section that mirrors ALL the English content to the same depth - eligibility (qualification, experience, age), posts and vacancies, important dates, application fee, selection process, job location and the action steps - written as natural, everyday conversational Marathi mixed with common English job terms (job, vacancy, form, last date), NEVER a word-for-word translation but NEVER only a 3-4 sentence summary either; every fact present in English must also appear in Marathi; make the Marathi section substantial, typically roughly half the length of the English core (never pad, but the old 3-4 sentence 'quick guide' is banned); avoid Sanskritized or bureaucratic constructions. (12) Important Links (see link policy). STYLE: simple, modern, Indian-job-seeker-friendly English; short paragraphs; emoji only as section markers (🔥📅🎓🎂💰🏢💼📝🚀✅); mention the reporting source once inside the body - there is NO separate source footer line ('Source: … Original report') on Career pages; say 'Not specified in the available source' for gaps; no fixed word target - complete but concise, a 2-4 minute read; never pad or repeat.";
 
+// Current Affairs template v2: exam-oriented roundup. The MOST IMPORTANT rule:
+// never fabricate topics when the source is only an announcement/digest lead.
+const CURRENT_AFFAIRS_STYLE_GUIDE = "CURRENT AFFAIRS TEMPLATE V2 (exam-oriented, Gen Z, mobile-first, accuracy overrides engagement). Only generate the article when the supplied source content ACTUALLY contains the day's current-affairs topics - never pretend an announcement or digest headline contains today's news. FLOW (use only the sections the source genuinely supports): (1) Short intro: 1-2 sentences telling the reader the coverage date and what they will learn; never write 'current affairs are important for exams...'. (2) 'Today's Current Affairs - Quick Scan' (📰 marker): a compact responsive table card listing EACH actual topic from the source and its UPSC focus (Polity, Economy, Environment, Science & Technology, International Relations, etc.) - only assign categories the content clearly supports. (3) One h2 per actual topic with short sub-blocks: 'Why in News?' (current relevance), 'What Happened?' (the actual development), 'Key Facts' (3-6 bullets), then 'UPSC Connection 🎯' only when the source justifies a syllabus/exam link; keep each topic tight - no essays. (4) '🎯 Prelims Focus': a facts card with Prelims-type bullets (organisation, location, article, act, constitutional provision, species, index, report, institution, scientific term, year, scheme, geography) - ONLY source-supported facts, otherwise write 'Not specified in the source'. (5) '✍️ Mains Angle': for topics that support analysis - issue/background, significance, challenges, way forward, plus an optional 'Possible Mains Question'; do not force it for trivial topics. (6) '⚡ 1-Minute Revision': 5-10 ultra-concise numbered revision points (organisation, location, development, key number, initiative). (7) '🧠 Quick Quiz': 3-5 MCQs (A-D options) with 'Answer:' and a one-line 'Why:' based ONLY on facts present in the article/source. (8) '🇮🇳 मराठीत झटपट Revision': a natural, conversational Marathi summary for Marathi-speaking exam students - each topic in 1-2 lines, then 'परीक्षेसाठी लक्षात ठेवा' with 3-5 📌 bullet points; everyday Marathi mixed with common English exam words; never a word-for-word translation; keep it concise. DO NOT generate sections that explain why current affairs matter, how daily compilations work, generic UPSC prep advice, generic civil-services descriptions, or publisher descriptions - explain CURRENT EVENTS, not what current affairs are. STYLE: modern, concise, scannable; emojis only as section markers; every fact attributed once per topic to the named source; 'Not specified in the source' / 'To be confirmed from the official source' for gaps; never invent topics, dates, statistics, schemes, reports, rankings, exam relevance or URLs; do NOT add an 'Important Links' section inside the body (the page template adds the original source link).";
+
+// Generic-filler phrases that are banned in any Current Affairs article -
+// they mark the announcement-only digest anti-pattern.
+const CA_BANNED_PHRASES = [
+  /current affairs are an important part/i,
+  /current affairs (?:is|are) vital/i,
+  /daily roundups serve as/i,
+  /serves? as an essential foundation/i,
+  /convert vast daily news flows/i,
+  /navigating unspecified details/i,
+  /key structure of civil services daily analysis/i,
+  /essential component of exam readiness/i,
+  /foundation for candidates navigating/i,
+];
+
+// The MOST IMPORTANT Current Affairs rule: if the source does not actually
+// contain current-affairs topics, never fabricate them. Returns true only
+// when the retrieved source text shows real, topic-bearing content.
+function stripEchoes(text, story) {
+  let out = String(text || "");
+  for (const ignore of [story && story.title, story && story.description]) {
+    if (ignore) out = out.split(String(ignore)).join(" ");
+  }
+  return out;
+}
+
+// The MOST IMPORTANT Current Affairs rule: if the source does not actually
+// contain current-affairs topics, never fabricate them. A genuine compilation
+// REPORTS several concrete developments; an announcement-only lead talks
+// ABOUT the digest (publisher praise, "roundups serve as...", syllabus talk)
+// without naming actual events. Count development-reporting sentences.
+const CA_DEV_VERB_RE = /\b(?:launched|approved|appointed|signed|released|inaugurated|unveiled|announced|reported that|declared|won|banned|imposed|recommended|submitted|celebrated|observed|hosted|discovered|elevated|ratified|hiked|revised|amended|cleared|notified|was (?:added|launched|approved|appointed|signed|released|inaugurated|unveiled|held|organised|concluded))\b/i;
+
+function hasCurrentAffairsTopics(story) {
+  const body = stripEchoes(story.rawContent, story);
+  const words = body.split(/\s+/).filter(Boolean).length;
+  if (words < 60) return false;
+  const sentences = body.split(/(?<=[.!?])\s+/);
+  let devSentences = 0;
+  for (const sentence of sentences) {
+    if (CA_DEV_VERB_RE.test(sentence)) devSentences += 1;
+  }
+  return devSentences >= 3;
+}
+
+async function fetchFullSourceText(story) {
+  const url = story.sourceUrl || story.link;
+  if (!url) return "";
+  try {
+    const response = await fetch(url, { headers: { "user-agent": "SnapAura-News/1.0" } });
+    if (!response.ok) return "";
+    return extractArticleBody(await response.text(), url).text;
+  } catch {
+    return "";
+  }
+}
+
+// Try to obtain the complete original content. Returns true when topics are
+// available; false when the source is genuinely announcement-only (=> skip).
+async function enrichCurrentAffairsStory(story) {
+  if (hasCurrentAffairsTopics(story)) return true;
+  const fetched = await fetchFullSourceText(story);
+  if (fetched && fetched.trim().length > 0) story.rawContent = fetched;
+  return hasCurrentAffairsTopics(story);
+}
+
 // Returns notification|apply|website|null for a scraped URL + label.
 function classifyCareerLink(href, linkText) {
   const url = String(href || "");
@@ -357,9 +426,13 @@ function retryDelay(response, attempt) {
 }
 
 async function createArticle(story, model) {
-  const careerRules = story.source.category === "Career" ? `CAREER MODE (bilingual English core + Marathi quick guide; template v2). ${CAREER_LINK_POLICY} ${CAREER_STYLE_GUIDE} Use "To be announced" for unknown dates, "Not specified in the available source" for other gaps, and label provisional vacancies as provisional.` : "";
-  const currentRules = story.source.category === "Current-Affairs" ? `This is a ${story.schedule || "daily"} Current Affairs article. Use a dated, exam-useful roundup structure and state the coverage period accurately.` : "";
-  const prompt = `You are an editor for SnapAura News. Create one original, fact-based article from the supplied source lead. Do not invent facts, quotes, numbers, or claims. Attribute every reported fact to the named source and clearly mark uncertainty. Write 600-850 words (Career: complete but concise - a 2-4 minute read, never pad; use one h2 section per template-v2 flow step so the section count follows the flow). Return ONLY valid JSON with keys title, description, keywords, bodyHtml, sourceLine. title must be under 60 characters and description under 155 characters. keywords must be a short comma-separated list. sourceLine must name the original publication. The bodyHtml must not include html, head, script, style, or article tags. Include a useful context section and a closing paragraph. ${careerRules} ${currentRules}\n\nGoogle trend topic: ${story.trend || "none"}\nCategory: ${story.source.category}\nSource title: ${story.title}\nSource description: ${story.description}\nSource page content: ${(story.rawContent || "").slice(0, 18000)}\nSource URL: ${story.sourceUrl || story.link}\nOriginal important links: ${(story.importantLinks || []).join("\n")}`;
+  const category = story.source.category;
+  const careerRules = category === "Career" ? `CAREER MODE (bilingual English core + Marathi quick guide; template v2). ${CAREER_LINK_POLICY} ${CAREER_STYLE_GUIDE} Use "To be announced" for unknown dates, "Not specified in the available source" for other gaps, and label provisional vacancies as provisional.` : "";
+  const currentRules = category === "Current-Affairs" ? `CURRENT AFFAIRS MODE (exam-oriented template v2). ${CURRENT_AFFAIRS_STYLE_GUIDE}` : "";
+  const lengthRules = category === "Current-Affairs"
+    ? `Write a complete-but-concise exam-oriented Current Affairs article. The 'Source page content' below CONTAINS the real current-affairs topics - structure THOSE topics with the template sections and never write an announcement-only digest. Coverage date: ${story.pubDate || story.schedule || TODAY}.`
+    : "Write 600-850 words, with 3-5 HTML h2 headings and paragraph tags. Include a useful context section and a closing paragraph.";
+  const prompt = `You are an editor for SnapAura News. Create one original, fact-based article from the supplied source lead. Do not invent facts, quotes, numbers, or claims. Attribute every reported fact to the named source and clearly mark uncertainty. ${lengthRules} Return ONLY valid JSON with keys title, description, keywords, bodyHtml, sourceLine. title must be under 60 characters and description under 155 characters. keywords must be a short comma-separated list. sourceLine must name the original publication. The bodyHtml must not include html, head, script, style, or article tags. ${careerRules} ${currentRules}\n\nGoogle trend topic: ${story.trend || "none"}\nCategory: ${category}\nSource title: ${story.title}\nSource description: ${story.description}\nSource page content: ${(story.rawContent || "").slice(0, 18000)}\nSource URL: ${story.sourceUrl || story.link}\nOriginal important links: ${(story.importantLinks || []).join("\n")}`;
   const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${encodeURIComponent(process.env.GEMINI_API_KEY.trim())}`;
   const request = {
     method: "POST",
@@ -424,14 +497,42 @@ function careerStructureWarnings(html) {
   return warnings;
 }
 
+// Current Affairs template v2 structural check: warn (never fabricate) when a
+// required section is missing from a Current Affairs body.
+function currentAffairsStructureWarnings(html) {
+  const warnings = [];
+  const required = [
+    ["Quick Scan table", /Quick Scan/i],
+    ["Prelims Focus section", /Prelims Focus/i],
+    ["1-Minute Revision section", /1.?Minute Revision/i],
+    ["Quick Quiz section", /Quick Quiz/i],
+    ["Marathi quick revision", /मराठीत/i],
+    ["at least one topic heading", /<h2\b/],
+  ];
+  for (const [name, re] of required) {
+    if (!re.test(html)) warnings.push("missing " + name);
+  }
+  return warnings;
+}
+
 function stripBannedCtas(html) {
   let out = html;
   for (const re of BANNED_CTA_PATTERNS) out = out.replace(re, "");
   return out.replace(/!{2,}/g, "!");
 }
 
+// Remove generic-filler paragraphs (the announcement-only digest anti-pattern).
+// Whole-paragraph removal avoids leaving sentence fragments behind.
+function stripCaFiller(html) {
+  let out = html;
+  for (const re of CA_BANNED_PHRASES) {
+    out = out.replace(new RegExp("<p[^>]*>[\\s\\S]*?(?:" + re.source + ")[\\s\\S]*?</p\\s*>", "gi"), "");
+  }
+  return out;
+}
+
 // Safety net: Career bodies keep at most 3 curated official links and 12
-// anchors total. Everything removed is scraper chrome, never genuine.
+// anchors total; Current Affairs bodies keep no Important-Links link farm.
 function sanitizeArticleBody(article, story) {
   if (!article || typeof article.bodyHtml !== "string") return;
   let html = article.bodyHtml.replace(/<script[\s\S]*?<\/script>/gi, " ").replace(/<style[\s\S]*?<\/style>/gi, " ");
@@ -443,6 +544,7 @@ function sanitizeArticleBody(article, story) {
   });
   const anchorCount = (html.match(/<a\b/gi) || []).length;
   const isCareer = story && story.source && story.source.category === "Career";
+  const isCurrentAffairs = story && story.source && story.source.category === "Current-Affairs";
   const maxAnchors = isCareer ? 12 : 15;
   if (isCareer) {
     html = stripBannedCtas(html);
@@ -450,6 +552,16 @@ function sanitizeArticleBody(article, story) {
     const warnings = careerStructureWarnings(html);
     if (warnings.length > 0) {
       console.warn(`Career template v2 warnings: ${warnings.join("; ")}.`);
+    }
+  }
+  if (isCurrentAffairs) {
+    html = stripCaFiller(html);
+    // Current Affairs pages must not become link farms: drop any model-written
+    // Important Links block - the page template adds the original source link.
+    html = html.replace(/<h2[^>]*>\s*Important Links[^<]*<\/h2\s*>\s*(<p[^>]*>[\s\S]{0,400}?<\/p\s*>)?\s*<ul[\s\S]*?<\/ul\s*>/i, "");
+    const warnings = currentAffairsStructureWarnings(html);
+    if (warnings.length > 0) {
+      console.warn(`Current Affairs template v2 warnings: ${warnings.join("; ")}.`);
     }
   }
   if (anchorCount > maxAnchors) {
@@ -554,11 +666,12 @@ function renderArticle(article, story) {
   const relative = `${story.source.category}/${filename}`;
   const canonical = `${BASE_URL}/${relative}`;
   const isCareer = story.source.category === "Career";
+  const isCurrentAffairs = story.source.category === "Current-Affairs";
   const locale = "en_IN";
   const language = "en";
   const categoryPage = `${story.source.category}.html`;
-  const related = isCareer ? findRelatedArticles(story.source.category, filename, 3) : findRelatedArticles(story.source.category, filename, 1);
-  const relatedHeading = isCareer ? "More Career Updates" : "Related coverage";
+  const related = isCareer || isCurrentAffairs ? findRelatedArticles(story.source.category, filename, 3) : findRelatedArticles(story.source.category, filename, 1);
+  const relatedHeading = isCareer ? "More Career Updates" : isCurrentAffairs ? "More Current Affairs" : "Related coverage";
   const relatedHtml = related.length === 0 ? "" : `<hr class="my-5"><div class="related-post"><h3>${relatedHeading}</h3>` + related.map(function (r) { return `<a href="${r.href}">${r.title}</a>`; }).join("") + `</div>`;
   const pageKey = slugify(article.title);
   const showImage = !IMAGELESS_CATEGORIES.has(story.source.category);
@@ -570,6 +683,7 @@ function renderArticle(article, story) {
 ` : "";
   const twitterCard = showImage ? "summary_large_image" : "summary";
   const careerCss = isCareer ? "  <style>.snap-glance{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:18px 0;padding:16px;border:1px solid #e9ecef;border-radius:14px;background:#f8f9fa;}.snap-glance div{background:#fff;border:1px solid #eef0f2;border-radius:10px;padding:10px 12px;font-size:.92rem;}.snap-glance strong{display:block;font-size:.78rem;text-transform:uppercase;letter-spacing:.04em;color:#6c757d;margin-bottom:2px;}.snap-deadline{border-left:4px solid #dc3545;background:#fff5f5;border-radius:12px;padding:14px 16px;margin:18px 0;}.snap-important-links{list-style:none;padding:0;margin:12px 0;display:grid;gap:10px;}.snap-important-links a{display:block;padding:12px 16px;border:1px solid #dee2e6;border-radius:12px;text-decoration:none;font-weight:600;min-height:44px;}.snap-key{overflow-x:auto;margin:14px 0;border:1px solid #e9ecef;border-radius:12px;}.snap-key table{width:100%;border-collapse:collapse;min-width:320px;}.snap-key th,.snap-key td{text-align:left;padding:10px 12px;border-bottom:1px solid #eef0f2;font-size:.93rem;}.related-post{display:grid;gap:10px;}.related-post a{display:block;padding:10px 12px;border:1px solid #e9ecef;border-radius:10px;text-decoration:none;}.snap-why{list-style:none;padding:12px 14px;margin:14px 0;background:#fffdf2;border:1px solid #fff3cd;border-left:4px solid #ffc107;border-radius:12px;}.snap-why li{padding:3px 0;font-size:.94rem;}.snap-elig{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:14px 0;}.snap-elig div{background:#fff;border:1px solid #eef0f2;border-radius:10px;padding:10px 12px;font-size:.93rem;}.snap-elig strong{display:block;font-size:.78rem;text-transform:uppercase;letter-spacing:.04em;color:#6c757d;margin-bottom:3px;}.snap-check{list-style:none;padding:12px 14px;margin:14px 0;background:#f8f9fa;border:1px solid #e9ecef;border-radius:12px;}.snap-check li{padding:4px 0;font-size:.94rem;}.snap-mr{background:#fff8f1;border:1px solid #ffe0b2;border-radius:14px;padding:14px 16px;margin:16px 0;}.snap-mr ul{list-style:none;padding:0;margin:10px 0 0;display:grid;grid-template-columns:1fr 1fr;gap:8px;}.snap-mr li{background:#fff;border:1px solid #f2e6d8;border-radius:10px;padding:8px 10px;font-size:.9rem;}@media (max-width:576px){.snap-glance{grid-template-columns:1fr;}.snap-elig{grid-template-columns:1fr;}.snap-mr ul{grid-template-columns:1fr;}}</style>\n" : "";
+const caCss = isCurrentAffairs ? "  <style>.ca-scan{overflow-x:auto;margin:14px 0;border:1px solid #e9ecef;border-radius:12px;}.ca-scan table{width:100%;border-collapse:collapse;min-width:260px;}.ca-scan th,.ca-scan td{text-align:left;padding:9px 12px;border-bottom:1px solid #eef0f2;font-size:.93rem;}.ca-topic{margin:18px 0;padding:14px 16px;border:1px solid #e9ecef;border-radius:14px;background:#fcfcfd;}.ca-facts{list-style:none;padding:10px 12px;margin:10px 0;background:#f8f9fa;border:1px solid #e9ecef;border-radius:12px;}.ca-facts li{padding:3px 0;font-size:.93rem;}.ca-rev{margin:14px 0;padding:14px 16px;background:#eef6ff;border:1px solid #cfe4fb;border-left:4px solid #0d6efd;border-radius:12px;}.ca-rev ol{margin:0;padding-left:20px;}.ca-rev li{padding:2px 0;font-size:.93rem;}.ca-quiz{margin:14px 0;padding:14px 16px;background:#fff;border:1px solid #e9ecef;border-radius:12px;}.ca-quiz p{margin:6px 0;}.ca-mr{background:#fff8f1;border:1px solid #ffe0b2;border-radius:14px;padding:14px 16px;margin:16px 0;}.ca-mr ul{list-style:none;padding:0;margin:8px 0 0;}.ca-mr li{padding:2px 0;font-size:.93rem;}.ca-focus{background:#f4f9ff;border:1px solid #d6e9ff;border-radius:12px;padding:12px 14px;margin:14px 0;}@media (max-width:576px){.ca-topic{padding:12px;}.ca-scan table{min-width:240px;}}</style>\n" : "";
   const html = `<!DOCTYPE html>
 <html lang="${language}">
 <head>
@@ -599,7 +713,7 @@ ${imageMetadata}  <meta property="og:url" content="${canonical}">
   <link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,700;1,400;1,700&family=Merriweather:wght@400;700&family=Open+Sans:wght@400;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.3.0/css/all.min.css" crossorigin="anonymous">
   <link rel="stylesheet" href="../../css/styles.css">
-${careerCss}  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1892357947938832" crossorigin="anonymous"></script>
+${careerCss}${caCss}  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1892357947938832" crossorigin="anonymous"></script>
   <script async src="https://www.googletagmanager.com/gtag/js?id=G-DJQ7J0Y2RG"></script>
   <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','G-DJQ7J0Y2RG');</script>
   <script type="application/ld+json">${schema}</script>
@@ -711,6 +825,16 @@ async function main() {
   const stories = await getScheduledStories(seen);
   if (stories.length === 0) throw new Error("No scheduled category stories were found");
   for (const [index, story] of stories.entries()) {
+    if (story.source.category === "Current-Affairs") {
+      // MOST IMPORTANT rule: never generate a Current Affairs article from an
+      // announcement-only lead. Attempt to retrieve the complete source first;
+      // if the source truly has no topics, skip generation instead of faking.
+      const ready = await enrichCurrentAffairsStory(story);
+      if (!ready) {
+        console.warn(`Skipped Current-Affairs draft '${story.title}': source is an announcement-only lead with no actual topics.`);
+        continue;
+      }
+    }
     const article = await createArticle(story, model);
     const rendered = renderArticle(article, story);
     const output = path.join(OUTPUT_DIR, `${String(index + 1).padStart(2, "0")}-${path.basename(rendered.relative)}`);
@@ -731,8 +855,14 @@ if (process.env.NODE_ENV === "test") {
     buildCareerImportantLinks,
     enforceCareerImportantLinks,
     careerStructureWarnings,
+    currentAffairsStructureWarnings,
+    renderArticle,
     stripBannedCtas,
+    stripCaFiller,
+    hasCurrentAffairsTopics,
     BANNED_CTA_PATTERNS,
+    CA_BANNED_PHRASES,
+    CURRENT_AFFAIRS_STYLE_GUIDE,
     CAREER_LINK_POLICY,
     CAREER_STYLE_GUIDE,
     CHROME_LINK_PATTERNS,

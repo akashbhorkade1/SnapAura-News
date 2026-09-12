@@ -88,7 +88,17 @@ Career posts follow the bilingual Gen Z / mobile-first brief (English complete c
 - **Accuracy > engagement:** never invent dates, fees, vacancies, stages, salary, benefits, or URLs. `scripts/validate.js` enforces the required sections (incl. a full-coverage Marathi section), link caps, banned-CTA rules, and the no-source-footer-line rule for every Career article.
 - **Trust/SEO/AdSense:** unique intent-first title (<60 chars), useful meta description (<155 chars), canonical, NewsArticle schema, accurate date + author, natural keywords; global nav/footer stay separate from Important Links.
 
-### 4.8 Tone
+### 4.8 Current Affairs Articles (automated template v2)
+Current Affairs posts follow the exam-oriented, Gen Z / mobile-first brief, enforced by `scripts/generate-ai-drafts.js` (never per-article edits):
+- **SOURCE-COMPLETENESS RULE (most important):** never generate a "digest announcement" article. Before generating, the automation checks that the source actually REPORTS developments (≥3 development sentences via `hasCurrentAffairsTopics`); it first attempts to fetch the complete original source page. If the source is announcement-only, the article is either SKIPPED or a clearly-labelled short Release Notice (≤200 words, e.g. "Release Notice" heading) is produced — topics are NEVER fabricated.
+- **Flow (use only sections the source supports):** short 1–2 sentence intro → "📰 Today's Current Affairs — Quick Scan" (responsive table: topic × UPSC focus, only categories the content supports) → one h2 per actual topic with "Why in News?", "What Happened?", "Key Facts" bullets, and "UPSC Connection 🎯" only when justified → "🎯 Prelims Focus" (source-supported facts card) → "✍️ Mains Angle" (issue/significance/challenges/way forward + optional "Possible Mains Question", only for analytically meaningful topics) → "⚡ 1-Minute Revision" (5–10 ultra-concise points) → "🧠 Quick Quiz" (3–5 MCQs with Answer + one-line Why, from article facts only) → "🇮🇳 मराठीत झटपट Revision" (natural conversational Marathi: each topic 1–2 lines + "परीक्षेसाठी लक्षात ठेवा" 📌 bullets) → original source link → "More Current Affairs" (max 3).
+- **Banned filler:** never generate sections explaining why current affairs matter, how daily compilations work, generic UPSC-prep advice, publisher descriptions, "Navigating Unspecified Details" style sections. The automation strips such paragraphs and `scripts/validate.js` fails them.
+- **Length:** no artificial word count — COMPLETE + USEFUL + CONCISE; 2 meaningful topics → short article; 10 → longer. Never pad.
+- **Accuracy:** never invent news, statistics, dates, organisations, schemes, reports, rankings, exam relevance or URLs; gaps = "Not specified in the source" / "To be confirmed from the official source". SnapAura is never the publisher or exam authority.
+- **Links:** no Important Links link farm — only the original source link (page template); no Telegram/WhatsApp/social/app/tool links.
+- **Design:** `.ca-scan`, `.ca-topic`, `.ca-facts`, `.ca-focus`, `.ca-rev`, `.ca-quiz`, `.ca-mr` mobile-first components; emojis only as section markers; responsive tables; Prelims/Mains badges.
+
+### 4.9 Tone
 - Conversational but reads like reporting, not gossip.
 - Avoid all-caps headlines and stacked exclamation points.
 

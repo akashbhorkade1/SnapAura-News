@@ -159,6 +159,54 @@ const CAREER_BANNED_CTAS = [
 
 const CAREER_CHROME_LINK_RE = /majhinaukri\.in\/(tools|mock|tag|category|hall|result|current|new-updates|latest|career|notice-board|exam-time-table)|mocktest\.majhinaukri|games\.majhinaukri|tools\.majhinaukri|t\.me\/|whatsapp\.com\/channel|api\.whatsapp\.com|facebook\.com\/sharer|twitter\.com\/intent|x\.com\/intent|instagram\.com\/|play\.google\.com|linktr\.ee/i;
 
+// Current Affairs template v2 checks (exam-oriented roundup).
+const CA_REQUIRED_SECTIONS = [
+  ["CURRENT-AFFAIRS: Missing Quick Scan table", /Quick Scan/i],
+  ["CURRENT-AFFAIRS: Missing Prelims Focus", /Prelims Focus/i],
+  ["CURRENT-AFFAIRS: Missing 1-Minute Revision", /1.?Minute Revision/i],
+  ["CURRENT-AFFAIRS: Missing Quick Quiz", /Quick Quiz/i],
+  ["CURRENT-AFFAIRS: Missing Marathi quick revision", /मराठीत/i],
+];
+
+// Generic-filler phrases marking the "publisher released a digest" anti-pattern.
+const CA_BANNED_FILLER = [
+  ["CURRENT-AFFAIRS: Generic filler (current affairs are an important part)", /current affairs are an important part/i],
+  ["CURRENT-AFFAIRS: Generic filler (current affairs are vital)", /current affairs (?:is|are) vital/i],
+  ["CURRENT-AFFAIRS: Generic filler (daily roundups serve as)", /daily roundups serve as/i],
+  ["CURRENT-AFFAIRS: Generic filler (serves as an essential foundation)", /serves? as an essential foundation/i],
+  ["CURRENT-AFFAIRS: Generic filler (convert vast daily news flows)", /convert vast daily news flows/i],
+  ["CURRENT-AFFAIRS: Generic filler (Navigating Unspecified Details)", /navigating unspecified details/i],
+  ["CURRENT-AFFAIRS: Generic filler (Key Structure of Civil Services Daily Analysis)", /key structure of civil services daily analysis/i],
+  ["CURRENT-AFFAIRS: Generic filler (essential component of exam readiness)", /essential component of exam readiness/i],
+  ["CURRENT-AFFAIRS: Generic filler (foundation for candidates navigating)", /foundation for candidates navigating/i],
+];
+
+// When a source genuinely has no topics, the allowed output is a clearly
+// labelled short release/update article (the alternative to skipping).
+function isCurrentAffairsReleaseVariant(region) {
+  return /Release(s)? \/ Update|Release Announcement|Release Notice|Update Notice/i.test(region);
+}
+
+function validateCurrentAffairsTemplate(relPath, html, issues) {
+  if (!relPath.startsWith("Current-Affairs/") && !relPath.startsWith("Current-Affairs\\")) return;
+  const region = articleRegion(html);
+
+  for (const [msg, re] of CA_BANNED_FILLER) {
+    if (re.test(region)) issues.push(msg);
+  }
+
+  // Strict template checks apply to v2-template articles, recognised by their
+  // Quick Scan / 1-Minute Revision markers. A clearly-labelled Release/Update
+  // article is the allowed short alternative for topic-less sources.
+  if (isCurrentAffairsReleaseVariant(region)) return;
+  if (!/Quick Scan|1.?Minute Revision/i.test(region)) return;
+  for (const [msg, re] of CA_REQUIRED_SECTIONS) {
+    if (!re.test(region)) issues.push(msg);
+  }
+  const h2Count = (region.match(/<h2\b/gi) || []).length;
+  if (h2Count < 3) issues.push("CURRENT-AFFAIRS: Too few sections for a v2 Current Affairs article (min ~3 h2 headings)");
+}
+
 function articleRegion(html) {
   const m = html.match(/<article\b[^>]*>[\s\S]*?<\/article>/i);
   return m ? m[0] : "";
@@ -214,9 +262,11 @@ function validateArticle(relPath, html) {
   const text = readTextContent(html);
   const wordCount = text.split(/\s+/).filter(Boolean).length;
 
-  if (wordCount < MIN_WORDS) {
+  const isCA = relPath.startsWith("Current-Affairs/") || relPath.startsWith("Current-Affairs\\");
+  const minWords = isCA && isCurrentAffairsReleaseVariant(articleRegion(html)) ? 120 : isCA ? 300 : MIN_WORDS;
+  if (wordCount < minWords) {
     issues.push(
-      `WORD COUNT: ${wordCount} words (minimum ${MIN_WORDS} required)`
+      `WORD COUNT: ${wordCount} words (minimum ${minWords} required)`
     );
   }
 
@@ -290,6 +340,7 @@ function validateArticle(relPath, html) {
   }
 
   validateCareerTemplate(relPath, html, issues);
+  validateCurrentAffairsTemplate(relPath, html, issues);
   return { wordCount, issues };
 }
 
