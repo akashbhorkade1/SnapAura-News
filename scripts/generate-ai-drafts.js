@@ -691,6 +691,7 @@ const caCss = isCurrentAffairs ? "  <style>.ca-scan{overflow-x:auto;margin:14px 
   <meta name="google-adsense-account" content="ca-pub-1892357947938832">
   <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
   <meta name="author" content="SnapAura News Desk">
+  <!-- DRAFTS stay noindex by design. publish-queued.js flips this to index, follow on publish. -->
   <meta name="robots" content="noindex, nofollow">
   <title>${article.title} - SnapAura</title>
   <meta name="description" content="${article.description}">

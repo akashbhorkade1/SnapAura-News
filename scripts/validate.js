@@ -41,7 +41,7 @@ function getAllHtmlFiles() {
   function walk(dir) {
     const entries = fs.readdirSync(dir, { withFileTypes: true });
     for (const entry of entries) {
-      if (entry.name === ".git" || entry.name === "node_modules") continue;
+      if (entry.name === ".git" || entry.name === "node_modules" || entry.name === "drafts") continue;
       const full = path.join(dir, entry.name);
       if (entry.isDirectory()) walk(full);
       else if (entry.name.endsWith(".html")) results.push(full);
@@ -71,7 +71,6 @@ function isRootArticle(relPath) {
         "Career.html",
         "Current-Affairs.html",
         "latest.html",
-        "live.html",
         "about.html",
         "contact.html",
         "privacy-policy.html",
@@ -355,6 +354,10 @@ function validateSeo(relPath, html) {
   const robots = html.match(/<meta\s+name="robots"\s+content="([^"]+)"/i);
   if (!robots) {
     issues.push("ROBOTS: Missing robots meta tag");
+  } else if (/noindex/i.test(robots[1])) {
+    issues.push(`ROBOTS: Live page must be indexable, found noindex ("${robots[1]}")`);
+  } else if (!/index/i.test(robots[1])) {
+    issues.push(`ROBOTS: robots content should include index ("${robots[1]}")`);
   }
 
   const hreflang = html.match(/hreflang/i);

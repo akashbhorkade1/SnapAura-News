@@ -56,7 +56,7 @@ function generateRSS() {
   function walk(dir) {
     const entries = fs.readdirSync(dir, { withFileTypes: true });
     for (const entry of entries) {
-      if (entry.name === ".git" || entry.name === "node_modules") continue;
+      if (entry.name === ".git" || entry.name === "node_modules" || entry.name === "drafts") continue;
       const full = path.join(dir, entry.name);
       if (entry.isDirectory()) walk(full);
       else if (entry.name.endsWith(".html")) allHtml.push(full);
@@ -72,6 +72,11 @@ function generateRSS() {
     if (!isArticlePage(rel) && !isRootArticle(rel)) continue;
 
     const html = fs.readFileSync(file, "utf-8");
+    const robots = html.match(/<meta\s+name="robots"\s+content="([^"]+)"/i);
+    if (robots && /noindex/i.test(robots[1])) {
+      console.log(`SKIP noindex (excluded from RSS): ${rel}`);
+      continue;
+    }
     const title = extractTitle(html);
     if (!title || title.includes("PAGE TITLE HERE")) continue;
 
@@ -130,7 +135,6 @@ function isRootArticle(relPath) {
         "Career.html",
         "Current-Affairs.html",
         "latest.html",
-        "live.html",
         "about.html",
         "contact.html",
         "privacy-policy.html",

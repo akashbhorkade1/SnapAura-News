@@ -13,7 +13,6 @@ const CATEGORY_HUBS = [
   { file: "Career.html", url: "/Career.html" },
   { file: "Current-Affairs.html", url: "/Current-Affairs.html" },
   { file: "latest.html", url: "/latest.html" },
-  { file: "live.html", url: "/live.html" },
 ];
 
 const CATEGORY_INDEX_PAGES = [

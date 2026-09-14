@@ -12,7 +12,7 @@ function getAllHtmlFiles() {
   function walk(dir) {
     const entries = fs.readdirSync(dir, { withFileTypes: true });
     for (const entry of entries) {
-      if (entry.name === ".git" || entry.name === "node_modules") continue;
+      if (entry.name === ".git" || entry.name === "node_modules" || entry.name === "drafts") continue;
       const full = path.join(dir, entry.name);
       if (entry.isDirectory()) walk(full);
       else if (entry.name.endsWith(".html")) results.push(full);
@@ -20,6 +20,16 @@ function getAllHtmlFiles() {
   }
   walk(ROOT);
   return results;
+}
+
+function isNoindexFile(file) {
+  try {
+    const html = fs.readFileSync(file, "utf-8");
+    const m = html.match(/<meta\s+name="robots"\s+content="([^"]+)"/i);
+    return m ? /noindex/i.test(m[1]) : false;
+  } catch {
+    return false;
+  }
 }
 
 function generateSitemap() {
@@ -46,6 +56,10 @@ function generateSitemap() {
   for (const file of files) {
     const rel = path.relative(ROOT, file).replace(/\\/g, "/");
     if (rel === "index.html") continue;
+    if (isNoindexFile(file)) {
+      console.log(`SKIP noindex (excluded from sitemap): ${rel}`);
+      continue;
+    }
 
     let priority = "0.7";
     let changefreq = "weekly";
@@ -56,9 +70,6 @@ function generateSitemap() {
     } else if (lowPriority.includes(rel)) {
       priority = "0.6";
       changefreq = "monthly";
-    } else if (rel === "live.html") {
-      priority = "0.5";
-      changefreq = "daily";
     }
 
     let lastmod = TODAY;
