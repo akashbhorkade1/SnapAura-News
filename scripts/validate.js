@@ -158,16 +158,18 @@ const CAREER_BANNED_CTAS = [
 
 const CAREER_CHROME_LINK_RE = /majhinaukri\.in\/(tools|mock|tag|category|hall|result|current|new-updates|latest|career|notice-board|exam-time-table)|mocktest\.majhinaukri|games\.majhinaukri|tools\.majhinaukri|t\.me\/|whatsapp\.com\/channel|api\.whatsapp\.com|facebook\.com\/sharer|twitter\.com\/intent|x\.com\/intent|instagram\.com\/|play\.google\.com|linktr\.ee/i;
 
-// Current Affairs template v2 checks (exam-oriented roundup).
+// Current Affairs template v3 FINAL checks (weekly/monthly EN+MR, SEO-only exams).
 const CA_REQUIRED_SECTIONS = [
-  ["CURRENT-AFFAIRS: Missing Quick Scan table", /Quick Scan/i],
-  ["CURRENT-AFFAIRS: Missing Prelims Focus", /Prelims Focus/i],
-  ["CURRENT-AFFAIRS: Missing 1-Minute Revision", /1.?Minute Revision/i],
-  ["CURRENT-AFFAIRS: Missing Quick Quiz", /Quick Quiz/i],
-  ["CURRENT-AFFAIRS: Missing Marathi quick revision", /मराठीत/i],
+  ["CURRENT-AFFAIRS: Missing Glance table", /at a glance/i],
+  ["CURRENT-AFFAIRS: Missing Exam Focus", /exam focus/i],
+  ["CURRENT-AFFAIRS: Missing Revision", /revision/i],
+  ["CURRENT-AFFAIRS: Missing Quiz", /quick quiz|monthly quiz|सराव प्रश्न/i],
+  ["CURRENT-AFFAIRS: Missing Sources", /sources|स्रोत/i],
+  ["CURRENT-AFFAIRS: Missing separated Marathi version", /marathi|मराठी/i],
 ];
 
 // Generic-filler phrases marking the "publisher released a digest" anti-pattern.
+// v3 also bans exam-name stuffing and forced single-exam headings in CA bodies.
 const CA_BANNED_FILLER = [
   ["CURRENT-AFFAIRS: Generic filler (current affairs are an important part)", /current affairs are an important part/i],
   ["CURRENT-AFFAIRS: Generic filler (current affairs are vital)", /current affairs (?:is|are) vital/i],
@@ -178,6 +180,10 @@ const CA_BANNED_FILLER = [
   ["CURRENT-AFFAIRS: Generic filler (Key Structure of Civil Services Daily Analysis)", /key structure of civil services daily analysis/i],
   ["CURRENT-AFFAIRS: Generic filler (essential component of exam readiness)", /essential component of exam readiness/i],
   ["CURRENT-AFFAIRS: Generic filler (foundation for candidates navigating)", /foundation for candidates navigating/i],
+  ["CURRENT-AFFAIRS: Exam-name coaching filler (aspirants should)", /(UPSC|MPSC|SSC|RRB)\s+(aspirants?|candidates?)\s+should/i],
+  ["CURRENT-AFFAIRS: Exam-name coaching filler (candidates must study)", /(SSC|MPSC|UPSC)\s+candidates?\s+must\s+study/i],
+  ["CURRENT-AFFAIRS: Generic filler (exam consists of Prelims and Mains)", /exam consists of Prelims and Mains/i],
+  ["CURRENT-AFFAIRS: Generic filler (read current affairs daily)", /should read current affairs daily/i],
 ];
 
 // When a source genuinely has no topics, the allowed output is a clearly
@@ -194,16 +200,36 @@ function validateCurrentAffairsTemplate(relPath, html, issues) {
     if (re.test(region)) issues.push(msg);
   }
 
-  // Strict template checks apply to v2-template articles, recognised by their
-  // Quick Scan / 1-Minute Revision markers. A clearly-labelled Release/Update
+  // Strict template checks apply to v3-template articles, recognised by their
+  // Glance / Exam Focus / Quiz markers. A clearly-labelled Release/Update
   // article is the allowed short alternative for topic-less sources.
+  // Legacy v2 articles (Quick Scan / Prelims Focus markers) are grandfathered:
+  // they are checked against their own markers, never force-migrated here.
   if (isCurrentAffairsReleaseVariant(region)) return;
-  if (!/Quick Scan|1.?Minute Revision/i.test(region)) return;
+  const isV3 = /at a glance|exam focus|quick quiz|monthly quiz/i.test(region);
+  const isLegacyV2 = !isV3 && /quick scan|prelims focus/i.test(region);
+  if (!isV3 && !isLegacyV2) return;
+  if (isLegacyV2) {
+    if (!/quick scan/i.test(region)) issues.push("CURRENT-AFFAIRS: Missing Quick Scan table");
+    if (!/prelims focus|exam focus/i.test(region)) issues.push("CURRENT-AFFAIRS: Missing Prelims/Exam Focus");
+    if (!/revision/i.test(region)) issues.push("CURRENT-AFFAIRS: Missing Revision");
+    if (!/quick quiz/i.test(region)) issues.push("CURRENT-AFFAIRS: Missing Quick Quiz");
+    return;
+  }
   for (const [msg, re] of CA_REQUIRED_SECTIONS) {
     if (!re.test(region)) issues.push(msg);
   }
+  // Exam names are SEO-only (v3 and legacy): flag repeated exam-name stuffing.
+  // Marathi keyword line is metadata-driven, not body content - exclude it.
+  // Threshold 6 tolerates source-attribution lines (Insights IAS / Vajiram
+  // release notices) while still catching real stuffing.
+  const examHits = (region.match(/\b(UPSC|MPSC|SSC|RRB)\b/gi) || []).length + (region.match(/Police\s*Bharti/gi) || []).length;
+  if (examHits > 6) issues.push(`CURRENT-AFFAIRS: Exam names in body (${examHits} hits) - keep exam names in SEO metadata, not repeated in article text`);
+  if (/<h2[^>]*>\s*(UPSC\s*Connection|UPSC\s*Mains\s*Angle|UPSC\s*Prelims\s*Focus|Prelims\s*Focus|Mains\s*Angle)/i.test(region)) issues.push("CURRENT-AFFAIRS: Forced UPSC/MPSC section heading - use universal Exam Focus headings");
+  if (/<h2[^>]*>\s*Important Links/i.test(region)) issues.push("CURRENT-AFFAIRS: Important Links link farm - use Sources section only");
+  if (/<h2[^>]*>\s*Keywords/i.test(region)) issues.push("CURRENT-AFFAIRS: Visible keyword paragraph - keywords belong in metadata only");
   const h2Count = (region.match(/<h2\b/gi) || []).length;
-  if (h2Count < 3) issues.push("CURRENT-AFFAIRS: Too few sections for a v2 Current Affairs article (min ~3 h2 headings)");
+  if (h2Count < 3) issues.push("CURRENT-AFFAIRS: Too few sections for a Current Affairs article (min ~3 h2 headings)");
 }
 
 function articleRegion(html) {

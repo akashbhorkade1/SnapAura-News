@@ -185,12 +185,28 @@ const CAREER_LINK_POLICY = "Keep an 'Important Links' section with ONLY official
 // translation). Flow and style rules every Career article must follow.
 const CAREER_STYLE_GUIDE = "CAREER TEMPLATE V3 (English complete core + FULL Marathi coverage; Gen Z, mobile-first, accuracy overrides engagement). FLOW in this order: (1) Hook: 1-2 sentence lead answering what job, how many vacancies, who can apply, and the last date. (2) At-a-Glance card: Organization, Posts, Vacancies, Qualification, Age, Fee, Last Date, Location - use 'To be announced' if unknown, never guess. (3) 'Can I Apply?' with short sub-blocks: Qualification, Experience (if required), Age, Other requirements - only what the source supports - followed by one neutral decision line. (4) 'Why This Job?' with 2-4 practical points ONLY if the source supports them; never clickbait like 'Golden Opportunity' or 'BEST GOVERNMENT JOB'. (5) 'Important Dates' as a small timeline table (Applications Open, Last Date, Exam Date), last date emphasized. (6) 'Application Fee' as a category/fee table - only categories the source lists. (7) 'Selection Process' as short steps ONLY if in the source, otherwise exactly: 'Selection process: Check the official notification.' (8) 'Quick Eligibility Check' as a self-checklist (qualification, experience, age, documents, deadline) that never claims the reader is eligible. (9) 'What should I do now?' up to 5 practical steps, ending with saving application/confirmation details. (10) Background only if genuinely useful, max 80-100 words, never generic institutional filler. (11) 'मराठीत झटपट समजून घ्या' (with 🇮🇳 marker): a FULL Marathi section that mirrors ALL the English content to the same depth - eligibility (qualification, experience, age), posts and vacancies, important dates, application fee, selection process, job location and the action steps - written as natural, everyday conversational Marathi mixed with common English job terms (job, vacancy, form, last date), NEVER a word-for-word translation but NEVER only a 3-4 sentence summary either; every fact present in English must also appear in Marathi; make the Marathi section substantial, typically roughly half the length of the English core (never pad, but the old 3-4 sentence 'quick guide' is banned); avoid Sanskritized or bureaucratic constructions. (12) Important Links (see link policy). STYLE: simple, modern, Indian-job-seeker-friendly English; short paragraphs; emoji only as section markers (🔥📅🎓🎂💰🏢💼📝🚀✅); mention the reporting source once inside the body - there is NO separate source footer line ('Source: … Original report') on Career pages; say 'Not specified in the available source' for gaps; no fixed word target - complete but concise, a 2-4 minute read; never pad or repeat.";
 
-// Current Affairs template v2: exam-oriented roundup. The MOST IMPORTANT rule:
-// never fabricate topics when the source is only an announcement/digest lead.
-const CURRENT_AFFAIRS_STYLE_GUIDE = "CURRENT AFFAIRS TEMPLATE V2 (exam-oriented, Gen Z, mobile-first, accuracy overrides engagement). Only generate the article when the supplied source content ACTUALLY contains the day's current-affairs topics - never pretend an announcement or digest headline contains today's news. FLOW (use only the sections the source genuinely supports): (1) Short intro: 1-2 sentences telling the reader the coverage date and what they will learn; never write 'current affairs are important for exams...'. (2) 'Today's Current Affairs - Quick Scan' (📰 marker): a compact responsive table card listing EACH actual topic from the source and its UPSC focus (Polity, Economy, Environment, Science & Technology, International Relations, etc.) - only assign categories the content clearly supports. (3) One h2 per actual topic with short sub-blocks: 'Why in News?' (current relevance), 'What Happened?' (the actual development), 'Key Facts' (3-6 bullets), then 'UPSC Connection 🎯' only when the source justifies a syllabus/exam link; keep each topic tight - no essays. (4) '🎯 Prelims Focus': a facts card with Prelims-type bullets (organisation, location, article, act, constitutional provision, species, index, report, institution, scientific term, year, scheme, geography) - ONLY source-supported facts, otherwise write 'Not specified in the source'. (5) '✍️ Mains Angle': for topics that support analysis - issue/background, significance, challenges, way forward, plus an optional 'Possible Mains Question'; do not force it for trivial topics. (6) '⚡ 1-Minute Revision': 5-10 ultra-concise numbered revision points (organisation, location, development, key number, initiative). (7) '🧠 Quick Quiz': 3-5 MCQs (A-D options) with 'Answer:' and a one-line 'Why:' based ONLY on facts present in the article/source. (8) '🇮🇳 मराठीत झटपट Revision': a natural, conversational Marathi summary for Marathi-speaking exam students - each topic in 1-2 lines, then 'परीक्षेसाठी लक्षात ठेवा' with 3-5 📌 bullet points; everyday Marathi mixed with common English exam words; never a word-for-word translation; keep it concise. DO NOT generate sections that explain why current affairs matter, how daily compilations work, generic UPSC prep advice, generic civil-services descriptions, or publisher descriptions - explain CURRENT EVENTS, not what current affairs are. STYLE: modern, concise, scannable; emojis only as section markers; every fact attributed once per topic to the named source; 'Not specified in the source' / 'To be confirmed from the official source' for gaps; never invent topics, dates, statistics, schemes, reports, rankings, exam relevance or URLs; do NOT add an 'Important Links' section inside the body (the page template adds the original source link).";
+// Current Affairs template v3 FINAL (weekly + monthly ONLY, EN + MR separated,
+// exam names SEO-only). Overrides all previous CA language/exam/format rules.
+const CURRENT_AFFAIRS_STYLE_GUIDE = "CURRENT AFFAIRS TEMPLATE V3 FINAL (weekly + monthly, English + Marathi, competitive-exam revision, Gen Z mobile-first, accuracy overrides engagement). FREQUENCY: weekly or monthly ONLY - never daily. Daily material is collected internally and consolidated into the weekly/monthly roundup. TWO SEPARATE LANGUAGE VERSIONS in ONE article: first a complete natural ENGLISH article, then a clearly separated complete natural MARATHI article under its own Marathi heading. Never mix languages paragraph-by-paragraph; never sentence-by-sentence translation; Marathi must read as originally written for Marathi readers (simple clear Marathi, short paragraphs, bullets, tables). ENGLISH BODY RULES: natural English only. Do NOT repeat exam names (UPSC/MPSC/SSC/RRB/ZP/Police Bharti) in the body. Banned: 'UPSC aspirants should know', 'MPSC candidates should remember', 'SSC candidates must study', 'RRB aspirants should focus on', 'UPSC Connection', 'UPSC Mains Angle', 'UPSC Prelims Focus'. Use universal headings only: 'Exam Focus', 'Important Facts', 'Why It Matters', 'Quick Revision', '1-Minute Revision', 'Quick Quiz'. Natural exam-neutral phrases allowed: 'important for competitive-exam preparation', 'exam-relevant facts', 'key facts to remember', 'important points for revision'. Exam relevance via CONTENT (what happened, why it matters, key facts, background, data, institutional relevance) not exam-name repetition. MARATHI BODY RULES: same - no repeated exam names; banned literal machine translation and 'UPSC umedvaaranni he lakshat thevave' / 'MPSC vidyarthiansathi he mahatvache aahe' / 'SSC parikshesathi ha prashn mahatvacha aahe' style lines. Natural Marathi allowed: 'spardha parikshechya drushtine mahatvache mudde', 'parikshesathi lakshat thevanyasarkhe tathy', 'jhatpat punaravlokan', 'mahatvache tathy'. WEEKLY EN FLOW: H1 'Weekly Current Affairs: [DATE RANGE]' + short intro; 'This Week at a Glance' table (Topic | What Happened | Key Point); one h2 per real topic using ONLY relevant sub-blocks (Why It Matters / What Happened / Key Facts / Background / Key Takeaway); then 'Exam Focus' (no exam-name repetition), '1-Minute Revision', 'Quick Quiz' (MCQs from verified facts only). WEEKLY MR FLOW after the English section: a separated, independently readable Marathi article with natural headings - 'ya athavdyatil mahatvachya ghadamodi', 'kay ghadle', 'mahatvache tathy', 'parshvabhumi', 'parikshechya drushtine mahatvache mudde', '1-minute revision', 'sarav prashn'. MONTHLY EN FLOW: H1 'Monthly Current Affairs: [MONTH YEAR]'; 'Month at a Glance'; ONLY non-empty categories (National / International / Economy / Polity and Governance / Environment / Science and Technology / Defence / Awards and Events / Sports / Reports and Indexes); 'Monthly Exam Focus'; 'Quick Revision'; 'Monthly Quiz'; 'Sources'. MONTHLY MR FLOW: separated Marathi article with natural Marathi category headings plus 'Srot' (Sources). TITLE RULE: natural user-friendly titles like 'Weekly Current Affairs: 7-13 September 2026' - never stuff exam-name lists into titles. EXAM NAMES = SEO METADATA ONLY (title/meta description/keywords/news_keywords/schema where natural; never a visible keyword paragraph in the article). SOURCES: a 'Sources' section with original/official links ONLY - never an 'Important Links' link farm. SOURCE HONESTY: every claim from supplied source material; if a source is a release announcement without actual topics, skip or write a clearly-labelled short notice - never fabricate topics. STYLE: concise mobile-first cards/tables/bullets, emoji section markers, short paragraphs, no coaching-centre filler, no motivational padding, no artificial word count.";
 
 // Generic-filler phrases that are banned in any Current Affairs article -
 // they mark the announcement-only digest anti-pattern.
+// Exam names live in SEO metadata ONLY. These curated keyword sets are merged
+// into meta keywords/news_keywords for CA articles - never shown in the body.
+const CA_SEO_EXAM_KEYWORDS_EN = "weekly current affairs 2026, monthly current affairs 2026, UPSC current affairs, MPSC current affairs, SSC current affairs, RRB current affairs, railway current affairs, ZP bharti current affairs, police bharti current affairs, banking exams current affairs, IBPS current affairs, SBI current affairs, RBI current affairs, teaching exams current affairs, defence exams current affairs, state government exams current affairs, competitive exam current affairs, government exam current affairs";
+const CA_SEO_EXAM_KEYWORDS_MR = "स्पर्धा परीक्षा चालू घडामोडी, MPSC चालू घडामोडी, UPSC चालू घडामोडी, SSC चालू घडामोडी, RRB चालू घडामोडी, ZP भरती चालू घडामोडी, पोलीस भरती चालू घडामोडी";
+// Banned inside CA article BODIES (allowed only in SEO metadata / source titles).
+const CA_BODY_BANNED_EXAM_PHRASES = [
+  /UPSC\s+aspirants?\s+should/i,
+  /MPSC\s+candidates?\s+should/i,
+  /SSC\s+candidates?\s+must/i,
+  /RRB\s+aspirants?\s+should/i,
+  /ZP\s+bharti\s+(aspirants?|candidates?|students?)[\s\S]{0,60}should/i,
+  /police\s+bharti\s+(aspirants?|candidates?|students?)[\s\S]{0,60}should/i,
+  /UPSC\s+Connection/i,
+  /UPSC\s*Mains\s*Angle/i,
+  /UPSC\s*Prelims\s*Focus/i,
+];
 const CA_BANNED_PHRASES = [
   /current affairs are an important part/i,
   /current affairs (?:is|are) vital/i,
@@ -201,6 +217,12 @@ const CA_BANNED_PHRASES = [
   /key structure of civil services daily analysis/i,
   /essential component of exam readiness/i,
   /foundation for candidates navigating/i,
+  /UPSC aspirants should/i,
+  /MPSC candidates should/i,
+  /SSC candidates must/i,
+  /RRB aspirants should/i,
+  /should read current affairs daily/i,
+  /exam consists of Prelims and Mains/i,
 ];
 
 // The MOST IMPORTANT Current Affairs rule: if the source does not actually
@@ -315,14 +337,79 @@ function extractArticleBody(pageHtml, sourceUrl) {
   return { text, links };
 }
 
-function scheduleLabel() {
+function caPeriodForToday() {
   const weekday = new Intl.DateTimeFormat("en-US", { timeZone: INDIA_TIME_ZONE, weekday: "short" }).format(new Date());
-  const sunday = weekday === "Sun";
   const firstOfMonth = Number(TODAY.slice(8, 10)) === 1;
-  if (sunday && firstOfMonth) return "weekly and monthly";
-  if (sunday) return "weekly";
+  if (weekday === "Sun" && firstOfMonth) return "weekly and monthly";
+  if (weekday === "Sun") return "weekly";
   if (firstOfMonth) return "monthly";
-  return "daily";
+  return null;
+}
+
+function caSlugForPeriod(period) {
+  if (String(period).indexOf("monthly") !== -1) return "monthly-current-affairs-" + TODAY.slice(0, 7);
+  const end = new Date(TODAY + "T00:00:00+05:30");
+  const start = new Date(end);
+  start.setDate(end.getDate() - 6);
+  const f = (x) => x.toISOString().slice(0, 10);
+  return "weekly-current-affairs-" + f(start) + "-to-" + TODAY;
+}
+
+function caTitleForPeriod(period) {
+  const months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+  if (String(period).indexOf("monthly") !== -1) return "Monthly Current Affairs: " + months[Number(TODAY.slice(5, 7)) - 1] + " " + TODAY.slice(0, 4);
+  const end = new Date(TODAY + "T00:00:00+05:30");
+  const start = new Date(end);
+  start.setDate(end.getDate() - 6);
+  const o = { day: "numeric", month: "long" };
+  return "Weekly Current Affairs: " + start.toLocaleDateString("en-IN", o) + "-" + end.toLocaleDateString("en-IN", o) + " " + TODAY.slice(0, 4);
+}
+
+function caPeriodExists(period) {
+  const slug = caSlugForPeriod(period);
+  const files = [];
+  function walk(dir) {
+    let entries = [];
+    try { entries = fs.readdirSync(dir, { withFileTypes: true }); } catch (e) { return; }
+    for (const entry of entries) {
+      if (entry.name === ".git" || entry.name === "node_modules" || entry.name === "drafts") continue;
+      const full = path.join(dir, entry.name);
+      if (entry.isDirectory()) walk(full);
+      else if (entry.name.endsWith(".html")) files.push(full);
+    }
+  }
+  walk(ROOT);
+  let queued = "";
+  try {
+    const arr = JSON.parse(fs.readFileSync(QUEUE_PATH, "utf8"));
+    if (Array.isArray(arr)) queued = arr.map((i) => String(i.destination || "") + " " + String(i.source || "")).join(" ");
+  } catch (e) {}
+  return (files.join(" ") + " " + queued).indexOf(slug) !== -1;
+}
+
+async function buildCaRoundupStories(period, seen) {
+  const queries = ["India national news polity economy", "India science technology environment news", "Maharashtra government news"];
+  const got = [];
+  for (const q of queries) {
+    try {
+      const url = "https://news.google.com/rss/search?q=" + encodeURIComponent(q + " when:7d") + "&hl=en-IN&gl=IN&ceid=IN:en";
+      const r = await fetch(url, { headers: { "user-agent": "SnapAura-News/1.0" } });
+      if (!r.ok) continue;
+      const items = parseItems(await r.text());
+      for (const it of items) {
+        if (got.length >= 8) break;
+        if (!it.title || !it.link || seen.indexOf(it.link) !== -1) continue;
+        if (got.some((c) => c.link === it.link)) continue;
+        if (!hasCurrentAffairsTopics({ title: it.title, description: it.description, rawContent: (it.content || it.description || "") })) continue;
+        got.push(it);
+      }
+    } catch (e) {}
+    if (got.length >= 8) break;
+  }
+  if (got.length < 3) return [];
+  const desc = got.map((c) => c.title).slice(0, 4).join("; ").slice(0, 400);
+  const body = got.map((c, i) => "STORY " + (i + 1) + ": " + c.title + ". " + (c.description || "") + " " + ((c.content || "").slice(0, 2000))).join(" ").slice(0, 18000);
+  return [{ title: caTitleForPeriod(period), description: desc, link: got[0].link, sourceUrl: got[0].link, pubDate: TODAY, schedule: period, caDigest: true, caItems: got, caSlug: caSlugForPeriod(period), rawContent: body, importantLinks: [], source: { category: "Current-Affairs", language: "English", image: DEFAULT_IMAGE } }];
 }
 
 async function getScheduledStories(seen) {
@@ -331,18 +418,20 @@ async function getScheduledStories(seen) {
     getNewsStory("Indian OTT web series Netflix", "web-series", "Hindi", seen),
     getNewsStory("India cricket", "Cricket", "English", seen),
     getMajhiStory(seen),
-    getNewsStory("India current affairs", "Current-Affairs", "Marathi", seen),
   ]);
   const stories = [];
   for (const result of results) {
     if (result.status === "fulfilled") stories.push(result.value);
     else console.error("Scheduled story skipped: " + (result.reason && result.reason.message ? result.reason.message : result.reason));
   }
-  const label = scheduleLabel();
-  if (label !== "daily") {
-    const extra = await getMajhiStory(seen, true);
-    extra.schedule = label;
-    stories.push(extra);
+  const period = caPeriodForToday();
+  if (period) {
+    if (caPeriodExists(period)) console.log("CA digest exists - skip duplicate period.");
+    else {
+      const digests = await buildCaRoundupStories(period, seen);
+      for (const d of digests) stories.push(d);
+      if (digests.length === 0) console.warn("CA digest skipped: fewer than 3 verified developments.");
+    }
   }
   return stories;
 }
@@ -428,11 +517,11 @@ function retryDelay(response, attempt) {
 async function createArticle(story, model) {
   const category = story.source.category;
   const careerRules = category === "Career" ? `CAREER MODE (bilingual English core + Marathi quick guide; template v2). ${CAREER_LINK_POLICY} ${CAREER_STYLE_GUIDE} Use "To be announced" for unknown dates, "Not specified in the available source" for other gaps, and label provisional vacancies as provisional.` : "";
-  const currentRules = category === "Current-Affairs" ? `CURRENT AFFAIRS MODE (exam-oriented template v2). ${CURRENT_AFFAIRS_STYLE_GUIDE}` : "";
+  const currentRules = category === "Current-Affairs" ? `CURRENT AFFAIRS MODE (template v3 FINAL: weekly + monthly EN + MR, exam names SEO-only). ${CURRENT_AFFAIRS_STYLE_GUIDE}` : "";
   const lengthRules = category === "Current-Affairs"
-    ? `Write a complete-but-concise exam-oriented Current Affairs article. The 'Source page content' below CONTAINS the real current-affairs topics - structure THOSE topics with the template sections and never write an announcement-only digest. Coverage date: ${story.pubDate || story.schedule || TODAY}.`
+    ? `Write a complete-but-concise weekly/monthly Current Affairs roundup. Use the story title as the article title basis (Weekly Current Affairs: ... / Monthly Current Affairs: ...). When digest items are supplied, consolidate ALL of them into ONE roundup. Put exam names ONLY in the keywords field, never in title/bodyHtml; never emit a visible keyword paragraph or an Important Links section (Sources section only). Coverage period: ${story.pubDate || story.schedule || TODAY}.`
     : "Write 600-850 words, with 3-5 HTML h2 headings and paragraph tags. Include a useful context section and a closing paragraph.";
-  const prompt = `You are an editor for SnapAura News. Create one original, fact-based article from the supplied source lead. Do not invent facts, quotes, numbers, or claims. Attribute every reported fact to the named source and clearly mark uncertainty. ${lengthRules} Return ONLY valid JSON with keys title, description, keywords, bodyHtml, sourceLine. title must be under 60 characters and description under 155 characters. keywords must be a short comma-separated list. sourceLine must name the original publication. The bodyHtml must not include html, head, script, style, or article tags. ${careerRules} ${currentRules}\n\nGoogle trend topic: ${story.trend || "none"}\nCategory: ${category}\nSource title: ${story.title}\nSource description: ${story.description}\nSource page content: ${(story.rawContent || "").slice(0, 18000)}\nSource URL: ${story.sourceUrl || story.link}\nOriginal important links: ${(story.importantLinks || []).join("\n")}`;
+  const prompt = `You are an editor for SnapAura News. Create one original, fact-based article from the supplied source lead. Do not invent facts, quotes, numbers, or claims. Attribute every reported fact to the named source and clearly mark uncertainty. ${lengthRules} Return ONLY valid JSON with keys title, description, keywords, bodyHtml, sourceLine. title must be under 60 characters and description under 155 characters. keywords must be a short comma-separated list. ${category === "Current-Affairs" ? "Merge these exam-discovery keywords into keywords (dedupe, keep under 500 chars): " + CA_SEO_EXAM_KEYWORDS_EN + ", " + CA_SEO_EXAM_KEYWORDS_MR + ". " : ""}sourceLine must name the original publication. The bodyHtml must not include html, head, script, style, or article tags. ${careerRules} ${currentRules}\n\nGoogle trend topic: ${story.trend || "none"}\nCategory: ${category}\nSource title: ${story.title}\nSource description: ${story.description}\nSource page content: ${(story.rawContent || "").slice(0, 18000)}\nSource URL: ${story.sourceUrl || story.link}\nOriginal important links: ${(story.importantLinks || []).join("\n")}${story.caDigest ? "\nCA DIGEST ITEMS (consolidate ALL " + story.caItems.length + " into ONE weekly/monthly roundup, one section per item):\n" + story.caItems.map((c, i) => (i + 1) + ". " + c.title + " | " + (c.description || "")).join("\n") : ""}`;
   const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${encodeURIComponent(process.env.GEMINI_API_KEY.trim())}`;
   const request = {
     method: "POST",
@@ -502,11 +591,12 @@ function careerStructureWarnings(html) {
 function currentAffairsStructureWarnings(html) {
   const warnings = [];
   const required = [
-    ["Quick Scan table", /Quick Scan/i],
-    ["Prelims Focus section", /Prelims Focus/i],
-    ["1-Minute Revision section", /1.?Minute Revision/i],
-    ["Quick Quiz section", /Quick Quiz/i],
-    ["Marathi quick revision", /मराठीत/i],
+    ["This Week/Month at a Glance table", /at a glance/i],
+    ["Exam Focus section", /exam focus/i],
+    ["Revision section", /revision/i],
+    ["Quick Quiz section", /quick quiz|monthly quiz/i],
+    ["Sources section", /sources/i],
+    ["Separated Marathi version", /Marathi/i],
     ["at least one topic heading", /<h2\b/],
   ];
   for (const [name, re] of required) {
@@ -556,12 +646,21 @@ function sanitizeArticleBody(article, story) {
   }
   if (isCurrentAffairs) {
     html = stripCaFiller(html);
-    // Current Affairs pages must not become link farms: drop any model-written
-    // Important Links block - the page template adds the original source link.
+    html = html.replace(/<h2[^>]*>\s*(?:UPSC\s*Connection|UPSC\s*Mains\s*Angle|UPSC\s*Prelims\s*Focus|Prelims\s*Focus|Mains\s*Angle)[^<]*<\/h2\s*>/gi, "");
+    for (const re of CA_BODY_BANNED_EXAM_PHRASES) {
+      html = html.replace(new RegExp("<p[^>]*>[\\s\\S]*?(?:" + re.source + ")[\\s\\S]*?</p\\s*>", "gi"), "");
+    }
     html = html.replace(/<h2[^>]*>\s*Important Links[^<]*<\/h2\s*>\s*(<p[^>]*>[\s\S]{0,400}?<\/p\s*>)?\s*<ul[\s\S]*?<\/ul\s*>/i, "");
+    // Merge curated exam keywords into meta keywords (SEO-only, never visible).
+    if (article && typeof article.keywords === "string") {
+      const base = article.keywords.split(",").map((k) => k.trim()).filter(Boolean);
+      const merged = base.concat([CA_SEO_EXAM_KEYWORDS_EN, CA_SEO_EXAM_KEYWORDS_MR]);
+      const seenKw = {};
+      article.keywords = merged.map((k) => k.trim()).filter((k) => k && !seenKw[k.toLowerCase()] && (seenKw[k.toLowerCase()] = true)).join(", ").slice(0, 500);
+    }
     const warnings = currentAffairsStructureWarnings(html);
     if (warnings.length > 0) {
-      console.warn(`Current Affairs template v2 warnings: ${warnings.join("; ")}.`);
+      console.warn(`Current Affairs template v3 warnings: ${warnings.join("; ")}.`);
     }
   }
   if (anchorCount > maxAnchors) {
@@ -662,7 +761,13 @@ function findRelatedArticles(category, currentFile, limit) {
 }
 
 function renderArticle(article, story) {
-  const filename = `${slugify(article.title)}.html`;
+  if (story && story.source && story.source.category === "Current-Affairs" && typeof article.keywords === "string") {
+    const base = article.keywords.split(",").map((k) => k.trim()).filter(Boolean);
+    const merged = base.concat([CA_SEO_EXAM_KEYWORDS_EN, CA_SEO_EXAM_KEYWORDS_MR]);
+    const seenKw = {};
+    article.keywords = merged.map((k) => k.trim()).filter((k) => k && !seenKw[k.toLowerCase()] && (seenKw[k.toLowerCase()] = true)).join(", ").slice(0, 500);
+  }
+  const filename = story && story.caSlug ? `${story.caSlug}.html` : `${slugify(article.title)}.html`;
   const relative = `${story.source.category}/${filename}`;
   const canonical = `${BASE_URL}/${relative}`;
   const isCareer = story.source.category === "Career";
