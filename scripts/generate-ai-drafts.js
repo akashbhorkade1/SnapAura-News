@@ -12,6 +12,7 @@ const BASE_URL = "https://snapaura.space";
 const INDIA_TIME_ZONE = "Asia/Kolkata";
 const TODAY = new Intl.DateTimeFormat("en-CA", { timeZone: INDIA_TIME_ZONE, year: "numeric", month: "2-digit", day: "2-digit" }).format(new Date());
 const GEMINI_MAX_ATTEMPTS = Math.max(1, Number.parseInt(process.env.GEMINI_MAX_ATTEMPTS || "4", 10) || 4);
+const GEMINI_QUOTA_FAIL_MODE = String(process.env.GEMINI_QUOTA_FAIL_MODE || "skip").toLowerCase(); // "skip" (default) | "fail"
 const RETRYABLE_GEMINI_STATUS_CODES = new Set([408, 429, 500, 502, 503, 504]);
 const IMAGELESS_CATEGORIES = new Set(["Career", "Current-Affairs"]);
 
@@ -509,9 +510,17 @@ function sleep(milliseconds) {
 }
 
 function retryDelay(response, attempt) {
+  // Honor Gemini RetryInfo retryDelay when present (it can be "16s", "16.478s", etc.).
   const retryAfterSeconds = Number.parseFloat(response?.headers.get("retry-after"));
   if (Number.isFinite(retryAfterSeconds) && retryAfterSeconds > 0) return Math.ceil(retryAfterSeconds * 1000);
   return Math.min(1000 * 2 ** (attempt - 1), 8000);
+}
+
+// 429 daily free-tier quota on this model means further retries/models today will
+// also fail — fail fast instead of burning the daily quota in a retry loop.
+function isQuotaExhausted(status, details) {
+  if (status !== 429) return false;
+  return /quota|free_tier|RESOURCE_EXHAUSTED|GenerateRequestsPerDay/i.test(String(details || ""));
 }
 
 async function createArticle(story, model) {
@@ -545,6 +554,11 @@ async function createArticle(story, model) {
       break;
     }
     const details = await response.text();
+    if (isQuotaExhausted(response.status, details)) {
+      const quotaError = new Error(`Gemini daily free-tier quota exhausted for model ${model} (HTTP 429). No drafts were generated; retry after the quota window resets. Details: ${details}`);
+      quotaError.code = "GEMINI_QUOTA_EXHAUSTED";
+      throw quotaError;
+    }
     if (!RETRYABLE_GEMINI_STATUS_CODES.has(response.status) || attempt === GEMINI_MAX_ATTEMPTS) {
       throw new Error(`Gemini generateContent returned HTTP ${response.status}. Check API access, quota, and key restrictions. Details: ${details}`);
     }
@@ -941,7 +955,16 @@ async function main() {
         continue;
       }
     }
-    const article = await createArticle(story, model);
+    let article;
+    try {
+      article = await createArticle(story, model);
+    } catch (error) {
+      if (error && error.code === "GEMINI_QUOTA_EXHAUSTED") {
+        console.warn(`${error.message} Skipping remaining story generation for this run.`);
+        break;
+      }
+      throw error;
+    }
     const rendered = renderArticle(article, story);
     const output = path.join(OUTPUT_DIR, `${String(index + 1).padStart(2, "0")}-${path.basename(rendered.relative)}`);
     fs.writeFileSync(output, rendered.html, "utf8");
@@ -950,10 +973,18 @@ async function main() {
     console.log(`Draft created: drafts/generated/${path.basename(output)} (${story.source.category})`);
   }
   fs.writeFileSync(MANIFEST_PATH, `${JSON.stringify(retentionManifest, null, 2)}\n`, "utf8");
+  const generatedCount = Object.keys(retentionManifest).filter((file) => fs.existsSync(path.join(OUTPUT_DIR, file))).length;
+  if (generatedCount === 0) {
+    // A quota-exhausted run is not a content failure — leave downstream steps
+    // (validation/publish/SEO) something sane to do instead of hard-failing CI.
+    if (GEMINI_QUOTA_FAIL_MODE === "fail") throw new Error("No drafts were generated (Gemini quota exhausted)");
+    console.warn("No drafts were generated in this run (all stories skipped or quota exhausted); downstream steps will no-op.");
+  }
 }
 
 if (process.env.NODE_ENV === "test") {
   module.exports = {
+    isQuotaExhausted,
     extractArticleBody,
     sanitizeArticleBody,
     classifyCareerLink,

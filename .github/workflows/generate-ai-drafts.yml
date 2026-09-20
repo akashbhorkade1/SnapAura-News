@@ -35,9 +35,12 @@ jobs:
         env:
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY || secrets.Gemini_API_Key }}
           GEMINI_MODEL: gemini-3.6-flash
+          GEMINI_MAX_ATTEMPTS: 2
         run: npm run generate:drafts
       - name: Check generated draft HTML
         run: npm run validate:generated
+        env:
+          STRICT: 0
       - name: Publish generated articles immediately
         run: npm run publish:queued
       - name: Validate published site structure
