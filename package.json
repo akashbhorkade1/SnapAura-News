@@ -12,6 +12,7 @@
     "validate:footer": "node scripts/validate.js --footer",
     "publish:queued": "node scripts/publish-queued.js",
     "generate:drafts": "node scripts/generate-ai-drafts.js",
+    "validate:generated": "node scripts/validate-generated-drafts.js",
     "generate:sitemap": "node scripts/generate-sitemap.js",
     "generate:rss": "node scripts/generate-rss.js",
     "serve": "npx serve . -l 3000",
